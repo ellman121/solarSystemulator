@@ -16,10 +16,10 @@ GL_LIBS = -lglut -lGLU -lGL -lm
 
 #-----------------------------------------------------------------------
 
-default: Tankgame.c tank.cpp tank.h
-	g++ -o tankwars Tankgame.c tank.cpp -lglut -lGLU -lGL -std=c++11
+default: orbit.cpp
+	g++ -o solar orbit.cpp -lglut -lGLU -lGL -std=c++11
 
 # utility targets
 clean:
 	@rm -f *.o *~ core
-	@rm tankwars
+	@rm solar
