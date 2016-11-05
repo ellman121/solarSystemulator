@@ -3,14 +3,16 @@
 
 #include <string>
 #include "globals.h"
+#include <iostream>
 
 using namespace std;
 
 class planet
 {
+public:
 	// Constructors
 	planet();
-	planet(string name, float radius, float rotationSpeed, planet *planet, float distance, float orbitalSpeed, float color[3], image img);
+	planet(string name, planet *parent, float radius, float distance, float daysPerYear, float hoursPerDay, float color[3], Image_s img);
 	~planet();
 
 	// Getters
@@ -19,7 +21,8 @@ class planet
 	float getRotation();
 	float getOrbit();
 	void getColor(float returned[]);
-	image getImage();
+	Image_s getImage();
+	string getName();
 
 	// Setters
 	// bool setRadius(int radius);
@@ -30,7 +33,7 @@ class planet
 	// bool setSpeed(int speed);
 
 	// Action functions
-	void step();
+	void step(float speed);
 
 private:
 	string _name;			// Name of the planet
@@ -45,7 +48,7 @@ private:
 	float _orbitalSpeed;	// Number of degrees around parent we rotate/hour
 
 	float _color[3];		// Default color of the planet's
-	image _img;				// Image data
+	Image_s _img;				// Image data
 };
 
 #endif

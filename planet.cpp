@@ -9,29 +9,31 @@
 planet::planet() {
 	_name = "";
 	_radius = 0;
-	_rotation = =0;
+	_rotation =0;
 
 }
 
 // Use this constructor
-planet::planet(string name, float radius, float rotationSpeed, float color[3], image img, planet *planet, float distance, float orbitalSpeed)
+planet::planet(string name, planet *parent, float radius, float distance, float daysPerYear, float hoursPerDay, float color[3], Image_s img)
 {
 	_name = name;
-	_radius = radius;
-	_rotation = 0;
-	_rotSpeed = rotationSpeed;
-	_color = color;
-	_img = img;
 	_parent = parent;
-	_distance = distance;
-	_orbit = 0;
-	_orbitalSpeed = orbitalSpeed;
+	_radius = radius/10000;								//scale down radius
+	_distance = distance/10;							//scale down distance
+	_rotation = 0;										//start at 0 degree rotation position
+	_rotSpeed = 360/hoursPerDay;						//rotational degree change per hour
+	_orbit = 0;											//start at 0 degree orbit position
+	_orbitalSpeed = 360/(24*daysPerYear);				//orbital degree change per hour
+	_color[0] = color[0];
+	_color[1] = color[1];
+	_color[2] = color[2];
+	_img = img;
 }
 
 /*
  * Destructors
  ***************/
-planet::~planet();
+planet::~planet(){}
 
 /*
  * Getters
@@ -47,17 +49,17 @@ float planet::getRadius()
 float planet::getDistance()
 {
 	// If we don't have a parent, return 0
-	return (_parent == null) ? 0 : _distance;
+	return (_parent == NULL) ? 0 : _distance;
 }
 
 // The number of degrees around self axis we've rotated
-float getRotation()
+float planet::getRotation()
 {
 	return _rotation;
 }
 
 // The number of degrees around parent we've rotated
-float getOrbit()
+float planet::getOrbit()
 {
 	return _orbit;
 }
@@ -71,19 +73,26 @@ void planet::getColor(float *returned)
 }
 
 // Return a pionter to the bitmap image for the planet
-image planet::getImage()
+Image_s planet::getImage()
 {
 	return _img;
 }
 
+// Get the name of the planet
+string planet::getName()
+{
+	return _name;
+}
 /*
  * Activities
  ***************/
 
 // Simulate the planet's movements in 1 hour
-void planet::step()
+void planet::step(float speed)
 {
-	_rotation += (_rotation + _rotSpeed > 360) : _rotSpeed ? _rotSpeed - 360;
-	_orbit += (_orbit + _orbitalSpeed > 360) : _orbitalSpeed ? _orbitalSpeed - 360;
+	float rot = _rotSpeed * speed;
+	float orb = _orbitalSpeed * speed;
+	_rotation += (_rotation + rot > 360) ? rot : rot - 360;
+	_orbit += (_orbit + orb > 360) ? orb : orb - 360;
 
 }

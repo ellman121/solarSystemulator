@@ -17,7 +17,7 @@ GL_LIBS = -lglut -lGLU -lGL -lm
 #-----------------------------------------------------------------------
 
 default: orbit.cpp
-	g++ -o solar orbit.cpp -lglut -lGLU -lGL -std=c++11
+	g++ -o solar orbit.cpp planet.cpp -lglut -lGLU -lGL -std=c++11
 
 # utility targets
 clean:

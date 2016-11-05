@@ -33,9 +33,12 @@
 // JMW: Minor modifications for CSC433/533 Computer Graphics, Fall 2016.
 
 #include <cstdlib>
+#include <iostream>
 #include <GL/freeglut.h>
-#include "globals.h"
 #include "planet.h"
+#include <string>
+#include <map>
+
 using namespace std;
 
 // function prototypes
@@ -44,138 +47,153 @@ void Animate( void );
 void ResizeWindow( int w, int h );
 void KeyPressFunc( unsigned char Key, int x, int y );
 void SpecialKeyFunc( int Key, int x, int y );
+void InitSolarSystem();
+void timeProgress (int value);
+// Global things
+bool infoFlag = false;
+bool pauseFlag = false;
+float hourSpeed = 30;
+Mode drawMode; 
 
-// global variables
-GLenum spinMode = GL_TRUE;
-GLenum singleStep = GL_FALSE;
+float sunColor[3] = {1.0, 1.0, 0.3};
+float mercuryColor[3] = {0.8, 0.5, 0.3};
+float venusColor[3] = {0.5, 0.6, 0.6};
+float earthColor[3] = {0.2, 0.2, 1.0};
+float marsColor[3] = {1.0, 0.2, 0.2};
+float jupiterColor[3] = {0.8, 0.6, 0.0};
+float saturnColor[3] = {0.6, 0.7, 0.0};
+float uranusColor[3] = {0.2, 1.0, 0.6};
+float neptuneColor[3] = {0.2, 0.4, 0.8};
 
-// these three variables control the animation's state and speed.
-float HourOfDay = 0.0;
-float DayOfYear = 0.0;
-float AnimateIncrement = 24.0;  // Time step for animation (hours)
+map<string,planet*> planetMap;
 
+void drawBody(planet* body){
+	string name = body->getName();
+	if(name!="Sun"){
+		// First position it around the sun. Use DayOfYear to determine its position.
+		glRotatef( body->getOrbit(), 0.0, 1.0, 0.0 );
+		glTranslatef( body->getDistance(), 0.0, 0.0 );
+	}
+	glPushMatrix();						// Save matrix state
+	// Second, rotate the earth on its axis. Use HourOfDay to determine its rotation.
+	glRotatef( body->getRotation(), 0.0, 1.0, 0.0 );
+	// Third, draw the earth as a wireframe sphere.
 
+	float color[3] = {};
+	body->getColor(color);
+	glColor3fv(color);
+	glutWireSphere( body->getRadius(), 10, 10 );
+
+	glPopMatrix();						// Restore matrix state
+	if(name != "Sun"){
+		// move back to starting position
+		glTranslatef( -1 * body->getDistance(), 0.0, 0.0 );
+		glRotatef( -1 * body->getOrbit(), 0.0, 1.0, 0.0 );
+	}
+
+}
+void timeProgress (int value){
+	for (auto& p: planetMap)
+    	p.second->step(hourSpeed);
+}
 // Animate() handles the animation and the redrawing of the graphics window contents.
 void Animate( void )
 {
-    // Clear the redering window
-    glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
+	// Clear the redering window
+	glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
+	if(!infoFlag){
 
-    if ( spinMode )
-    {
-        // Update the animation state
-        HourOfDay += AnimateIncrement;
-        DayOfYear += AnimateIncrement / 24.0;
+		// Clear the current matrix (Modelview)
+		glLoadIdentity();
 
-        HourOfDay = HourOfDay - ( ( int ) ( HourOfDay / 24 ) ) * 24;
-        DayOfYear = DayOfYear - ( ( int ) ( DayOfYear / 365 ) ) * 365;
-    }
+		// Back off eight units to be able to view from the origin.
+		glTranslatef ( 0.0, 0.0, -100.0 );
 
-    // Clear the current matrix (Modelview)
-    glLoadIdentity();
+		// Rotate the plane of the elliptic
+		// (rotate the model's plane about the x axis by fifteen degrees)
+		glRotatef( 15.0, 1.0, 0.0, 0.0 );
+		for (auto& p: planetMap)
 
-    // Back off eight units to be able to view from the origin.
-    glTranslatef ( 0.0, 0.0, -8.0 );
+			drawBody(p.second);
 
-    // Rotate the plane of the elliptic
-    // (rotate the model's plane about the x axis by fifteen degrees)
-    glRotatef( 15.0, 1.0, 0.0, 0.0 );
+	}else {
+		cout << "draw info screen" << endl;
+	}
 
-    // Draw the sun	-- as a yellow, wireframe sphere
-    glColor3f( 1.0, 1.0, 0.0 );
-    glutWireSphere( 1.0, 15, 15 );
+	// Flush the pipeline, and swap the buffers
+	glFlush();
+	glutSwapBuffers();
+	glutTimerFunc(1, timeProgress, 0);
+	glutPostRedisplay();		// Request a re-draw for animation purposes
 
-    // Draw the Earth
-    // First position it around the sun. Use DayOfYear to determine its position.
-    glRotatef( 360.0 * DayOfYear / 365.0, 0.0, 1.0, 0.0 );
-    glTranslatef( 4.0, 0.0, 0.0 );
-    glPushMatrix();						// Save matrix state
-    // Second, rotate the earth on its axis. Use HourOfDay to determine its rotation.
-    glRotatef( 360.0 * HourOfDay / 24.0, 0.0, 1.0, 0.0 );
-    // Third, draw the earth as a wireframe sphere.
-    glColor3f( 0.2, 0.2, 1.0 );
-    glutWireSphere( 0.4, 10, 10 );
-    glPopMatrix();						// Restore matrix state
-
-    // Draw the moon. Use DayOfYear to control its rotation around the earth
-    glRotatef( 360.0 * 12.0 * DayOfYear / 365.0, 0.0, 1.0, 0.0 );
-    glTranslatef( 0.7, 0.0, 0.0 );
-    glColor3f( 0.3, 0.7, 0.3 );
-    glutWireSphere( 0.1, 5, 5 );
-
-    // Flush the pipeline, and swap the buffers
-    glFlush();
-    glutSwapBuffers();
-
-    if ( singleStep )
-    {
-        spinMode = GL_FALSE;
-    }
-
-    glutPostRedisplay();		// Request a re-draw for animation purposes
 }
 
 // Initialize OpenGL's rendering modes
 void OpenGLInit( void )
 {
-    glShadeModel( GL_FLAT );
-    glClearColor( 0.0, 0.0, 0.0, 0.0 );
-    glClearDepth( 1.0 );
-    glEnable( GL_DEPTH_TEST );
+	glShadeModel( GL_FLAT );
+	glClearColor( 0.0, 0.0, 0.0, 0.0 );
+	glClearDepth( 1.0 );
+	glEnable( GL_DEPTH_TEST );
 }
 
 // ResizeWindow is called when the window is resized
 void ResizeWindow( int w, int h )
 {
-    float aspectRatio;
-    h = ( h == 0 ) ? 1 : h;
-    w = ( w == 0 ) ? 1 : w;
-    glViewport( 0, 0, w, h );	// View port uses whole window
-    aspectRatio = ( float ) w / ( float ) h;
+	float aspectRatio;
+	h = ( h == 0 ) ? 1 : h;
+	w = ( w == 0 ) ? 1 : w;
+	glViewport( 0, 0, w, h );	// View port uses whole window
+	aspectRatio = ( float ) w / ( float ) h;
 
-    // Set up the projection view matrix (not very well!)
-    glMatrixMode( GL_PROJECTION );
-    glLoadIdentity();
-    gluPerspective( 60.0, aspectRatio, 1.0, 30.0 );
+	// Set up the projection view matrix (not very well!)
+	glMatrixMode( GL_PROJECTION );
+	glLoadIdentity();
+	gluPerspective( 60.0, aspectRatio, 1.0, 1000.0 );
 
-    // Select the Modelview matrix
-    glMatrixMode( GL_MODELVIEW );
+	// Select the Modelview matrix
+	glMatrixMode( GL_MODELVIEW );
 }
 
 void InitSolarSystem(){
-    Image_s nullImage = {0, 0, NULL};
-    Position_s pos = {0, 0, 0,};
-    planet *sun = new planet ("Sun", 69600, 14.4, sunColor, nullImage, nullptr, 0, 0, pos);
-    pos = {4.0, 0, 0};
-    planet *earth = new planet ("Earth", 6370, 15, earthColor, nullImage, sun, 150000000, 0.04109589, pos);
-    pos = {6.0, 0, 0};
-    planet *mars = new planet ("Mars", 3394, 14.634, marsColor, nullImage, sun,  228000000, 0.021301523, pos);
-    // planet(char *name, int radius, int rotation, float color[3], Image_s img, planet *parent, int distance, int orbitalSpeed, Position_s pos);
+	Image_s nullImage = {0, 0, NULL};
+
+
+	planetMap.emplace("Sun", new planet ("Sun", nullptr, 696000/10, 0, 0, 25, sunColor, nullImage));
+	planetMap.emplace("Mercury", new planet ("Mercury", planetMap.at("Sun"), 2439, 58, 88, 1416, mercuryColor, nullImage));
+	planetMap.emplace("Venus", new planet ("Venus", planetMap.at("Sun"), 6052, 108, 225, 5832, venusColor, nullImage));
+	planetMap.emplace("Earth", new planet ("Earth", planetMap.at("Sun"), 6378, 150, 365, 24, earthColor, nullImage));
+	planetMap.emplace("Mars", new planet ("Mars", planetMap.at("Sun"), 3394, 228, 687, 24.6, marsColor, nullImage));
+	planetMap.emplace("Jupiter", new planet ("Jupiter", planetMap.at("Sun"), 71398, 779, 4332, 9.8, jupiterColor, nullImage));
+	planetMap.emplace("Saturn", new planet ("Saturn", planetMap.at("Sun"), 60270, 1424, 10761, 10.2, saturnColor, nullImage));
+	planetMap.emplace("Uranus", new planet ("Uranus", planetMap.at("Sun"), 25550, 2867, 30682, 15.5, uranusColor, nullImage));
+	planetMap.emplace("Neptune", new planet ("Neptune", planetMap.at("Sun"), 24750, 4492, 60195, 15.8, neptuneColor, nullImage));
 }
 // Main routine
 // Set up OpenGL, hook up callbacks, and start the main loop
 int main( int argc, char** argv )
 {
-    // Need to double buffer for animation
-    glutInit( &argc, argv );
-    glutInitDisplayMode( GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH );
+	// Need to double buffer for animation
+	glutInit( &argc, argv );
+	glutInitDisplayMode( GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH );
 
-    // Create and position the graphics window
-    glutInitWindowPosition( 0, 0 );
-    glutInitWindowSize( 600, 360 );
-    glutCreateWindow( "Solar System Demo" );
+	InitSolarSystem();
+	// Create and position the graphics window
+	glutInitWindowPosition( 0, 0 );
+	glutInitWindowSize( 600, 360 );
+	glutCreateWindow( "Solar System Demo" );
 
-    // Initialize OpenGL.
-    OpenGLInit();
+	// Initialize OpenGL.
+	OpenGLInit();
 
-    // Set up the callback function for resizing windows
-    glutReshapeFunc( ResizeWindow );
+	// Set up the callback function for resizing windows
+	glutReshapeFunc( ResizeWindow );
 
-    // Callback for graphics image redrawing
-    glutDisplayFunc( Animate );
+	// Callback for graphics image redrawing
+	glutDisplayFunc( Animate );
 
-    // Start the main loop.  glutMainLoop never returns.
-    glutMainLoop( );
+	// Start the main loop.  glutMainLoop never returns.
+	glutMainLoop( );
 
-    return 0;
+	return 0;
 }
