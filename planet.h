@@ -10,39 +10,42 @@ class planet
 {
 	// Constructors
 	planet();
-	planet(char *name, int radius, int rotation, float color[3], image img, planet *parent, int distance, int orbitalSpeed, position pos);
+	planet(string name, float radius, float rotationSpeed, planet *planet, float distance, float orbitalSpeed, float color[3], image img);
 	~planet();
 
 	// Getters
-	int getRadius();
+	float getRadius();
+	float getDistance();
+	float getRotation();
+	float getOrbit();
 	void getColor(float returned[]);
 	image getImage();
-	int getDistance();
 
 	// Setters
-	bool setRadius(int radius);
-	bool setRotation(int rotation);
-	bool setColor(float new[3]);
-	bool setImage(image newImage);
-	bool setParent(planet newParent);
-	bool setDistance(int distance);
-	bool setSpeed(int speed);
+	// bool setRadius(int radius);
+	// bool setColor(float newColor[3]);
+	// bool setImage(image newImage);
+	// bool setParent(planet newParent);
+	// bool setDistance(int distance);
+	// bool setSpeed(int speed);
 
-	// Other functions
+	// Action functions
 	void step();
 
 private:
-	string _name;		// Name of the planet
-	int _radius;		// Radius of the planet
-	int _rotation;		// How many degrees the planet spins/hour
-	float _color[3];	// Default color of the planet's
-	image _img;			// Image data
+	string _name;			// Name of the planet
 
-	planet* _parent;	// The object that this planet orbits
-	int _distance;		// Distance from the parent
-	int _orbitalSpeed;	// Angular velocity around parent
+	float _radius;			// Radius of the planet
+	float _rotation;		// How many degrees the planet spins/hour
+	float _rotSpeed;		// How many degrees the planet rotates around its axis/hour
 
-	position _position;	// Current position of the planet in space
-}
+	planet* _parent;		// The object that this planet orbits
+	float _distance;		// Distance from the parent
+	float _orbit;			// Current degrees around parent
+	float _orbitalSpeed;	// Number of degrees around parent we rotate/hour
+
+	float _color[3];		// Default color of the planet's
+	image _img;				// Image data
+};
 
 #endif
