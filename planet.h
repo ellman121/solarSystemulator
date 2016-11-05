@@ -12,10 +12,21 @@ class planataryObject
 	~planataryObject();
 
 	// Getters
+	int getRadius();
+	void getColor(float returned[]);
+	image getImage();
+	int getDistance();
 
 	// Setters
+	bool setRadius(int rad);
+	bool setSpin(int degrees);
+	bool setColor(float new[3]);
+	bool setImage(image newImage);
+	bool setParent(planet newParent);
+	bool setDistance(int distance);
 
 	// Other functions
+	void runHour();
 
 private:
 	int radius;		// Radius of the planet
@@ -25,6 +36,8 @@ private:
 
 	planet* parent;	// The object that this planet orbits
 	int distance;	// Distance from the parent
+
+	position pos;	// Current position of the planet in space
 }
 
 #endif
