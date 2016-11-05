@@ -34,14 +34,13 @@
 
 #include <cstdlib>
 #include <GL/freeglut.h>
+#include "globals.h"
+#include "planet.h"
+using namespace std;
 
 // function prototypes
 void OpenGLInit( void );
 void Animate( void );
-void Key_r( void );
-void Key_s( void );
-void Key_up( void );
-void Key_down( void );
 void ResizeWindow( int w, int h );
 void KeyPressFunc( unsigned char Key, int x, int y );
 void SpecialKeyFunc( int Key, int x, int y );
@@ -55,71 +54,6 @@ float HourOfDay = 0.0;
 float DayOfYear = 0.0;
 float AnimateIncrement = 24.0;  // Time step for animation (hours)
 
-// glutKeyboardFunc is called to set this function to handle normal key presses.
-void KeyPressFunc( unsigned char Key, int x, int y )
-{
-    switch ( Key )
-    {
-        case 'R':
-        case 'r':
-            Key_r();
-            break;
-        case 's':
-        case 'S':
-            Key_s();
-            break;
-        case 27: 	// Escape key
-            exit( 1 );
-    }
-}
-
-// glutSpecialFunc is called to set this function to handle all special key presses
-// See glut.h for the names of special keys.
-void SpecialKeyFunc( int Key, int x, int y )
-{
-    switch ( Key )
-    {
-        case GLUT_KEY_UP:
-            Key_up();
-            break;
-        case GLUT_KEY_DOWN:
-            Key_down();
-            break;
-    }
-}
-
-// restart animation
-void Key_r( void )
-{
-    if ( singleStep )
-    {			// If ending single step mode
-        singleStep = GL_FALSE;
-        spinMode = GL_TRUE;		// Restart animation
-    }
-    else
-    {
-        spinMode = !spinMode;	// Toggle animation on and off.
-    }
-}
-
-// single step animation
-void Key_s( void )
-{
-    singleStep = GL_TRUE;
-    spinMode = GL_TRUE;
-}
-
-// animation speed
-void Key_up( void )
-{
-    AnimateIncrement *= 2.0;			// Double the animation time step
-}
-
-// animation speed
-void Key_down( void )
-{
-    AnimateIncrement /= 2.0;			// Halve the animation time step
-}
 
 // Animate() handles the animation and the redrawing of the graphics window contents.
 void Animate( void )
@@ -208,6 +142,16 @@ void ResizeWindow( int w, int h )
     glMatrixMode( GL_MODELVIEW );
 }
 
+void InitSolarSystem(){
+    Image_s nullImage = {0, 0, NULL};
+    Position_s pos = {0, 0, 0,};
+    planet *sun = new planet ("Sun", 69600, 14.4, sunColor, nullImage, nullptr, 0, 0, pos);
+    pos = {4.0, 0, 0};
+    planet *earth = new planet ("Earth", 6370, 15, earthColor, nullImage, sun, 150000000, 0.04109589, pos);
+    pos = {6.0, 0, 0};
+    planet *mars = new planet ("Mars", 3394, 14.634, marsColor, nullImage, sun,  228000000, 0.021301523, pos);
+    // planet(char *name, int radius, int rotation, float color[3], Image_s img, planet *parent, int distance, int orbitalSpeed, Position_s pos);
+}
 // Main routine
 // Set up OpenGL, hook up callbacks, and start the main loop
 int main( int argc, char** argv )
@@ -223,10 +167,6 @@ int main( int argc, char** argv )
 
     // Initialize OpenGL.
     OpenGLInit();
-
-    // Set up callback functions for key presses
-    glutKeyboardFunc( KeyPressFunc );
-    glutSpecialFunc( SpecialKeyFunc );
 
     // Set up the callback function for resizing windows
     glutReshapeFunc( ResizeWindow );
