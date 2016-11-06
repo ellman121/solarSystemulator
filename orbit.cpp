@@ -34,16 +34,22 @@
 
 #include <cstdlib>
 #include <iostream>
-#include <GL/freeglut.h>
 #include "planet.h"
 #include <string>
 #include <map>
+
+#ifdef __APPLE__
+#include <GLUT/glut.h>
+#elif __LINUX__
+#include <GL/freeglut.h>
+#endif
 
 using namespace std;
 
 // function prototypes
 void OpenGLInit( void );
 void Animate( void );
+void setDrawMode( Mode mode );
 void ResizeWindow( int w, int h );
 void KeyPressFunc( unsigned char Key, int x, int y );
 void SpecialKeyFunc( int Key, int x, int y );
@@ -52,7 +58,7 @@ void timeProgress (int value);
 // Global things
 bool infoFlag = false;
 bool pauseFlag = false;
-bool solidPlanets = false;
+bool solid = false;
 float hourSpeed = 1;
 
 float sunColor[3] = {1.0, 1.0, 0.3};
@@ -64,9 +70,10 @@ float jupiterColor[3] = {0.8, 0.6, 0.0};
 float saturnColor[3] = {0.6, 0.7, 0.0};
 float uranusColor[3] = {0.2, 1.0, 0.6};
 float neptuneColor[3] = {0.2, 0.4, 0.8};
-float zZoom = -100;
-float xRotate = 35.0;
+float zTranslate = -100;
+float xRotate = 60.0;
 float yRotate = 0.0;
+float zRotate = 0.0;
 
 map<string,planet*> planetMap;
 
@@ -74,12 +81,12 @@ void keyboardCallback(unsigned char key, int x, int y){
 	switch(key){
         case 'Z':
 		case 'z':
-			zZoom += 10;
+			zTranslate = (zTranslate + 10 > 800) ? 800 : zTranslate + 10;
 		break;
 
         case 'A':
 		case 'a':
-			zZoom -= 10;
+			zTranslate = (zTranslate - 10 < -800) ? -800 : zTranslate - 10;
 		break;
 
         case 'X':
@@ -94,28 +101,37 @@ void keyboardCallback(unsigned char key, int x, int y){
 
         case 'C':
 		case 'c':
-			xRotate +=10;
+			yRotate +=10;
 		break;
 
         case 'D':
 		case 'd':
-			xRotate -=10;
-		break;		case 'q':
+			yRotate -=10;
+		break;
+		case 'f':
+			zRotate += 10;
+		break;
+		case 'v':
+			zRotate -= 10;
+		break;
+		case 'q':
 			hourSpeed++;
-			cout << hourSpeed << endl;
 		break;
 
         case 'W':
 		case 'w':
 			hourSpeed--;
-			cout << hourSpeed << endl;
 		break;
 
         case 'P':
 		case 'p':
-			cout << "pause" << endl;
 			pauseFlag = !pauseFlag;
-			cout << pauseFlag << endl;
+		break;
+		case 'r':
+			xRotate = 35.0;
+			yRotate = 0.0;
+			zRotate = 0.0;
+			zTranslate = 100.0;
 		break;
 
         // 1 -> wireframe, 2 -> flat, 3 -> smooth, 4 ->image
@@ -142,18 +158,20 @@ void keyboardCallback(unsigned char key, int x, int y){
 
 void setDrawMode(Mode mode)
 {
-    switch  mode{
+    switch (mode) {
         case wire:
+            solid = false;
             glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
-            gluQuadricDrawStyle( object, GLU_LINE );
         break;
 
         case flat:
+            solid = true;
             glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
             glShadeModel( GL_FLAT );
         break;
 
         case smooth:
+            solid = false;
             glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
             glShadeModel( GL_SMOOTH );
         break;
@@ -178,7 +196,12 @@ void drawBody(planet* body){
 	float color[3] = {};
 	body->getColor(color);
 	glColor3fv(color);
-	glutWireSphere( body->getRadius(), 10, 10 );
+
+    if (solid) {
+        glutSolidSphere( body->getRadius(), 10, 10 );
+    } else {
+        glutWireSphere( body->getRadius(), 10, 10 );
+    }
 
 	glPopMatrix();						// Restore matrix state
 	if(name != "Sun"){
@@ -203,11 +226,14 @@ void Animate( void )
 		glLoadIdentity();
 
 		// Back off eight units to be able to view from the origin.
-		glTranslatef ( 0.0, yRotate, zZoom );
+		glTranslatef ( 0.0, 0.0, zTranslate );
 
 		// Rotate the plane of the elliptic
 		// (rotate the model's plane about the x axis by fifteen degrees)
 		glRotatef( xRotate, 1.0, 0.0, 0.0 );
+		glRotatef( yRotate, 0.0, 1.0, 0.0 );
+		glRotatef( zRotate, 0.0, 0.0, 1.0 );
+
 		//draw each primary body 
 		for (auto& p: planetMap)
 			drawBody(p.second);
