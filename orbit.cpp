@@ -51,6 +51,7 @@ void OpenGLInit( void );
 void Animate( void );
 void setDrawMode( Mode mode );
 void ResizeWindow( int w, int h );
+void initLighting();
 void KeyPressFunc( unsigned char Key, int x, int y );
 void SpecialKeyFunc( int Key, int x, int y );
 void InitSolarSystem();
@@ -94,6 +95,7 @@ void passiveMouseCallback(int x, int y){
 	// }
 	glutPostRedisplay();
 }
+
 void mouseCallback (int button, int state, int x, int y){
 	if (button == GLUT_LEFT_BUTTON){
 		if (state == GLUT_DOWN){
@@ -103,9 +105,9 @@ void mouseCallback (int button, int state, int x, int y){
 		} else {
 			glutMotionFunc(NULL);
 		}
-	}
-
+    }
 }
+
 void keyboardCallback(unsigned char key, int x, int y){
 	switch(key){
 		case 'D':
@@ -210,6 +212,43 @@ void specialKeyCallback(int key, int x, int y){
 		// break;
 	}
 }
+
+void initLighting() {
+    // specify material reflectivity
+    GLfloat mat_ambient[] = { 1.0, 1.0, 1.0, 0.10 };
+    GLfloat mat_diffuse[] = { 1.0, 1.0, 1.0, 1.0 };
+    GLfloat mat_specular[] = { 1.0, 1.0, 1.0, 1.0 };
+    GLfloat mat_shininess = { 100.0 };
+    
+    glMaterialfv( GL_FRONT_AND_BACK, GL_AMBIENT, mat_ambient );
+    glMaterialfv( GL_FRONT_AND_BACK, GL_DIFFUSE, mat_diffuse );
+    glMaterialfv( GL_FRONT_AND_BACK, GL_SPECULAR, mat_specular );
+    glMaterialf( GL_FRONT_AND_BACK, GL_SHININESS, mat_shininess );
+    
+    // specify light source properties
+    GLfloat light_position[] = { 0.0, 400.0, 0.0, 1.0 };
+    GLfloat light_ambient[] = { 1.0, 1.0, 1.0, 1.0 };       // ambient light
+    GLfloat light_diffuse[] = { 1.0, 1.0, 1.0, 1.0 };       // diffuse light
+    GLfloat light_specular[] = { 1.0, 1.0, 1.0, 1.0 };      // highlights
+
+    glEnable( GL_LIGHT0 );      // enable one light source
+    glLightfv( GL_LIGHT0, GL_POSITION, light_position );
+    glLightfv( GL_LIGHT0, GL_AMBIENT, light_ambient );
+    glLightfv( GL_LIGHT0, GL_DIFFUSE, light_diffuse );
+    glLightfv( GL_LIGHT0, GL_SPECULAR, light_specular );
+
+    glShadeModel( GL_FLAT );    // start with flat shading (smooth is default)
+
+    glEnable( GL_DEPTH_TEST );  // enable depth buffer for hidden-surface elimination
+    glEnable( GL_NORMALIZE );   // automatic normalization of normals
+    glEnable( GL_CULL_FACE );   // eliminate backfacing polygons
+    glCullFace( GL_BACK );
+    // glLightModeli( GL_LIGHT_MODEL_TWO_SIDE, GL_TRUE );   // render back faces
+
+    glClearColor( 0.0, 0.0, 0.0, 1.0 );     // black background
+    glColor3f ( 0.8, 0.8, 0.0 );            // draw in yellow
+}
+
 void setDrawMode(Mode mode)
 {
     switch (mode) {
@@ -368,6 +407,10 @@ int main( int argc, char** argv )
 
 	// Set up the callback function for resizing windows
 	glutReshapeFunc( ResizeWindow );
+
+    // Set up lighting
+    initLighting();
+    glEnable(GL_LIGHTING);
 
 	// Callback for graphics image redrawing
 	glutDisplayFunc( Animate );
