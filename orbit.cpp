@@ -66,6 +66,7 @@ float uranusColor[3] = {0.2, 1.0, 0.6};
 float neptuneColor[3] = {0.2, 0.4, 0.8};
 float zZoom = -100;
 float xRotate = 35.0;
+float yRotate = 0.0;
 
 map<string,planet*> planetMap;
 
@@ -83,7 +84,12 @@ void keyboardCallback(unsigned char key, int x, int y){
 		case 's':
 			xRotate -=10;
 		break;
-		case 'q':
+		case 'c':
+			xRotate +=10;
+		break;
+		case 'd':
+			xRotate -=10;
+		break;		case 'q':
 			hourSpeed++;
 			cout << hourSpeed << endl;
 		break;
@@ -127,8 +133,10 @@ void drawBody(planet* body){
 // Animate() handles the animation and the redrawing of the graphics window contents.
 void Animate( void )
 {
-	for (auto& p: planetMap)
+	if (!pauseFlag){
+		for (auto& p: planetMap)
 	    	p.second->step(hourSpeed);
+	}
 	// Clear the redering window
 	glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
 	if(!infoFlag){
@@ -137,7 +145,7 @@ void Animate( void )
 		glLoadIdentity();
 
 		// Back off eight units to be able to view from the origin.
-		glTranslatef ( 0.0, 0.0, zZoom );
+		glTranslatef ( 0.0, yRotate, zZoom );
 
 		// Rotate the plane of the elliptic
 		// (rotate the model's plane about the x axis by fifteen degrees)
@@ -156,8 +164,7 @@ void Animate( void )
 	// Flush the pipeline, and swap the buffers
 	glFlush();
 	glutSwapBuffers();
-	if (!pauseFlag)
-		glutPostRedisplay();		// Request a re-draw for animation purposes
+	glutPostRedisplay();		// Request a re-draw for animation purposes
 
 }
 
