@@ -51,7 +51,7 @@ void InitSolarSystem();
 void timeProgress (int value);
 // Global things
 bool infoFlag = false;
-bool pauseFlag = false;
+bool pauseFlag = true;
 float hourSpeed = 1;
 Mode drawMode; 
 
@@ -64,19 +64,34 @@ float jupiterColor[3] = {0.8, 0.6, 0.0};
 float saturnColor[3] = {0.6, 0.7, 0.0};
 float uranusColor[3] = {0.2, 1.0, 0.6};
 float neptuneColor[3] = {0.2, 0.4, 0.8};
-float zZoom = -100;
-float xRotate = 35.0;
+float xTranslate = 0.0;
+float yTranslate = 0.0;
+float zTranslate = -100;
+float xRotate = 60.0;
 float yRotate = 0.0;
+float zRotate = 0.0;
 
 map<string,planet*> planetMap;
 
 void keyboardCallback(unsigned char key, int x, int y){
 	switch(key){
 		case 'z':
-			zZoom += 10;
+			zTranslate = (zTranslate + 10 > 800) ? 800 : zTranslate + 10;
 		break;
 		case 'a':
-			zZoom -= 10;
+			zTranslate = (zTranslate - 10 < -800) ? -800 : zTranslate - 10;
+		break;
+		case 'g':
+			xTranslate = (xTranslate + 10 > 800) ? 800 : xTranslate + 10;
+		break;
+		case 'b':
+			xTranslate = (xTranslate - 10 < -800) ? -800 : xTranslate - 10;
+		break;
+		case 'h':
+			yTranslate = (yTranslate + 10 > 800) ? 800 : yTranslate + 10;
+		break;
+		case 'n':
+			yTranslate = (yTranslate - 10 < -800) ? -800 : yTranslate - 10;
 		break;
 		case 'x':
 			xRotate +=10;
@@ -85,26 +100,36 @@ void keyboardCallback(unsigned char key, int x, int y){
 			xRotate -=10;
 		break;
 		case 'c':
-			xRotate +=10;
+			yRotate +=10;
 		break;
 		case 'd':
-			xRotate -=10;
-		break;		case 'q':
+			yRotate -=10;
+		break;
+		case 'f':
+			zRotate += 10;
+		break;
+		case 'v':
+			zRotate -= 10;
+		break;
+		case 'q':
 			hourSpeed++;
-			cout << hourSpeed << endl;
 		break;
 		case 'w':
 			hourSpeed--;
-			cout << hourSpeed << endl;
 		break;
 		case 'p':
-			cout << "pause" << endl;
 			pauseFlag = !pauseFlag;
-			cout << pauseFlag << endl;
+		break;
+		case 'r':
+			xRotate = 35.0;
+			yRotate = 0.0;
+			zRotate = 0.0;
+			zTranslate = 100.0;
 		break;
 	}
 	glutPostRedisplay();
 }
+
 void drawBody(planet* body){
 	string name = body->getName();
 	if(name!="Sun"){
@@ -145,11 +170,14 @@ void Animate( void )
 		glLoadIdentity();
 
 		// Back off eight units to be able to view from the origin.
-		glTranslatef ( 0.0, yRotate, zZoom );
+		glTranslatef ( zTranslate, yTranslate, zTranslate );
 
 		// Rotate the plane of the elliptic
 		// (rotate the model's plane about the x axis by fifteen degrees)
 		glRotatef( xRotate, 1.0, 0.0, 0.0 );
+		glRotatef( yRotate, 0.0, 1.0, 0.0 );
+		glRotatef( zRotate, 0.0, 0.0, 1.0 );
+
 		//draw each primary body 
 		for (auto& p: planetMap)
 			drawBody(p.second);
