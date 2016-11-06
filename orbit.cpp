@@ -64,8 +64,6 @@ float jupiterColor[3] = {0.8, 0.6, 0.0};
 float saturnColor[3] = {0.6, 0.7, 0.0};
 float uranusColor[3] = {0.2, 1.0, 0.6};
 float neptuneColor[3] = {0.2, 0.4, 0.8};
-float xTranslate = 0.0;
-float yTranslate = 0.0;
 float zTranslate = -100;
 float xRotate = 60.0;
 float yRotate = 0.0;
@@ -80,18 +78,6 @@ void keyboardCallback(unsigned char key, int x, int y){
 		break;
 		case 'a':
 			zTranslate = (zTranslate - 10 < -800) ? -800 : zTranslate - 10;
-		break;
-		case 'g':
-			xTranslate = (xTranslate + 10 > 800) ? 800 : xTranslate + 10;
-		break;
-		case 'b':
-			xTranslate = (xTranslate - 10 < -800) ? -800 : xTranslate - 10;
-		break;
-		case 'h':
-			yTranslate = (yTranslate + 10 > 800) ? 800 : yTranslate + 10;
-		break;
-		case 'n':
-			yTranslate = (yTranslate - 10 < -800) ? -800 : yTranslate - 10;
 		break;
 		case 'x':
 			xRotate +=10;
@@ -170,7 +156,7 @@ void Animate( void )
 		glLoadIdentity();
 
 		// Back off eight units to be able to view from the origin.
-		glTranslatef ( zTranslate, yTranslate, zTranslate );
+		glTranslatef ( 0.0, 0.0, zTranslate );
 
 		// Rotate the plane of the elliptic
 		// (rotate the model's plane about the x axis by fifteen degrees)
