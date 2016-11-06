@@ -14,6 +14,8 @@ struct Position_s {
 	float y;
 	float z;
 };
+
+// Current draw mode
 enum Mode {wire, flat, smooth, image};
 
 extern bool infoFlag;

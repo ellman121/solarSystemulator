@@ -52,8 +52,8 @@ void timeProgress (int value);
 // Global things
 bool infoFlag = false;
 bool pauseFlag = false;
+bool solidPlanets = false;
 float hourSpeed = 1;
-Mode drawMode; 
 
 float sunColor[3] = {1.0, 1.0, 0.3};
 float mercuryColor[3] = {0.8, 0.5, 0.3};
@@ -72,39 +72,97 @@ map<string,planet*> planetMap;
 
 void keyboardCallback(unsigned char key, int x, int y){
 	switch(key){
+        case 'Z':
 		case 'z':
 			zZoom += 10;
 		break;
+
+        case 'A':
 		case 'a':
 			zZoom -= 10;
 		break;
+
+        case 'X':
 		case 'x':
 			xRotate +=10;
 		break;
+
+        case 'S':
 		case 's':
 			xRotate -=10;
 		break;
+
+        case 'C':
 		case 'c':
 			xRotate +=10;
 		break;
+
+        case 'D':
 		case 'd':
 			xRotate -=10;
 		break;		case 'q':
 			hourSpeed++;
 			cout << hourSpeed << endl;
 		break;
+
+        case 'W':
 		case 'w':
 			hourSpeed--;
 			cout << hourSpeed << endl;
 		break;
+
+        case 'P':
 		case 'p':
 			cout << "pause" << endl;
 			pauseFlag = !pauseFlag;
 			cout << pauseFlag << endl;
 		break;
+
+        // 1 -> wireframe, 2 -> flat, 3 -> smooth, 4 ->image
+        case '1':
+            setDrawMode(wire);
+        break;
+        case '2':
+            setDrawMode(flat);
+        break;
+        case '3':
+            setDrawMode(smooth);
+        break;
+        case '4':
+            setDrawMode(image);
+        break;
+
+        // Escape key to quit
+        case 27:
+            exit(0);
+        break;
 	}
 	glutPostRedisplay();
 }
+
+void setDrawMode(Mode mode)
+{
+    switch  mode{
+        case wire:
+            glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
+            gluQuadricDrawStyle( object, GLU_LINE );
+        break;
+
+        case flat:
+            glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
+            glShadeModel( GL_FLAT );
+        break;
+
+        case smooth:
+            glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
+            glShadeModel( GL_SMOOTH );
+        break;
+
+        case image:
+        break;
+    }
+}
+
 void drawBody(planet* body){
 	string name = body->getName();
 	if(name!="Sun"){
