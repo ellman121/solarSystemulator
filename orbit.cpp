@@ -52,7 +52,7 @@ void timeProgress (int value);
 // Global things
 bool infoFlag = false;
 bool pauseFlag = false;
-float hourSpeed = 30;
+float hourSpeed = 1;
 Mode drawMode; 
 
 float sunColor[3] = {1.0, 1.0, 0.3};
@@ -64,9 +64,41 @@ float jupiterColor[3] = {0.8, 0.6, 0.0};
 float saturnColor[3] = {0.6, 0.7, 0.0};
 float uranusColor[3] = {0.2, 1.0, 0.6};
 float neptuneColor[3] = {0.2, 0.4, 0.8};
+float zZoom = -100;
+float xRotate = 35.0;
 
 map<string,planet*> planetMap;
 
+void keyboardCallback(unsigned char key, int x, int y){
+	switch(key){
+		case 'z':
+			zZoom += 10;
+		break;
+		case 'a':
+			zZoom -= 10;
+		break;
+		case 'x':
+			xRotate +=10;
+		break;
+		case 's':
+			xRotate -=10;
+		break;
+		case 'q':
+			hourSpeed++;
+			cout << hourSpeed << endl;
+		break;
+		case 'w':
+			hourSpeed--;
+			cout << hourSpeed << endl;
+		break;
+		case 'p':
+			cout << "pause" << endl;
+			pauseFlag = !pauseFlag;
+			cout << pauseFlag << endl;
+		break;
+	}
+	glutPostRedisplay();
+}
 void drawBody(planet* body){
 	string name = body->getName();
 	if(name!="Sun"){
@@ -92,13 +124,11 @@ void drawBody(planet* body){
 	}
 
 }
-void timeProgress (int value){
-	for (auto& p: planetMap)
-    	p.second->step(hourSpeed);
-}
 // Animate() handles the animation and the redrawing of the graphics window contents.
 void Animate( void )
 {
+	for (auto& p: planetMap)
+	    	p.second->step(hourSpeed);
 	// Clear the redering window
 	glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
 	if(!infoFlag){
@@ -107,14 +137,17 @@ void Animate( void )
 		glLoadIdentity();
 
 		// Back off eight units to be able to view from the origin.
-		glTranslatef ( 0.0, 0.0, -100.0 );
+		glTranslatef ( 0.0, 0.0, zZoom );
 
 		// Rotate the plane of the elliptic
 		// (rotate the model's plane about the x axis by fifteen degrees)
-		glRotatef( 15.0, 1.0, 0.0, 0.0 );
+		glRotatef( xRotate, 1.0, 0.0, 0.0 );
+		//draw each primary body 
 		for (auto& p: planetMap)
-
 			drawBody(p.second);
+		// Draw satelite bodies
+		// for (auto& m: moonMap)
+		// 	drawSatelite(m.second);
 
 	}else {
 		cout << "draw info screen" << endl;
@@ -123,8 +156,8 @@ void Animate( void )
 	// Flush the pipeline, and swap the buffers
 	glFlush();
 	glutSwapBuffers();
-	glutTimerFunc(1, timeProgress, 0);
-	glutPostRedisplay();		// Request a re-draw for animation purposes
+	if (!pauseFlag)
+		glutPostRedisplay();		// Request a re-draw for animation purposes
 
 }
 
@@ -159,7 +192,7 @@ void InitSolarSystem(){
 	Image_s nullImage = {0, 0, NULL};
 
 
-	planetMap.emplace("Sun", new planet ("Sun", nullptr, 696000/10, 0, 0, 25, sunColor, nullImage));
+	planetMap.emplace("Sun", new planet ("Sun", nullptr, 696000/20, 0, 0, 25, sunColor, nullImage));
 	planetMap.emplace("Mercury", new planet ("Mercury", planetMap.at("Sun"), 2439, 58, 88, 1416, mercuryColor, nullImage));
 	planetMap.emplace("Venus", new planet ("Venus", planetMap.at("Sun"), 6052, 108, 225, 5832, venusColor, nullImage));
 	planetMap.emplace("Earth", new planet ("Earth", planetMap.at("Sun"), 6378, 150, 365, 24, earthColor, nullImage));
@@ -180,7 +213,7 @@ int main( int argc, char** argv )
 	InitSolarSystem();
 	// Create and position the graphics window
 	glutInitWindowPosition( 0, 0 );
-	glutInitWindowSize( 600, 360 );
+	glutInitWindowSize( 1200, 720 );
 	glutCreateWindow( "Solar System Demo" );
 
 	// Initialize OpenGL.
@@ -191,6 +224,7 @@ int main( int argc, char** argv )
 
 	// Callback for graphics image redrawing
 	glutDisplayFunc( Animate );
+	glutKeyboardFunc(keyboardCallback);
 
 	// Start the main loop.  glutMainLoop never returns.
 	glutMainLoop( );
