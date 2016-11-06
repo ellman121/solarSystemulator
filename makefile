@@ -17,7 +17,7 @@ GL_LIBS = -lglut -lGLU -lGL -lm
 #-----------------------------------------------------------------------
 
 default: orbit.cpp planet.cpp globals.h
-	g++ -o solar orbit.cpp planet.cpp -lglut -lGLU -lGL -std=c++11
+	g++ -o solar orbit.cpp planet.cpp -lglut -lGLU -lGL -lm -std=c++11
 
 osx: orbit.cpp planet.cpp globals.h
 	g++ -o solar orbit.cpp planet.cpp -framework OpenGL -framework GLUT -framework Cocoa -std=c++11

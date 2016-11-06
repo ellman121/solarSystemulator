@@ -58,7 +58,8 @@ void timeProgress (int value);
 // Global things
 bool infoFlag = false;
 bool pauseFlag = false;
-bool solid = false;
+bool solidFlag = false;
+bool lightFlag = true;
 float hourSpeed = 1;
 int width = 1200;
 int height = 720;
@@ -75,15 +76,34 @@ float neptuneColor[3] = {0.2, 0.4, 0.8};
 float xTranslate = 0.0;
 float yTranslate = 0.0;
 float zTranslate = -100;
-float xRotate = 0.0;
+float xRotate = 35.0;
 float yRotate = 0.0;
 float zRotate = 0.0;
+float mouseX, mouseY;
 
 map<string,planet*> planetMap;
 
 void passiveMouseCallback(int x, int y){
-	cout << "X: " << x - (width/2) << endl;
-	cout << "Y: " << height - y - (height/2) << endl;
+	// if (mouseFlag) {
+		float deltaX = x - ( width / 2.0 );
+		float deltaY = height - y - ( height / 2.0 );
+		xRotate += (deltaY-mouseY);
+		yRotate += (deltaX-mouseX);
+		mouseX = x - ( width / 2.0 );
+		mouseY = height - y - ( height / 2.0 );
+	// }
+	glutPostRedisplay();
+}
+void mouseCallback (int button, int state, int x, int y){
+	if (button == GLUT_LEFT_BUTTON){
+		if (state == GLUT_DOWN){
+			mouseX = x - ( width / 2.0 );
+			mouseY = height - y - ( height / 2.0 );
+			glutMotionFunc(passiveMouseCallback);
+		} else {
+			glutMotionFunc(NULL);
+		}
+	}
 
 }
 void keyboardCallback(unsigned char key, int x, int y){
@@ -125,6 +145,7 @@ void keyboardCallback(unsigned char key, int x, int y){
 		case 'p':
 			pauseFlag = !pauseFlag;
 		break;
+		case 'R':
 		case 'r':
 			xRotate = 35.0;
 			yRotate = 0.0;
@@ -132,6 +153,15 @@ void keyboardCallback(unsigned char key, int x, int y){
 			zTranslate = -100.0;
 		break;
 
+		case 'L':
+		case 'l':
+			lightFlag = !lightFlag;
+			if (lightFlag){
+				glEnable(GL_LIGHTING);
+			} else {
+				glDisable(GL_LIGHTING);
+			}
+		break;
         // 1 -> wireframe, 2 -> flat, 3 -> smooth, 4 ->image
         case '1':
             setDrawMode(wire);
@@ -184,18 +214,18 @@ void setDrawMode(Mode mode)
 {
     switch (mode) {
         case wire:
-            solid = false;
+            solidFlag = false;
             glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
         break;
 
         case flat:
-            solid = true;
+            solidFlag = true;
             glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
             glShadeModel( GL_FLAT );
         break;
 
         case smooth:
-            solid = false;
+            solidFlag = false;
             glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
             glShadeModel( GL_SMOOTH );
         break;
@@ -221,7 +251,7 @@ void drawBody(planet* body){
 	body->getColor(color);
 	glColor3fv(color);
 
-    if (solid) {
+    if (solidFlag) {
         glutSolidSphere( body->getRadius(), 10, 10 );
     } else {
         glutWireSphere( body->getRadius(), 10, 10 );
@@ -342,7 +372,9 @@ int main( int argc, char** argv )
 	// Callback for graphics image redrawing
 	glutDisplayFunc( Animate );
 	glutKeyboardFunc(keyboardCallback);
-	glutPassiveMotionFunc(passiveMouseCallback);
+	glutMouseFunc(mouseCallback);
+	glutMotionFunc(NULL);
+	// glutPassiveMotionFunc(passiveMouseCallback);
 	glutSpecialFunc(specialKeyCallback);
 	// Start the main loop.  glutMainLoop never returns.
 	glutMainLoop( );

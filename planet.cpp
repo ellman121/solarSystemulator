@@ -1,4 +1,5 @@
 #include "planet.h"
+#include <cmath>
 
 /*
  * Constructors
@@ -90,9 +91,6 @@ string planet::getName()
 // Simulate the planet's movements in 1 hour
 void planet::step(float speed)
 {
-	float rot = _rotSpeed * speed;
-	float orb = _orbitalSpeed * speed;
-	_rotation += (_rotation + rot > 360) ? rot : rot - 360;
-	_orbit += (_orbit + orb > 360) ? orb : orb - 360;
-
+	_rotation = fmod( _rotation + (_rotSpeed * speed), 360);
+	_orbit = fmod( _orbit + (_orbitalSpeed * speed), 360);
 }
