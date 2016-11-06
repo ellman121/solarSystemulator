@@ -16,11 +16,17 @@ GL_LIBS = -lglut -lGLU -lGL -lm
 
 #-----------------------------------------------------------------------
 
-default: orbit.cpp planet.cpp globals.h
-	g++ -o solar orbit.cpp planet.cpp -lglut -lGLU -lGL -lm -std=c++11
+default: orbit.cpp planet.o imageReader.o globals.h
+	g++ -o solar orbit.cpp planet.o imageReader.o -lglut -lGLU -lGL -lm -std=c++11
 
-osx: orbit.cpp planet.cpp globals.h
-	g++ -o solar orbit.cpp planet.cpp -framework OpenGL -framework GLUT -framework Cocoa -std=c++11
+osx: orbit.cpp planet.o imageReader.o globals.h
+	g++ -o solar orbit.cpp planet.o imageReader.o -framework OpenGL -framework GLUT -framework Cocoa -Wno-deprecated-declarations -std=c++11
+
+planet.o: planet.cpp planet.h
+	g++ -o planet.o planet.cpp -c -std=c++11
+
+imageReader.o: imageReader.cpp imageReader.h
+	g++ -o imageReader.o imageReader.cpp -c -std=c++11
 
 # utility targets
 clean:

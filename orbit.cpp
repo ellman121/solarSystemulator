@@ -1,48 +1,43 @@
 /*
 * orbit.cpp
 *
-* Program to demonstrate how to use a local
-* coordinate method to position parts of a
-* model in relation to other model parts.
+* Program to simulate the solar system and allow eht user to fly around, viewing
+* individual planets.  
 *
-* Draws a simple solar system, with a sun, planet and moon.
-* Based on sample code from the OpenGL programming guide
-* by Woo, Neider, Davis.  Addison-Wesley.
+* Authors: Elliott Rarden && Katie MacMillan
 *
-* Author: Samuel R. Buss
+* This code is based on the code provided by Dr. Weiss at 
+* www.mds.sdsmt.edu/csc344/Assignments/PA3
 *
-* Software accompanying the book
-* 3D Computer Graphics: A Mathematical Introduction with OpenGL,
-* by S. Buss, Cambridge University Press, 2003.
+* Compile and run using 
 *
-* Software is "as-is" and carries no warranty.  It may be used without
-* restriction, but if you modify it, please change the filenames to
-* prevent confusion between different versions.
+*   $ make
+*   $ ./solar
 *
-* Bug reports: Sam Buss, sbuss@ucsd.edu.
-* Web page: http://math.ucsd.edu/~sbuss/MathCG
+* If on an Apple Mac Computer, use
 *
-* USAGE:
-*    Press "r" key to toggle (off and on) running the animation
-*    Press "s" key to single-step animation
-*    The up and down array keys control the time step used in the animation rate.
-*    Each key press multiplies or divides the times by a factor of two.
-*    Press ESCAPE to exit.
+*   $ make osx
+*   $ ./solar
+*
 */
 
-// JMW: Minor modifications for CSC433/533 Computer Graphics, Fall 2016.
-
+// C++ STL Libraries
 #include <cstdlib>
 #include <iostream>
-#include "planet.h"
+#include <algorithm>
 #include <string>
 #include <map>
 
+// Steve Jobs made me
 #ifdef __APPLE__
 #include <GLUT/glut.h>
 #else
 #include <GL/freeglut.h>
 #endif
+
+// Our headers
+#include "planet.h"
+#include "imageReader.h"
 
 using namespace std;
 
@@ -112,12 +107,12 @@ void keyboardCallback(unsigned char key, int x, int y){
 	switch(key){
 		case 'D':
 		case 'd':
-			xTranslate = (xTranslate + 5 > 600) ? 600 : xTranslate + 5;
+			xTranslate = (xTranslate + 5 > 600) ? 600 : xTranslate - 5;
 		break;
 
         case 'A':
 		case 'a':
-			xTranslate = (xTranslate - 5 < -600) ? -600 : xTranslate - 5;
+			xTranslate = (xTranslate - 5 < -600) ? -600 : xTranslate + 5;
 		break;
 
 		case 'W':
@@ -270,6 +265,12 @@ void setDrawMode(Mode mode)
         break;
 
         case image:
+            int numR, numC;
+            unsigned char *image;
+            if(LoadBmpFile("Sun", numR, numC, image))
+                cout << "YAY" << endl;
+            delete image;
+            cin >> numR;
         break;
     }
 }
