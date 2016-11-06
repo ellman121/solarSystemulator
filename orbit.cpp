@@ -40,7 +40,7 @@
 
 #ifdef __APPLE__
 #include <GLUT/glut.h>
-#elif __LINUX__
+#else
 #include <GL/freeglut.h>
 #endif
 
@@ -60,6 +60,8 @@ bool infoFlag = false;
 bool pauseFlag = false;
 bool solid = false;
 float hourSpeed = 1;
+int width = 1200;
+int height = 720;
 
 float sunColor[3] = {1.0, 1.0, 0.3};
 float mercuryColor[3] = {0.8, 0.5, 0.3};
@@ -70,56 +72,52 @@ float jupiterColor[3] = {0.8, 0.6, 0.0};
 float saturnColor[3] = {0.6, 0.7, 0.0};
 float uranusColor[3] = {0.2, 1.0, 0.6};
 float neptuneColor[3] = {0.2, 0.4, 0.8};
+float xTranslate = 0.0;
+float yTranslate = 0.0;
 float zTranslate = -100;
-float xRotate = 60.0;
+float xRotate = 0.0;
 float yRotate = 0.0;
 float zRotate = 0.0;
 
 map<string,planet*> planetMap;
 
+void passiveMouseCallback(int x, int y){
+	cout << "X: " << x - (width/2) << endl;
+	cout << "Y: " << height - y - (height/2) << endl;
+
+}
 void keyboardCallback(unsigned char key, int x, int y){
 	switch(key){
-        case 'Z':
-		case 'z':
-			zTranslate = (zTranslate + 10 > 800) ? 800 : zTranslate + 10;
+		case 'D':
+		case 'd':
+			xTranslate = (xTranslate + 5 > 600) ? 600 : xTranslate + 5;
 		break;
 
         case 'A':
 		case 'a':
-			zTranslate = (zTranslate - 10 < -800) ? -800 : zTranslate - 10;
+			xTranslate = (xTranslate - 5 < -600) ? -600 : xTranslate - 5;
 		break;
 
-        case 'X':
-		case 'x':
-			xRotate +=10;
+		case 'W':
+		case 'w':
+			zTranslate = (zTranslate + 5 > 600) ? 600 : zTranslate + 5;
 		break;
-
-        case 'S':
+		case 'S':
 		case 's':
-			xRotate -=10;
+			zTranslate = (zTranslate - 5 < -600) ? -600 : zTranslate - 5;
 		break;
+		// case 'h':
+		// 	yTranslate = (yTranslate + 5 > 600) ? 600 : yTranslate + 5;
+		// break;
+		// case 'n':
+		// 	yTranslate = (yTranslate - 5 < -600) ? -600 : yTranslate - 5;
+		// break;
 
-        case 'C':
-		case 'c':
-			yRotate +=10;
-		break;
-
-        case 'D':
-		case 'd':
-			yRotate -=10;
-		break;
-		case 'f':
-			zRotate += 10;
-		break;
-		case 'v':
-			zRotate -= 10;
-		break;
-		case 'q':
+		case '+':
 			hourSpeed++;
 		break;
 
-        case 'W':
-		case 'w':
+		case '-':
 			hourSpeed--;
 		break;
 
@@ -130,8 +128,8 @@ void keyboardCallback(unsigned char key, int x, int y){
 		case 'r':
 			xRotate = 35.0;
 			yRotate = 0.0;
-			zRotate = 0.0;
-			zTranslate = 100.0;
+			yTranslate = 0.0;
+			zTranslate = -100.0;
 		break;
 
         // 1 -> wireframe, 2 -> flat, 3 -> smooth, 4 ->image
@@ -156,6 +154,32 @@ void keyboardCallback(unsigned char key, int x, int y){
 	glutPostRedisplay();
 }
 
+void specialKeyCallback(int key, int x, int y){
+	switch(key){
+        case GLUT_KEY_UP:
+			xRotate +=5;
+		break;
+
+        case GLUT_KEY_DOWN:
+			xRotate -=5;
+		break;
+
+        case GLUT_KEY_RIGHT:
+			yRotate +=5;
+		break;
+
+        case GLUT_KEY_LEFT:
+			yRotate -=5;
+		break;
+
+		// case 'f':
+		// 	zRotate += 5;
+		// break;
+		// case 'v':
+		// 	zRotate -= 10;
+		// break;
+	}
+}
 void setDrawMode(Mode mode)
 {
     switch (mode) {
@@ -226,6 +250,8 @@ void Animate( void )
 		glLoadIdentity();
 
 		// Back off eight units to be able to view from the origin.
+		glTranslatef ( xTranslate, 0.0, 0.0 );
+		glTranslatef ( 0.0, yTranslate, 0.0 );
 		glTranslatef ( 0.0, 0.0, zTranslate );
 
 		// Rotate the plane of the elliptic
@@ -265,10 +291,10 @@ void OpenGLInit( void )
 void ResizeWindow( int w, int h )
 {
 	float aspectRatio;
-	h = ( h == 0 ) ? 1 : h;
-	w = ( w == 0 ) ? 1 : w;
+	height = ( h == 0 ) ? 1 : h;
+	width = ( w == 0 ) ? 1 : w;
 	glViewport( 0, 0, w, h );	// View port uses whole window
-	aspectRatio = ( float ) w / ( float ) h;
+	aspectRatio = ( float ) width / ( float ) height;
 
 	// Set up the projection view matrix (not very well!)
 	glMatrixMode( GL_PROJECTION );
@@ -304,7 +330,7 @@ int main( int argc, char** argv )
 	InitSolarSystem();
 	// Create and position the graphics window
 	glutInitWindowPosition( 0, 0 );
-	glutInitWindowSize( 1200, 720 );
+	glutInitWindowSize( width, height );
 	glutCreateWindow( "Solar System Demo" );
 
 	// Initialize OpenGL.
@@ -316,7 +342,8 @@ int main( int argc, char** argv )
 	// Callback for graphics image redrawing
 	glutDisplayFunc( Animate );
 	glutKeyboardFunc(keyboardCallback);
-
+	glutPassiveMotionFunc(passiveMouseCallback);
+	glutSpecialFunc(specialKeyCallback);
 	// Start the main loop.  glutMainLoop never returns.
 	glutMainLoop( );
 
