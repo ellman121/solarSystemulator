@@ -40,177 +40,26 @@
 #endif
 
 // Our headers
+#include "globals.h"
 #include "planet.h"
 #include "imageReader.h"
+#include "setFuncs.h"
+#include "draw.h"
+#include "callbacks.h"
 
 using namespace std;
 
 // function prototypes
 void OpenGLInit( void );
-void Animate( void );
-void setDrawMode( Mode mode );
 void ResizeWindow( int w, int h );
 void initLighting();
-void KeyPressFunc( unsigned char Key, int x, int y );
-void SpecialKeyFunc( int Key, int x, int y );
 void InitSolarSystem();
-void timeProgress (int value);
+
 // Global things
-bool infoFlag = false;
-bool pauseFlag = false;
-bool solidFlag = false;
-bool lightFlag = true;
-float hourSpeed = 1;
-int width = 1200;
-int height = 720;
-
-float sunColor[3] = {1.0, 1.0, 0.3};
-float mercuryColor[3] = {0.8, 0.5, 0.5};
-float venusColor[3] = {0.8, 0.5, 0.3};
-float earthColor[3] = {0.2, 0.2, 1.0};
-float marsColor[3] = {1.0, 0.2, 0.2};
-float jupiterColor[3] = {0.8, 0.6, 0.0};
-float saturnColor[3] = {0.6, 0.7, 0.0};
-float uranusColor[3] = {0.2, 1.0, 0.6};
-float neptuneColor[3] = {0.2, 0.4, 0.8};
-float xTranslate = 0.0;
-float yTranslate = 0.0;
-float zTranslate = -100;
-float xRotate = 35.0;
-float yRotate = 0.0;
-float zRotate = 0.0;
-float mouseX, mouseY;
-
+extern bool infoFlag, pauseFlag, solidFlag, lightFlag;
+extern int width, height;
+extern float hourSpeed, sunColor[3], mercuryColor[3], venusColor[3], earthColor[3], marsColor[3], jupiterColor[3], saturnColor[3], uranusColor[3], neptuneColor[3], xTranslate, yTranslate, zTranslate, xRotate , yRotate, zRotate, mouseX, mouseY;
 map<string,planet*> planetMap;
-
-void passiveMouseCallback(int x, int y){
-	// if (mouseFlag) {
-		float deltaX = x - ( width / 2.0 );
-		float deltaY = height - y - ( height / 2.0 );
-		xRotate += (deltaY-mouseY);
-		yRotate += (deltaX-mouseX);
-		mouseX = x - ( width / 2.0 );
-		mouseY = height - y - ( height / 2.0 );
-	// }
-	glutPostRedisplay();
-}
-
-void mouseCallback (int button, int state, int x, int y){
-	if (button == GLUT_LEFT_BUTTON){
-		if (state == GLUT_DOWN){
-			mouseX = x - ( width / 2.0 );
-			mouseY = height - y - ( height / 2.0 );
-			glutMotionFunc(passiveMouseCallback);
-		} else {
-			glutMotionFunc(NULL);
-		}
-    }
-}
-
-void keyboardCallback(unsigned char key, int x, int y){
-	switch(key){
-		case 'D':
-		case 'd':
-			xTranslate = (xTranslate + 5 > 600) ? 600 : xTranslate - 5;
-		break;
-
-        case 'A':
-		case 'a':
-			xTranslate = (xTranslate - 5 < -600) ? -600 : xTranslate + 5;
-		break;
-
-		case 'W':
-		case 'w':
-			zTranslate = (zTranslate + 5 > 600) ? 600 : zTranslate + 5;
-		break;
-		case 'S':
-		case 's':
-			zTranslate = (zTranslate - 5 < -600) ? -600 : zTranslate - 5;
-		break;
-		// case 'h':
-		// 	yTranslate = (yTranslate + 5 > 600) ? 600 : yTranslate + 5;
-		// break;
-		// case 'n':
-		// 	yTranslate = (yTranslate - 5 < -600) ? -600 : yTranslate - 5;
-		// break;
-
-		case '+':
-			hourSpeed++;
-		break;
-
-		case '-':
-			hourSpeed--;
-		break;
-
-        case 'P':
-		case 'p':
-			pauseFlag = !pauseFlag;
-		break;
-		case 'R':
-		case 'r':
-			xRotate = 35.0;
-			yRotate = 0.0;
-			yTranslate = 0.0;
-			zTranslate = -100.0;
-		break;
-
-		case 'L':
-		case 'l':
-			lightFlag = !lightFlag;
-			if (lightFlag){
-				glEnable(GL_LIGHTING);
-			} else {
-				glDisable(GL_LIGHTING);
-			}
-		break;
-        // 1 -> wireframe, 2 -> flat, 3 -> smooth, 4 ->image
-        case '1':
-            setDrawMode(wire);
-        break;
-        case '2':
-            setDrawMode(flat);
-        break;
-        case '3':
-            setDrawMode(smooth);
-        break;
-        case '4':
-            setDrawMode(image);
-        break;
-
-        // Escape key to quit
-        case 27:
-            exit(0);
-        break;
-	}
-	glutPostRedisplay();
-}
-
-void specialKeyCallback(int key, int x, int y){
-	switch(key){
-        case GLUT_KEY_UP:
-			xRotate +=5;
-		break;
-
-        case GLUT_KEY_DOWN:
-			xRotate -=5;
-		break;
-
-        case GLUT_KEY_RIGHT:
-			yRotate +=5;
-		break;
-
-        case GLUT_KEY_LEFT:
-			yRotate -=5;
-		break;
-
-		// case 'f':
-		// 	zRotate += 5;
-		// break;
-		// case 'v':
-		// 	zRotate -= 10;
-		// break;
-	}
-}
 
 void initLighting() {
     // specify material reflectivity
@@ -248,203 +97,6 @@ void initLighting() {
     glColor3f ( 0.8, 0.8, 0.0 );            // draw in yellow
 }
 
-void setDrawMode(Mode mode)
-{
-    switch (mode) {
-        case wire:
-            solidFlag = false;
-            glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
-        break;
-
-        case flat:
-            solidFlag = true;
-            glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
-            glShadeModel( GL_FLAT );
-        break;
-
-        case smooth:
-            solidFlag = true;
-            glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
-            glShadeModel( GL_SMOOTH );
-        break;
-
-        case image:
-            int numR, numC;
-            unsigned char *image;
-            if(LoadBmpFile("Sun", numR, numC, image))
-                cout << "YAY" << endl;
-            delete image;
-            cin >> numR;
-        break;
-    }
-}
-
-void drawLighSource (){
-	    GLfloat light_position[] = { 0.0, 1.0, 0.0, 1.0 };
-	    GLfloat light_ambient[] = { 1.0, 1.0, 1.0, 1.0 };       // ambient light
-	    GLfloat light_diffuse[] = { 1.0, 1.0, 1.0, 1.0 };       // diffuse light
-	    GLfloat light_specular[] = { 1.0, 1.0, 1.0, 1.0 };      // highlights
-
-	    // Set up solar system light source
-	    glEnable( GL_LIGHT0 );
-	    glLightfv( GL_LIGHT0, GL_POSITION, light_position );
-	    glLightfv( GL_LIGHT0, GL_AMBIENT, light_ambient );
-	    glLightfv( GL_LIGHT0, GL_DIFFUSE, light_diffuse );
-	    glLightfv( GL_LIGHT0, GL_SPECULAR, light_specular );
-
-	    // Eliminate hidden surfaces
-	    glEnable( GL_DEPTH_TEST );
-	    glEnable( GL_NORMALIZE );
-	    glEnable( GL_CULL_FACE );
-	    glCullFace( GL_BACK );
-}
-void setMaterials( float color[]){
-	    // Set material property values
-	    GLfloat mat_ambient[] = { color[0], color[1], color[2], 1.0 };
-	    GLfloat mat_diffuse[] = { color[0], color[1], color[2], 1.0 };
-	    GLfloat mat_specular[] = { color[0], color[1], color[2], 1.0 };
-	    GLfloat mat_shininess = { 100.0 };
-	    
-	    // Set material properties
-	    glMaterialfv( GL_FRONT_AND_BACK, GL_AMBIENT, mat_ambient );
-	    glMaterialfv( GL_FRONT_AND_BACK, GL_DIFFUSE, mat_diffuse );
-	    glMaterialfv( GL_FRONT_AND_BACK, GL_SPECULAR, mat_specular );
-	    glMaterialf( GL_FRONT_AND_BACK, GL_SHININESS, mat_shininess );	
-}
-void drawSun(planet* sun){
-	// Get body color
-	float color[3] = {};
-	sun->getColor(color);
-
-	// Set material properties
-	if (lightFlag){
-	    setMaterials(color);
-	}
-
-	glPushMatrix();
-	glColor3fv(color);
-
-	// Draw body
-    if (solidFlag) {
-        glutSolidSphere( sun->getRadius(), 10, (int) (sun->getRadius()*50) );
-    } else {
-        glutWireSphere( sun->getRadius(), 10, 10 );
-    }
-
-
-	glPopMatrix();
-
-}
-
-void drawBodyName(planet *body){
-	const char* name = body->getName().c_str();
-	if (body->getName() == "Venus") {
-		// cout << body->getDistance() << endl;
-		// cout << body->getOrbit() << endl;
-		cout << body->getRadius() << endl;
-	}
-	// if (name == "Venus") {
-	// 	cout << "here"<< endl;
-	// 	cout << body->getDistance() << endl;
-	// }	// Get body color
-	float color[3] = {1.0, 1.0, 1.0};
-	if (lightFlag){
-	    setMaterials(color);
-	}
-	// Position body around sun at correct distance
-	glRotatef( body->getOrbit(), 0.0, 1.0, 0.0 );
-	glTranslatef( body->getDistance(), 0.0, 0.0 );
-
-  	glRasterPos3f(0, 5, 0);
-	glutBitmapString(GLUT_BITMAP_HELVETICA_12, (const unsigned char *)name);
-	// Move back to starting position
-	glTranslatef( -1 * body->getDistance(), 0.0, 0.0 );
-	glRotatef( -1 * body->getOrbit(), 0.0, 1.0, 0.0 );
-}
-
-void drawBody(planet* body){
-	// Get body color
-	float color[3] = {};
-	body->getColor(color);
-
-
-	// Set material properties
-	if (lightFlag){
-	    setMaterials(color);
-	}
-
-	// Position body around sun at correct distance
-	glRotatef( body->getOrbit(), 0.0, 1.0, 0.0 );
-	glTranslatef( body->getDistance(), 0.0, 0.0 );
-
-	glPushMatrix();
-	// Rotate the body on it's axis
-	glRotatef( body->getRotation(), 0.0, 1.0, 0.0 );
-	glColor3fv(color);
-	// Draw body
-    if (solidFlag) {
-        glutSolidSphere( body->getRadius(), 10, (int) (body->getRadius()*50) );
-    } else {
-        glutWireSphere( body->getRadius(), 10, 10 );
-    }
-
-	glPopMatrix();
-
-	// Move back to starting position
-	glTranslatef( -1 * body->getDistance(), 0.0, 0.0 );
-	glRotatef( -1 * body->getOrbit(), 0.0, 1.0, 0.0 );
-
-}
-// Animate() handles the animation and the redrawing of the graphics window contents.
-void Animate( void )
-{
-	if (!pauseFlag){
-		for (auto& p: planetMap)
-	    	p.second->step(hourSpeed);
-	}
-	// Clear the redering window
-	glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
-	if(!infoFlag){
-
-		// Clear the current matrix (Modelview)
-		glLoadIdentity();
-
-		// Move to current view point
-		glTranslatef ( xTranslate, yTranslate, zTranslate );
-
-		// Rotate the scene according to user specifications
-		glRotatef( xRotate, 1.0, 0.0, 0.0 );
-		glRotatef( yRotate, 0.0, 1.0, 0.0 );
-		glRotatef( zRotate, 0.0, 0.0, 1.0 );
-
-		// Draw each planet
-		for (auto& p: planetMap){
-			if (p.second->getName() != "Sun"){
-				drawBody(p.second);
-			}
-		}
-		drawSun(planetMap.at("Sun"));
-		// Draw satelite bodies
-		// for (auto& m: moonMap)
-		// 	drawSatelite(m.second);
-			
-		drawLighSource();
-	
-		// Draw each planet
-		for (auto& p: planetMap){
-
-			drawBodyName(p.second);
-		}
-	}else {
-		cout << "draw info screen" << endl;
-	}
-
-	// Flush pipeline, swap buffers, and redraw
-	glFlush();
-	glutSwapBuffers();
-	glutPostRedisplay();
-
-}
 
 // Initialize OpenGL's rendering modes
 void OpenGLInit( void )
@@ -512,7 +164,7 @@ int main( int argc, char** argv )
     glEnable(GL_LIGHTING);
 
 	// Callback for graphics image redrawing
-	glutDisplayFunc( Animate );
+	glutDisplayFunc( displayCallback );
 	glutKeyboardFunc(keyboardCallback);
 	glutMouseFunc(mouseCallback);
 	glutMotionFunc(NULL);
