@@ -8,6 +8,7 @@ extern bool infoFlag, pauseFlag, solidFlag, lightFlag;
 extern int width, height;
 extern float xTranslate, hourSpeed, zTranslate, xRotate , yRotate, mouseX, mouseY;
 extern map<string,planet*> planetMap;
+extern map<string,planet*> moonMap;
 
 // displayCallback() handles the animation and the redrawing of the graphics window contents.
 void displayCallback( void )
@@ -15,6 +16,8 @@ void displayCallback( void )
 	if (!pauseFlag){
 		for (auto& p: planetMap)
 	    	p.second->step(hourSpeed);
+		for (auto& m: moonMap)
+	    	m.second->step(hourSpeed);
 	}
 	// Clear the redering window
 	glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
@@ -29,26 +32,16 @@ void displayCallback( void )
 		// Rotate the scene according to user specifications
 		glRotatef( xRotate, 1.0, 0.0, 0.0 );
 		glRotatef( yRotate, 0.0, 1.0, 0.0 );
-		// glRotatef( zRotate, 0.0, 0.0, 1.0 );
 
-		// Draw each planet
-		for (auto& p: planetMap){
-			if (p.second->getName() != "Sun"){
-				drawBody(p.second);
-			}
-		}
+		drawPlanets();
 		drawSun(planetMap.at("Sun"));
-		// Draw satelite bodies
-		// for (auto& m: moonMap)
-		// 	drawSatelite(m.second);
-			
+		// drawSatellites();
 		drawLighSource();
+		drawNames();
 	
-		// Draw each planet
-		for (auto& p: planetMap){
 
-			drawBodyName(p.second);
-		}
+	glFlush();
+
 	}else {
 		cout << "draw info screen" << endl;
 	}
@@ -101,12 +94,14 @@ void keyboardCallback(unsigned char key, int x, int y){
 		// Move forward in scene
 		case 'W':
 		case 'w':
-			zTranslate = (zTranslate + 1 > 600) ? 600 : zTranslate + 1;
+			// zTranslate = (zTranslate + 1 > 600) ? 600 : zTranslate + 1;
+			zTranslate += 5;
 		break;
 		//Move backward in scene
 		case 'S':
 		case 's':
-			zTranslate = (zTranslate - 1 < -600) ? -600 : zTranslate - 1;
+			zTranslate -= 5;
+			// zTranslate = (zTranslate - 1 < -600) ? -600 : zTranslate - 1;
 		break;
 
 		// Increase hours per frame

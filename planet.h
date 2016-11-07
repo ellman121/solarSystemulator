@@ -12,7 +12,7 @@ class planet
 public:
 	// Constructors
 	planet();
-	planet(string name, planet *parent, float radius, float distance, float daysPerYear, float hoursPerDay, float color[3], Image_s img);
+	planet(string name, string parent, float radius, float distance, float daysPerYear, float hoursPerDay, float color[3], Image_s img);
 	~planet();
 
 	// Getters
@@ -23,6 +23,7 @@ public:
 	void getColor(float returned[]);
 	Image_s getImage();
 	string getName();
+	string getParent();
 
 	// Setters
 	// bool setRadius(int radius);
@@ -42,7 +43,7 @@ private:
 	float _rotation;		// How many degrees the planet spins/hour
 	float _rotSpeed;		// How many degrees the planet rotates around its axis/hour
 
-	planet* _parent;		// The object that this planet orbits
+	string _parent;		// The object that this planet orbits
 	float _distance;		// Distance from the parent
 	float _orbit;			// Current degrees around parent
 	float _orbitalSpeed;	// Number of degrees around parent we rotate/hour
