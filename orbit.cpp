@@ -1,17 +1,47 @@
-/*Documentation Needs
-  If program is closed from comandline there will be a mem leak from dynamically allocated bmp images*/
+/*
+* orbit.cpp
+*
+* Program to simulate the solar system and allow eht user to fly around, viewing
+* individual planets.  
+*
+* Authors: Elliott Rarden && Katie MacMillan
+*
+* This code is based on the code provided by Dr. Weiss at 
+* www.mds.sdsmt.edu/csc344/Assignments/PA3
+*
+* Compile and run using 
+*
+*   $ make
+*   $ ./solar
+*
+* If on an Apple Mac Computer, use
+*
+*   $ make osx
+*   $ ./solar
+*
+* Notes:
+*	  	If program is closed from comandline there will be a mem leak from 
+*		dynamically allocated bmp images
+*
+*/
 
+// C++ STL Libraries*/
 #include <cstdlib>
 #include <iostream>
-#include "planet.h"
+#include <algorithm>
 #include <string>
 #include <map>
 
+// Steve Jobs made me
 #ifdef __APPLE__
 #include <GLUT/glut.h>
 #else
 #include <GL/freeglut.h>
 #endif
+
+// Our headers
+#include "planet.h"
+#include "imageReader.h"
 
 using namespace std;
 
@@ -81,12 +111,12 @@ void keyboardCallback(unsigned char key, int x, int y){
 	switch(key){
 		case 'D':
 		case 'd':
-			xTranslate = (xTranslate + 5 > 600) ? 600 : xTranslate + 5;
+			xTranslate = (xTranslate + 5 > 600) ? 600 : xTranslate - 5;
 		break;
 
         case 'A':
 		case 'a':
-			xTranslate = (xTranslate - 5 < -600) ? -600 : xTranslate - 5;
+			xTranslate = (xTranslate - 5 < -600) ? -600 : xTranslate + 5;
 		break;
 
 		case 'W':
@@ -239,6 +269,12 @@ void setDrawMode(Mode mode)
         break;
 
         case image:
+            int numR, numC;
+            unsigned char *image;
+            if(LoadBmpFile("Sun", numR, numC, image))
+                cout << "YAY" << endl;
+            delete image;
+            cin >> numR;
         break;
     }
 }
