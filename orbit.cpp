@@ -1,36 +1,5 @@
-/*
-* orbit.cpp
-*
-* Program to demonstrate how to use a local
-* coordinate method to position parts of a
-* model in relation to other model parts.
-*
-* Draws a simple solar system, with a sun, planet and moon.
-* Based on sample code from the OpenGL programming guide
-* by Woo, Neider, Davis.  Addison-Wesley.
-*
-* Author: Samuel R. Buss
-*
-* Software accompanying the book
-* 3D Computer Graphics: A Mathematical Introduction with OpenGL,
-* by S. Buss, Cambridge University Press, 2003.
-*
-* Software is "as-is" and carries no warranty.  It may be used without
-* restriction, but if you modify it, please change the filenames to
-* prevent confusion between different versions.
-*
-* Bug reports: Sam Buss, sbuss@ucsd.edu.
-* Web page: http://math.ucsd.edu/~sbuss/MathCG
-*
-* USAGE:
-*    Press "r" key to toggle (off and on) running the animation
-*    Press "s" key to single-step animation
-*    The up and down array keys control the time step used in the animation rate.
-*    Each key press multiplies or divides the times by a factor of two.
-*    Press ESCAPE to exit.
-*/
-
-// JMW: Minor modifications for CSC433/533 Computer Graphics, Fall 2016.
+/*Documentation Needs
+  If program is closed from comandline there will be a mem leak from dynamically allocated bmp images*/
 
 #include <cstdlib>
 #include <iostream>
@@ -309,7 +278,7 @@ void setMaterials( float color[]){
 void drawSun(planet* sun){
 	// Get body color
 	float color[3] = {};
-	body->getColor(color);
+	sun->getColor(color);
 
 	// Set material properties
 	if (lightFlag){
@@ -321,20 +290,47 @@ void drawSun(planet* sun){
 
 	// Draw body
     if (solidFlag) {
-        glutSolidSphere( body->getRadius(), 10, (int) (body->getRadius()*50) );
+        glutSolidSphere( sun->getRadius(), 10, (int) (sun->getRadius()*50) );
     } else {
-        glutWireSphere( body->getRadius(), 10, 10 );
+        glutWireSphere( sun->getRadius(), 10, 10 );
     }
+
 
 	glPopMatrix();
 
 }
 
-void drawBody(planet* body){
+void drawBodyName(planet *body){
+	const char* name = body->getName().c_str();
+	if (body->getName() == "Venus") {
+		// cout << body->getDistance() << endl;
+		// cout << body->getOrbit() << endl;
+		cout << body->getRadius() << endl;
+	}
+	// if (name == "Venus") {
+	// 	cout << "here"<< endl;
+	// 	cout << body->getDistance() << endl;
+	// }	// Get body color
+	float color[3] = {1.0, 1.0, 1.0};
+	if (lightFlag){
+	    setMaterials(color);
+	}
+	// Position body around sun at correct distance
+	glRotatef( body->getOrbit(), 0.0, 1.0, 0.0 );
+	glTranslatef( body->getDistance(), 0.0, 0.0 );
 
+  	glRasterPos3f(0, 5, 0);
+	glutBitmapString(GLUT_BITMAP_HELVETICA_12, (const unsigned char *)name);
+	// Move back to starting position
+	glTranslatef( -1 * body->getDistance(), 0.0, 0.0 );
+	glRotatef( -1 * body->getOrbit(), 0.0, 1.0, 0.0 );
+}
+
+void drawBody(planet* body){
 	// Get body color
 	float color[3] = {};
 	body->getColor(color);
+
 
 	// Set material properties
 	if (lightFlag){
@@ -391,13 +387,18 @@ void Animate( void )
 				drawBody(p.second);
 			}
 		}
+		drawSun(planetMap.at("Sun"));
 		// Draw satelite bodies
 		// for (auto& m: moonMap)
 		// 	drawSatelite(m.second);
 			
 		drawLighSource();
-		drawSun(planetMap.at("Sun"));
 	
+		// Draw each planet
+		for (auto& p: planetMap){
+
+			drawBodyName(p.second);
+		}
 	}else {
 		cout << "draw info screen" << endl;
 	}
