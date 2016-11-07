@@ -1,5 +1,4 @@
-extern bool lightFlag;
-
+extern bool lightFlag, solidFlag;
 void drawLighSource (){
 	    GLfloat light_position[] = { 0.0, 1.0, 0.0, 1.0 };
 	    GLfloat light_ambient[] = { 1.0, 1.0, 1.0, 1.0 };       // ambient light
@@ -45,6 +44,15 @@ void drawSun(planet* sun){
 
 void drawBodyName(planet *body){
 	const char* name = body->getName().c_str();
+	if (body->getName() == "Venus") {
+		// cout << body->getDistance() << endl;
+		// cout << body->getOrbit() << endl;
+		cout << body->getRadius() << endl;
+	}
+	// if (name == "Venus") {
+	// 	cout << "here"<< endl;
+	// 	cout << body->getDistance() << endl;
+	// }	// Get body color
 	float color[3] = {1.0, 1.0, 1.0};
 	if (lightFlag){
 	    setMaterials(color);

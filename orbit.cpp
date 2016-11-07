@@ -61,6 +61,7 @@ extern int width, height;
 extern float hourSpeed, sunColor[3], mercuryColor[3], venusColor[3], earthColor[3], marsColor[3], jupiterColor[3], saturnColor[3], uranusColor[3], neptuneColor[3], xTranslate, yTranslate, zTranslate, xRotate , yRotate, zRotate, mouseX, mouseY;
 map<string,planet*> planetMap;
 
+
 void initLighting() {
     // specify material reflectivity
     GLfloat mat_ambient[] = { 1.0, 1.0, 1.0, 0.10 };

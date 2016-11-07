@@ -1,5 +1,4 @@
 extern bool solidFlag;
-
 void setDrawMode(Mode mode)
 {
     switch (mode) {
