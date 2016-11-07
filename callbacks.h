@@ -6,7 +6,7 @@
 // Global things
 extern bool infoFlag, pauseFlag, solidFlag, lightFlag;
 extern int width, height;
-extern float xTranslate, hourSpeed, yTranslate, zTranslate, xRotate , yRotate, zRotate, mouseX, mouseY;
+extern float xTranslate, hourSpeed, zTranslate, xRotate , yRotate, mouseX, mouseY;
 extern map<string,planet*> planetMap;
 
 // displayCallback() handles the animation and the redrawing of the graphics window contents.
@@ -24,12 +24,12 @@ void displayCallback( void )
 		glLoadIdentity();
 
 		// Move to current view point
-		glTranslatef ( xTranslate, yTranslate, zTranslate );
+		glTranslatef ( xTranslate, 0, zTranslate );
 
 		// Rotate the scene according to user specifications
 		glRotatef( xRotate, 1.0, 0.0, 0.0 );
 		glRotatef( yRotate, 0.0, 1.0, 0.0 );
-		glRotatef( zRotate, 0.0, 0.0, 1.0 );
+		// glRotatef( zRotate, 0.0, 0.0, 1.0 );
 
 		// Draw each planet
 		for (auto& p: planetMap){
