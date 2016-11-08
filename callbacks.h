@@ -31,14 +31,12 @@ void displayCallback( void )
 
 		// Rotate the scene according to user specifications
 		glRotatef( xRotate, 1.0, 0.0, 0.0 );
+
 		glRotatef( yRotate, 0.0, 1.0, 0.0 );
 
-		drawPlanets();
-		drawSun(planetMap.at("Sun"));
-		// drawSatellites();
+		drawBodies();
 		drawLighSource();
-		drawNames();
-	
+		
 
 	glFlush();
 
@@ -82,13 +80,15 @@ void keyboardCallback(unsigned char key, int x, int y){
 		// Move scene right
 		case 'D':
 		case 'd':
-			xTranslate = (xTranslate + 1 > 600) ? 600 : xTranslate - 1;
+			xTranslate -=5;
+			// xTranslate = (xTranslate + 1 > 600) ? 600 : xTranslate - 5;
 		break;
 
 		// Move scene left
         case 'A':
 		case 'a':
-			xTranslate = (xTranslate - 1 < -600) ? -600 : xTranslate + 1;
+			xTranslate += 5;
+			// xTranslate = (xTranslate - 1 < -600) ? -600 : xTranslate + 5;
 		break;
 
 		// Move forward in scene
@@ -106,12 +106,25 @@ void keyboardCallback(unsigned char key, int x, int y){
 
 		// Increase hours per frame
 		case '+':
-			hourSpeed++;
+			if (hourSpeed >= 1){
+				hourSpeed++;
+			} else {
+				hourSpeed += 0.1;
+			}
 		break;
 
 		// Decrease hours per frame
 		case '-':
-			hourSpeed--;
+			// Decrement by 1 until speed is 1 hour per frame
+			if (hourSpeed > 1){
+				hourSpeed--;
+			} else {
+				// Don't go below 0.1 hour per frame
+				if (hourSpeed > 0.1){
+					// Decrement by 0.1 hours when going below 1 hour per frame
+					hourSpeed -= 0.1;
+				}
+			}
 		break;
 
 		// Pause animation
@@ -186,3 +199,21 @@ void specialKeyCallback(int key, int x, int y){
 
 	}
 }
+
+// void passiveMouseFunc(int x, int y){
+// 	int X = x - ( width / 2.0 );
+// 	int Y = height - y - ( height / 2.0 );
+// 	for (auto& m : moonMap){
+// 		float radius = m.second->getRadius();
+// 		float theta = 
+// 		float xDir = cos()
+// sin(θ) = opposite / hypotenuse
+// Cosine Function:
+// ...cah...
+// cos(θ) = adjacent / hypotenuse
+
+
+// 		if (m.second->getName() != "Sun"){
+// 			drawPlanet(p.second, false);
+// 		}
+// }

@@ -16,22 +16,26 @@ planet::planet() {
 }
 
 // Use this constructor
-planet::planet(string name, string parent, float radius, float distance, float daysPerYear, float hoursPerDay, float color[3], Image_s img)
+planet::planet(string name, string parent, float radius, float distance, float daysPerYear, float hoursPerDay, float incline, float color[3], Image_s img, vector<string> satellites)
 {
 	_name = name;
 	_parent = parent;
 	_radius = radius/1000;								//scale down radius
-	_distance = distance/1000000;							//scale down distance
+	_distance = distance/200000;							//scale down distance
 	_rotation = 0;										//start at 0 degree rotation position
-	_rotSpeed = 360.0/hoursPerDay;						//rotational degree change per hour
+	if (hoursPerDay == 0){
+		_rotSpeed = 0;
+	} else {
+		_rotSpeed = 360.0/hoursPerDay;						//rotational degree change per hour		
+	}
 	_orbit = 0;											//start at 0 degree orbit position
 	_orbitalSpeed = 360.0/(24.0*daysPerYear);				//orbital degree change per hour
 	_color[0] = color[0];
 	_color[1] = color[1];
 	_color[2] = color[2];
 	_img = img;
-	// cout << name << " Radius: " << _radius << " Orbit: " << _orbitalSpeed << " Distance: " << _orbitalSpeed << endl;
-
+	_satellites = satellites;							// the list of satellite names
+	_incline = incline;									// the angle in y at which the body orbits
 
 }
 
@@ -93,6 +97,18 @@ string planet::getName()
 string planet::getParent()
 {
 	return _parent;
+}
+
+// Get the names of the orbiting satellites
+vector<string> planet::getSatellites()
+{
+	return _satellites;
+}
+
+// Get the orbit incline angle
+float planet::getIncline()
+{
+	return _incline;
 }
 /*
  * Activities
