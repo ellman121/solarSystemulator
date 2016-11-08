@@ -33,14 +33,18 @@ void setDrawMode(Mode mode)
 
 void setMaterials( float color[]){
 	    // Set material property values
-	    GLfloat mat_ambient[] = { color[0], color[1], color[2], 1.0 };
-	    GLfloat mat_diffuse[] = { color[0], color[1], color[2], 1.0 };
-	    GLfloat mat_specular[] = { color[0], color[1], color[2], 1.0 };
-	    GLfloat mat_shininess = { 100.0 };
+	    GLfloat mat_ambient[] = { (float)(color[0] * 0.4), (float)(color[1] * 0.4), (float)(color[2] * 0.4), 1.0 };
+	    GLfloat mat_diffuse[] = { (float)(color[0] * 0.7), (float)(color[1] * 0.7), (float)(color[2] * 0.7), 1.0 };
+	    GLfloat mat_specular[] = { (float)(color[0] * 0.8), (float)(color[1] * 0.8), (float)(color[2] * 0.8), 1.0 };
+	    GLfloat mat_shininess = { 75.0 };
 	    
 	    // Set material properties
 	    glMaterialfv( GL_FRONT_AND_BACK, GL_AMBIENT, mat_ambient );
 	    glMaterialfv( GL_FRONT_AND_BACK, GL_DIFFUSE, mat_diffuse );
 	    glMaterialfv( GL_FRONT_AND_BACK, GL_SPECULAR, mat_specular );
 	    glMaterialf( GL_FRONT_AND_BACK, GL_SHININESS, mat_shininess );	
+}
+
+void setVelocity(int x, int y, int z){
+
 }

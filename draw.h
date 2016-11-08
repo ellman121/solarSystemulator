@@ -1,9 +1,11 @@
-extern bool lightFlag, solidFlag;
+extern bool lightFlag, solidFlag, bodyLabelFlag, moonLabelFlag, velocityFlag, pauseFlag;
 extern map<string,planet*> planetMap, moonMap;
+extern float zTranslate, hourSpeed, xVelocity, yVelocity, zVelocity, xTranslate, yTranslate;
+extern int height, width;
 
 void drawLighSource (){
 	    GLfloat light_position[] = { 0.0, 1.0, 0.0, 1.0 };
-	    GLfloat light_ambient[] = { 1.0, 1.0, 1.0, 1.0 };       // ambient light
+	    GLfloat light_ambient[] = { 0.6, 0.6, 1.0, 1.0 };       // ambient light
 	    GLfloat light_diffuse[] = { 1.0, 1.0, 1.0, 1.0 };       // diffuse light
 	    GLfloat light_specular[] = { 1.0, 1.0, 1.0, 1.0 };      // highlights
 
@@ -26,10 +28,18 @@ void drawBodyName(planet *body){
 	const char* name = body->getName().c_str();
 	float color[3] = {1.0, 1.0, 1.0};
 	if (lightFlag){
-	    setMaterials(color);
+	// Set material property values
+	    GLfloat labelMat[] = { 1.0, 1.0, 1.0, 1.0 };
+	    // GLfloat mat_shininess = { 75.0 };
+	    
+	    // Set material properties
+	    glMaterialfv( GL_FRONT_AND_BACK, GL_AMBIENT, labelMat );
+	    glMaterialfv( GL_FRONT_AND_BACK, GL_DIFFUSE, labelMat );
+	    glMaterialfv( GL_FRONT_AND_BACK, GL_SPECULAR, labelMat );
+	    // glMaterialf( GL_FRONT_AND_BACK, GL_SHININESS, mat_shininess );
 	}
-
-  	glRasterPos3f(0, body->getRadius()+0.5, 0);
+	glColor3fv(color);
+  	glRasterPos3f(0, body->getRadius()+(body->getRadius() * 0.1), 0);
 	glutBitmapString(GLUT_BITMAP_HELVETICA_12, (const unsigned char *)name);
 }
 
@@ -41,6 +51,11 @@ void drawSun(planet* sun, bool sat){
 	// Set material properties
 	if (lightFlag){
 	    setMaterials(color);
+	    GLfloat mat_emission[] = { (float)(color[0]*0.6), (float)(color[1]*0.6), (float)(color[2]*0.6), 1.0 };
+	    
+	    // Set material properties
+	    glMaterialfv( GL_FRONT_AND_BACK, GL_EMISSION, mat_emission );
+
 	}
 
 	glPushMatrix();
@@ -48,18 +63,17 @@ void drawSun(planet* sun, bool sat){
 
 	// Draw body
     if (solidFlag) {
-        glutSolidSphere( sun->getRadius(), 10, (int) (sun->getRadius()*50) );
+        glutSolidSphere( sun->getRadius(), (int) (sun->getRadius()*10), (int) (sun->getRadius()*10) );
     } else {
         glutWireSphere( sun->getRadius(), 10, 10 );
     }
-    drawBodyName(sun);
+ 	if (bodyLabelFlag){
+	    drawBodyName(sun); 		
+ 	}
 
 	glPopMatrix();
 }
 
-// void transform(float yRotate, float xTranslate, float xRotate){
-
-// }
 void drawBody(planet* body, bool sat){
 	// Get body color
 	float color[3] = {};
@@ -94,14 +108,15 @@ void drawBody(planet* body, bool sat){
 	glColor3fv(color);
 	// Draw body
     if (solidFlag) {
-        glutSolidSphere( body->getRadius(), 10, (int) (body->getRadius()*50) );
+        glutSolidSphere( body->getRadius(), (int) (body->getRadius()*10), (int) (body->getRadius()*10) );
     } else {
         glutWireSphere( body->getRadius(), 10, 10 );
     }
     glPopMatrix();
-    if (!sat){
+    if ((!sat && bodyLabelFlag) || (sat && moonLabelFlag)){
 		drawBodyName(body);
     }
+
 	vector<string> satellites = body->getSatellites();
 	for (int s = 0; s < satellites.size(); s++)
 	{	
@@ -122,5 +137,58 @@ void drawBodies(){
 		} else {
 			drawSun(p.second, false);
 		}
+	}
+}
+
+void drawStatus(){
+
+	//Set ortho view
+	glMatrixMode (GL_PROJECTION); // Tell opengl that we are doing project matrix work
+	glLoadIdentity(); // Clear the matrix
+	glOrtho(-1, 1, -1, 1, 0.0, 1); // Setup an Ortho view
+	glMatrixMode(GL_MODELVIEW); // Tell opengl that we are doing model matrix work. (drawing)
+	glLoadIdentity(); // Clear the model matrix
+
+	char xV [40];
+	char yV [40];
+	char zV [40];
+	char speed[40];
+	float color[3] = {0, 1.0, 0};
+
+	if (!pauseFlag){
+		sprintf(speed, "Speed:  %f  hours / frame", hourSpeed);
+
+	} else {
+		sprintf(speed, "Speed:  PAUSED");
+
+	}
+ 	glColor3fv(color);
+
+  	glRasterPos3f(-0.97, 0.9, 0);
+	glutBitmapString(GLUT_BITMAP_HELVETICA_10, (const unsigned char*)speed);
+	
+  	glRasterPos3f(-0.95, 0.85, 0);
+	glutBitmapString(GLUT_BITMAP_HELVETICA_10, (const unsigned char*)"Velocity");
+  	glRasterPos3f(-0.98, 0.83, 0);
+	glutBitmapString(GLUT_BITMAP_HELVETICA_10, (const unsigned char*)"<--------->");
+	if (velocityFlag){
+
+		sprintf(xV, "X:  %d", (int)(-1 * xVelocity));
+		sprintf(yV, "Y:  %d", (int)(-1 * yVelocity));
+		sprintf(zV, "Z:  %d", (int)(zVelocity));
+	
+
+	  	glRasterPos3f(-0.95, 0.8, 0);
+		glutBitmapString(GLUT_BITMAP_HELVETICA_10, (const unsigned char*)xV);
+
+	  	glRasterPos3f(-0.95, 0.75, 0);
+		glutBitmapString(GLUT_BITMAP_HELVETICA_10, (const unsigned char*)yV);
+
+	  	glRasterPos3f(-0.95, 0.7, 0);
+		glutBitmapString(GLUT_BITMAP_HELVETICA_10, (const unsigned char*)zV);
+
+	} else {
+	  	glRasterPos3f(-0.95, 0.8, 0);
+		glutBitmapString(GLUT_BITMAP_HELVETICA_10, (const unsigned char*)"OFF");	
 	}
 }

@@ -4,20 +4,33 @@
 // displayCallback() handles the animation and the redrawing of the graphics window contents.
 
 // Global things
-extern bool infoFlag, pauseFlag, solidFlag, lightFlag;
+extern bool infoFlag, pauseFlag, solidFlag, lightFlag, velocityFlag;
 extern int width, height;
-extern float xTranslate, hourSpeed, zTranslate, xRotate , yRotate, mouseX, mouseY;
+extern float  hourSpeed, xVelocity, yVelocity, zVelocity, xTranslate, yTranslate, zTranslate, xRotate , yRotate, mouseX, mouseY;
 extern map<string,planet*> planetMap;
 extern map<string,planet*> moonMap;
 
 // displayCallback() handles the animation and the redrawing of the graphics window contents.
 void displayCallback( void )
 {
+	float aspectRatio = ( float ) width / ( float ) height;
+	// Set up the projection view matrix (not very well!)
+	glMatrixMode( GL_PROJECTION );
+	glLoadIdentity();
+	gluPerspective( 60.0, aspectRatio, 1.0, 1000000.0 );
+
+	// Select the Modelview matrix
+	glMatrixMode( GL_MODELVIEW );
 	if (!pauseFlag){
 		for (auto& p: planetMap)
 	    	p.second->step(hourSpeed);
 		for (auto& m: moonMap)
 	    	m.second->step(hourSpeed);
+	}
+	if (velocityFlag){
+		xTranslate += xVelocity;
+		yTranslate += yVelocity;
+		zTranslate += zVelocity;
 	}
 	// Clear the redering window
 	glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
@@ -27,7 +40,7 @@ void displayCallback( void )
 		glLoadIdentity();
 
 		// Move to current view point
-		glTranslatef ( xTranslate, 0, zTranslate );
+		glTranslatef ( xTranslate, yTranslate, zTranslate );
 
 		// Rotate the scene according to user specifications
 		glRotatef( xRotate, 1.0, 0.0, 0.0 );
@@ -36,14 +49,13 @@ void displayCallback( void )
 
 		drawBodies();
 		drawLighSource();
+		drawStatus();
 		
-
 	glFlush();
 
 	}else {
 		cout << "draw info screen" << endl;
 	}
-
 	// Flush pipeline, swap buffers, and redraw
 	glFlush();
 	glutSwapBuffers();
@@ -80,28 +92,57 @@ void keyboardCallback(unsigned char key, int x, int y){
 		// Move scene right
 		case 'D':
 		case 'd':
-			xTranslate -=5;
-			// xTranslate = (xTranslate + 1 > 600) ? 600 : xTranslate - 5;
+			if(velocityFlag){
+				xVelocity--;
+			} else {
+				xTranslate -= 5;
+			}
 		break;
 
 		// Move scene left
         case 'A':
 		case 'a':
-			xTranslate += 5;
-			// xTranslate = (xTranslate - 1 < -600) ? -600 : xTranslate + 5;
+			if(velocityFlag){
+				xVelocity++;
+			} else {
+				xTranslate += 5;
+			}
 		break;
-
+		// Move up in scene
+		case 'Q':
+		case 'q':
+			if(velocityFlag){
+				yVelocity++;
+			} else {
+				yTranslate += 5;
+			}
+		break;
+		//Move down in scene
+		case 'Z':
+		case 'z':
+			if(velocityFlag){
+				yVelocity--;
+			} else {
+				yTranslate -= 5;
+			}
+			break;
 		// Move forward in scene
 		case 'W':
 		case 'w':
-			// zTranslate = (zTranslate + 1 > 600) ? 600 : zTranslate + 1;
-			zTranslate += 5;
+			if(velocityFlag){
+				zVelocity++;
+			} else {
+				zTranslate += 5;
+			}
 		break;
 		//Move backward in scene
 		case 'S':
 		case 's':
-			zTranslate -= 5;
-			// zTranslate = (zTranslate - 1 < -600) ? -600 : zTranslate - 1;
+			if(velocityFlag){
+				zVelocity--;
+			} else {
+				zTranslate -= 5;
+			}
 		break;
 
 		// Increase hours per frame
@@ -153,7 +194,35 @@ void keyboardCallback(unsigned char key, int x, int y){
 			}
 		break;
 
+		// toggle labels for planetary bodies
+		case 'B':
+		case 'b':
+			bodyLabelFlag = !bodyLabelFlag;
+		break;
+
+		// toggle labels for moons
+		case 'M':
+		case 'm':
+			moonLabelFlag = !moonLabelFlag;
+		break;
+
+		// toggle velocity travel
+		case 'V':
+		case 'v':
+			velocityFlag = !velocityFlag;
+			if (velocityFlag){
+				xVelocity = 0;
+				yVelocity = 0;
+				zVelocity = 0;
+			}
+		break;
+
         // Set drawing modes 1 -> wireframe, 2 -> flat, 3 -> smooth, 4 ->image
+        case '0':
+            xVelocity = 0;
+            yVelocity = 0;
+            zVelocity = 0;
+        break;
         case '1':
             setDrawMode(wire);
         break;
