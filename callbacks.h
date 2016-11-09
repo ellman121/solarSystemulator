@@ -4,23 +4,29 @@
 // displayCallback() handles the animation and the redrawing of the graphics window contents.
 
 // Global things
-extern bool infoFlag, pauseFlag, solidFlag, lightFlag;
+extern bool infoFlag, pauseFlag, solidFlag, lightFlag, velocityFlag;
 extern int width, height;
-extern float xTranslate, hourSpeed, zTranslate, xRotate , yRotate, mouseX, mouseY;
+extern float  hourSpeed, xVelocity, yVelocity, zVelocity, xTranslate, yTranslate, zTranslate, xRotate , yRotate, mouseX, mouseY;
 extern map<string,planet*> planetMap;
 extern map<string,planet*> moonMap;
+string relative = "Earth";
 
 
 
 // displayCallback() handles the animation and the redrawing of the graphics window contents.
 void displayCallback( void )
 {
-	if (!pauseFlag){
-		for (auto& p: planetMap)
-	    	p.second->step(hourSpeed);
-		for (auto& m: moonMap)
-	    	m.second->step(hourSpeed);
-	}
+	float aspectRatio = ( float ) width / ( float ) height;
+	// Set up the projection view matrix (not very well!)
+	glMatrixMode( GL_PROJECTION );
+	glLoadIdentity();
+	gluPerspective( 60.0, aspectRatio, 1.0, 1000000.0 );
+
+	// Select the Modelview matrix
+	glMatrixMode( GL_MODELVIEW );
+
+	// Progress frame objects and variables to the next hour
+	setNextFrame();
 	// Clear the redering window
 	glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
 	if(!infoFlag){
@@ -29,23 +35,27 @@ void displayCallback( void )
 		glLoadIdentity();
 
 		// Move to current view point
-		glTranslatef ( xTranslate, 0, zTranslate );
+		glTranslatef ( xTranslate, yTranslate, zTranslate );
 
 		// Rotate the scene according to user specifications
 		glRotatef( xRotate, 1.0, 0.0, 0.0 );
-
 		glRotatef( yRotate, 0.0, 1.0, 0.0 );
+
+		// If viewing system relative to a planet, move scene negated distance and orbit of planet
+		if (relative != "Sun"){
+			glTranslatef (-1 * (planetMap.at(relative)->getDistance() + planetMap.at(relative)->getRadius()), 0, 0);
+			glRotatef( -1 * planetMap.at(relative)->getOrbit(), 0.0, 1.0, 0.0 );
+		}
 
 		drawBodies();
 		drawLighSource();
+		drawStatus();
 		
-
 	glFlush();
 
 	}else {
 		cout << "draw info screen" << endl;
 	}
-
 	// Flush pipeline, swap buffers, and redraw
 	glFlush();
 	glutSwapBuffers();
@@ -54,24 +64,32 @@ void displayCallback( void )
 }
 
 void mouseCallback(int x, int y){
-	// if (mouseFlag) {
-		float deltaX = x - ( width / 2.0 );
-		float deltaY = height - y - ( height / 2.0 );
-		xRotate += (deltaY-mouseY);
-		yRotate += (deltaX-mouseX);
-		mouseX = x - ( width / 2.0 );
-		mouseY = height - y - ( height / 2.0 );
-	// }
+	// get  current mouse position on screen
+	float deltaX = x - ( width / 2.0 );
+	float deltaY = height - y - ( height / 2.0 );
+
+	// subtract stored coordinates from current and add to rotate
+	xRotate += (deltaY-mouseY);
+	yRotate += (deltaX-mouseX);
+
+	// Store current position
+	mouseX = deltaX;
+	mouseY = deltaY;
+
 	glutPostRedisplay();
 }
 
 void mouseCallback (int button, int state, int x, int y){
+
 	if (button == GLUT_LEFT_BUTTON){
 		if (state == GLUT_DOWN){
+			// Store coordinates where button was pressed
 			mouseX = x - ( width / 2.0 );
 			mouseY = height - y - ( height / 2.0 );
+			// Register mouse callback
 			glutMotionFunc(mouseCallback);
 		} else {
+			// Unregister mouse callback
 			glutMotionFunc(NULL);
 		}
     }
@@ -79,54 +97,46 @@ void mouseCallback (int button, int state, int x, int y){
 
 void keyboardCallback(unsigned char key, int x, int y){
 	switch(key){
-		// Move scene right
-		case 'D':
-		case 'd':
-			xTranslate -=5;
-			// xTranslate = (xTranslate + 1 > 600) ? 600 : xTranslate - 5;
-		break;
-
-		// Move scene left
+		// Increase x direction velocity or move left in scene
         case 'A':
 		case 'a':
-			xTranslate += 5;
-			// xTranslate = (xTranslate - 1 < -600) ? -600 : xTranslate + 5;
+			(velocityFlag)? xVelocity++ : xTranslate += 5;
 		break;
-
-		// Move forward in scene
+		// Decrease x direction velocity or move right in scene
+		case 'D':
+		case 'd':
+			(velocityFlag) ? xVelocity-- : xTranslate -= 5;
+		break;
+		// Increase y direction velocity or move downward in scene
+		case 'Z':
+		case 'z':
+			(velocityFlag) ? yVelocity++ : yTranslate += 5;
+		break;
+		// Decrease y direction velocity or move upward in scene
+		case 'Q':
+		case 'q':
+			(velocityFlag) ? yVelocity-- : yTranslate -= 5;
+		break;
+		// Increase z direction velocity or move forward in scene
 		case 'W':
 		case 'w':
-			// zTranslate = (zTranslate + 1 > 600) ? 600 : zTranslate + 1;
-			zTranslate += 5;
+			(velocityFlag) ? zVelocity++ : zTranslate += 5;
 		break;
-		//Move backward in scene
+		// Decrease z direction velocity or move backward in scene
 		case 'S':
 		case 's':
-			zTranslate -= 5;
-			// zTranslate = (zTranslate - 1 < -600) ? -600 : zTranslate - 1;
+			(velocityFlag) ? zVelocity-- : zTranslate -= 5;
 		break;
 
 		// Increase hours per frame
 		case '+':
-			if (hourSpeed >= 1){
-				hourSpeed++;
-			} else {
-				hourSpeed += 0.1;
-			}
+			(hourSpeed >= 1) ? hourSpeed++ : hourSpeed += 0.1;
 		break;
 
-		// Decrease hours per frame
+		// Decrement by 1 until speed is 1 hour per frame then by 0.1
 		case '-':
-			// Decrement by 1 until speed is 1 hour per frame
-			if (hourSpeed > 1){
-				hourSpeed--;
-			} else {
-				// Don't go below 0.1 hour per frame
-				if (hourSpeed > 0.1){
-					// Decrement by 0.1 hours when going below 1 hour per frame
-					hourSpeed -= 0.1;
-				}
-			}
+			// Don't go below 0.1 hour per frame
+			(hourSpeed > 1) ? hourSpeed-- : (hourSpeed > 0.1) ? hourSpeed -= 0.1 : hourSpeed += 0;
 		break;
 
 		// Pause animation
@@ -138,22 +148,50 @@ void keyboardCallback(unsigned char key, int x, int y){
 		// Reset scene to original position
 		case 'R':
 		case 'r':
-			xRotate = 35.0;
+			xRotate = 0.0;
 			yRotate = 0.0;
 			xTranslate = 0.0;
-			zTranslate = -100.0;
+			zTranslate = -200.0;
 		break;
 
 		//Toggle lighting
 		case 'L':
 		case 'l':
 			lightFlag = !lightFlag;
-			if (lightFlag){
-				glEnable(GL_LIGHTING);
-			} else {
-				glDisable(GL_LIGHTING);
+			(lightFlag) ? glEnable(GL_LIGHTING) : glDisable(GL_LIGHTING);
+		break;
+
+		// toggle labels for planetary bodies
+		case 'B':
+		case 'b':
+			bodyLabelFlag = !bodyLabelFlag;
+		break;
+
+		// toggle labels for moons
+		case 'M':
+		case 'm':
+			moonLabelFlag = !moonLabelFlag;
+		break;
+
+		// toggle velocity travel, set velocity values to 0
+		case 'V':
+		case 'v':
+			velocityFlag = !velocityFlag;
+			if (velocityFlag){
+				xVelocity = yVelocity = zVelocity = 0;
 			}
 		break;
+
+		/*****Temporary for testing relative viewpoint*/
+        case '0':
+        	relative = "Sun";
+        break;
+        case '9':
+        	relative = "Earth";
+        break;
+        case '8':
+        	relative = "Jupiter";
+        break;
 
         // Set drawing modes 1 -> wireframe, 2 -> flat, 3 -> smooth, 4 ->image
         case '1':
@@ -200,22 +238,5 @@ void specialKeyCallback(int key, int x, int y){
 		break;
 
 	}
+
 }
-
-// void passiveMouseFunc(int x, int y){
-// 	int X = x - ( width / 2.0 );
-// 	int Y = height - y - ( height / 2.0 );
-// 	for (auto& m : moonMap){
-// 		float radius = m.second->getRadius();
-// 		float theta = 
-// 		float xDir = cos()
-// sin(θ) = opposite / hypotenuse
-// Cosine Function:
-// ...cah...
-// cos(θ) = adjacent / hypotenuse
-
-
-// 		if (m.second->getName() != "Sun"){
-// 			drawPlanet(p.second, false);
-// 		}
-// }
