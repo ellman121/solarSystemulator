@@ -16,7 +16,7 @@ planet::planet() {
 }
 
 // Use this constructor
-planet::planet(string name, string parent, float radius, float distance, float daysPerYear, float hoursPerDay, float incline, float color[3], Image_s img, vector<string> satellites)
+planet::planet(string name, string parent, float radius, float distance, float daysPerYear, float hoursPerDay, float incline, float tilt, float albedo, float color[3], Image_s img, vector<string> satellites)
 {
 	_name = name;
 	_parent = parent;
@@ -30,13 +30,18 @@ planet::planet(string name, string parent, float radius, float distance, float d
 	}
 	_orbit = 0;											//start at 0 degree orbit position
 	_orbitalSpeed = 360.0/(24.0*daysPerYear);				//orbital degree change per hour
+	
+	_incline = incline;									// the angle in y at which the body orbits
+	_axialTilt = tilt;									// the angle at which the body rotates
+	_albedo = albedo;									// the reflectivity coefficient of the body
+
+
 	_color[0] = color[0];
 	_color[1] = color[1];
 	_color[2] = color[2];
 	_img = img;
 	_satellites = satellites;							// the list of satellite names
-	_incline = incline;									// the angle in y at which the body orbits
-
+	
 }
 
 /*
@@ -58,7 +63,7 @@ float planet::getRadius()
 float planet::getDistance()
 {
 	// If we don't have a parent, return 0
-	return (_parent == "") ? 0 : _distance;
+	return  _distance;
 }
 
 // The number of degrees around self axis we've rotated
@@ -71,6 +76,24 @@ float planet::getRotation()
 float planet::getOrbit()
 {
 	return _orbit;
+}
+
+// Get the orbit incline angle
+float planet::getTilt()
+{
+	return _axialTilt;
+}
+
+// Get the orbit incline angle
+float planet::getIncline()
+{
+	return _incline;
+}
+
+// Get the orbit incline angle
+float planet::getAlbedo()
+{
+	return _albedo;
 }
 
 // Get the color from the planet
@@ -105,11 +128,7 @@ vector<string> planet::getSatellites()
 	return _satellites;
 }
 
-// Get the orbit incline angle
-float planet::getIncline()
-{
-	return _incline;
-}
+
 /*
  * Activities
  ***************/
