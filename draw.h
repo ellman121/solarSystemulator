@@ -85,22 +85,22 @@ void drawBody(planet* body, bool sat){
 	body->getColor(color);
 	string parent = body->getParent();
 
-	float distance;
-	// offset for current planet focus
-	float distance2 = 0;
-
 	// get distance between body surface and parent surface
-	distance = planetMap.at(parent)->getRadius()+ body->getRadius()+body->getDistance() - distance2;
+	float distance = planetMap.at(parent)->getRadius()+ body->getRadius()+body->getDistance();
+	float radius = body->getRadius();
 
 	// Set material properties
 	if (lightFlag){
 	    setMaterials(color, body->getAlbedo());
 	}
 
+	// make sure system is not being viewed relative to current body
 	// roate about the z axis for orbital incline
 	if (body->getName() != relative){
 		glRotatef( body->getIncline(), 0.0, 0.0, 1.0 );
 	}
+
+
 	// rotate around y axis to get orbital position
 	glRotatef( body->getOrbit(), 0.0, 1.0, 0.0 );
 	// translate distance in x plane  to place body
@@ -113,15 +113,13 @@ void drawBody(planet* body, bool sat){
 	// rotate about x axis for body axial tilt
 	glRotatef( body->getTilt()+90, 1.0, 0.0, 0.0 );
 
+
 	glColor3fv(color);
 	// Draw body
-    if (solidFlag) {
-        glutSolidSphere( body->getRadius(), (int) (body->getRadius()*10), (int) (body->getRadius()*10) );
-    } else {
-        glutWireSphere( body->getRadius(), 10, 10 );
-    }
-
+	(solidFlag) ? glutSolidSphere( radius, (int) (radius*10), (int) (radius*10) ) : glutWireSphere( radius, 10, 10 );
+    
     glPopMatrix();
+    
     // Draw body labels
     if ((!sat && bodyLabelFlag) || (sat && moonLabelFlag)){
 		drawBodyName(body);
@@ -129,8 +127,7 @@ void drawBody(planet* body, bool sat){
 
     // Draw satellite for body
 	vector<string> satellites = body->getSatellites();
-	for (int s = 0; s < satellites.size(); s++)
-	{	
+	for (int s = 0; s < satellites.size(); s++){	
 		drawBody(moonMap.at(satellites.at(s)), true);
 	}
 	
@@ -143,11 +140,7 @@ void drawBody(planet* body, bool sat){
 void drawBodies(){
 	// Draw each planet
 	for (auto& p: planetMap){
-		if (p.second->getName() != "Sun"){
-			drawBody(p.second, false);
-		} else {
-			drawSun(p.second, false);
-		}
+		(p.second->getName() != "Sun") ? drawBody(p.second, false) : drawSun(p.second, false);
 	}
 }
 
