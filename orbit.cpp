@@ -83,7 +83,6 @@ float mouseX, mouseY;
 map<string,planet*> planetMap;
 map<string,planet*> moonMap;
 
-
 void initLighting() {
     // specify material reflectivity
     GLfloat mat_ambient[] = { 1.0, 1.0, 1.0, 0.10 };
@@ -148,29 +147,45 @@ void ResizeWindow( int w, int h )
 	glMatrixMode( GL_MODELVIEW );
 }
 
+// 200 Lines to emplace each sun/planet/moon in the solar system
 void InitSolarSystem(){
 	Image_s nullImage = {0, 0, NULL};
 
 
 	vector<string> satellites = {};
 	planetMap.emplace("Sun", new planet ("Sun", "", 696000/10, 0, 0, 25, 0, sunColor, nullImage, satellites));
+
+    // Mercury has no moons
 	planetMap.emplace("Mercury", new planet ("Mercury", "Sun", 2439, 58000000, 88, 1416, 0, mercuryColor, nullImage, satellites));
+
+    // Venus has no moons
 	planetMap.emplace("Venus", new planet ("Venus", "Sun", 6052, 108000000, 225, 5832, 0, venusColor, nullImage, satellites));
+
+    // Earth and it's moon
 	satellites = {"Luna"};
 	planetMap.emplace("Earth", new planet ("Earth", "Sun", 6378, 150000000, 365, 24, 0, earthColor, nullImage, satellites));
+
+    // Mars and it's moons
 	satellites = {"Deimos", "Phobos"};
 	planetMap.emplace("Mars", new planet ("Mars", "Sun", 3394, 228000000, 687, 24.6, 0, marsColor, nullImage, satellites));
+
+    // Jupiter with so many moons
 	satellites = {"Adrastea","Aitne","Amalthea","Ananke","Aoede","Arche","Autonoe","Callisto","Carme","Callirrhoe","Carpo","Chaldene","Cyllene","Elara","Erinome","Euanthe","Eukelade","Euporie","Europa","Eurydome","Ganymede","Harpalyke","Hegemone","Helike","Hermippe","Himalia","Io","Iocaste","Isonone","Kale","Kallichore","Kalyke","Kore","Leda","Lysithea","Magaclite","Metis","Mneme","Orthosie","Pasiphae","Pasithee","Praxidike","Sinope","Sponde","S/2000 J11","S/2003 J2","S/2003 J3","S/2003 J4","S/2003 J5","S/2003 J9","S/2003 J10","S/2003 J12","S/2003 J15","S/2003 J16","S/2003 J17","S/2003 J18","S/2003 J19","S/2003 J 23","Taygete","Thebe","Thelxinoe","Themisto","Thyone"};
 	planetMap.emplace("Jupiter", new planet ("Jupiter", "Sun", 71398, 779000000, 4332, 9.8, 0, jupiterColor, nullImage, satellites));
+
+    // Saturn also has a lot of moons
 	satellites = {"Aegir", "Albiorix", "Anthe", "Atlas", "Bebhionn", "Bergelmir", "Bestla", "Calypso", "Daphnis", "Dione", "Enceladus", "Epimetheus", "Erriapo", "Farbauti", "Fenrir", "Fornjot", "Greip", "Hati", "Helene", "Hyperion", "Hyrokkin", "Iapetus", "Ijiraq", "Janus", "Jarnsaxa", "Kari", "Kiviuq", "Loge", "Methone", "Mimas", "Mundilfari", "Narvi", "Paaliaq", "Pallene", "Pan", "Pandora", "Phoebe", "Polydeuces", "Prometheus", "Rhea", "Siarnaq", "Skathi", "Skoll", "Surtur", "Suttungr", "S/2004 S07", "S/2004 S12", "S/2004 S13", "S/2004 S17", "S/2006 S1", "S/2006 S3", "S/2007 S2", "S/2007 S3", "Tarqeq", "Tarvos", "Telesto", "Tethys", "Thrymr", "Titan", "Ymir"};
 	planetMap.emplace("Saturn", new planet ("Saturn", "Sun", 60270, 1424000000, 10761, 10.2, 0, saturnColor, nullImage,satellites));
+
+    // Uranus doesn't have as many moons
 	satellites = {"Ariel", "Belinda", "Bianca", "Caliban", "Cordelia", "Cressida", "Cupid", "Desdemona", "Ferdinand", "Francisco", "Juliet", "Mab", "Margaret", "Miranda", "Oberon", "Ophelia", "Perdita", "Portia", "Prospero", "Puck", "Rosalind", "Setebos", "Stephano", "Sycorax", "Titania", "Trinculo", "Umbriel"};
-
 	planetMap.emplace("Uranus", new planet ("Uranus", "Sun", 25550, 2867000000, 30682, 15.5, 0, uranusColor, nullImage, satellites));
-	satellites = {"Despina", "Galatea", "Halimede", "Larissa", "Laomedeia", "Naiad", "Nereid", "Neso", "Proteus", "Psamathe", "Sao", "Thalassa", "Triton"};
 
+    // Neptune not so many moons either
+	satellites = {"Despina", "Galatea", "Halimede", "Larissa", "Laomedeia", "Naiad", "Nereid", "Neso", "Proteus", "Psamathe", "Sao", "Thalassa", "Triton"};
 	planetMap.emplace("Neptune", new planet ("Neptune", "Sun", 24750, 4492000000, 60195, 15.8, 0, neptuneColor, nullImage, satellites));
 
+    // Now we build the moonMap for all of the above satelites
 	satellites.clear();
 	moonMap.emplace("Luna", new planet("Luna", "Earth",1738, 384400, 27.322, 0, 30.0, moonColor, nullImage, satellites));
 	moonMap.emplace("Deimos", new planet("Deimos", "Mars",4, 23460, 1.263, 0, 0, moonColor, nullImage, satellites));
@@ -338,26 +353,8 @@ void InitSolarSystem(){
 	moonMap.emplace("Sao", new planet("Sao", "Neptune",19, 22337190, 2925.6, 0, 0, moonColor, nullImage, satellites));
 	moonMap.emplace("Thalassa", new planet("Thalassa", "Neptune",45, 50000, 0.31, 0, 0, moonColor, nullImage, satellites));
 	moonMap.emplace("Triton", new planet("Triton", "Neptune",1352.5, 354800, 5.877, 0, 0, moonColor, nullImage, satellites));
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 }
+
 // Main routine
 // Set up OpenGL, hook up callbacks, and start the main loop
 int main( int argc, char** argv )

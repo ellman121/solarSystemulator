@@ -10,6 +10,8 @@ extern float xTranslate, hourSpeed, zTranslate, xRotate , yRotate, mouseX, mouse
 extern map<string,planet*> planetMap;
 extern map<string,planet*> moonMap;
 
+
+
 // displayCallback() handles the animation and the redrawing of the graphics window contents.
 void displayCallback( void )
 {
