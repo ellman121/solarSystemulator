@@ -9,7 +9,7 @@ extern int width, height;
 extern float  hourSpeed, xVelocity, yVelocity, zVelocity, xTranslate, yTranslate, zTranslate, xRotate , yRotate, mouseX, mouseY;
 extern map<string,planet*> planetMap;
 extern map<string,planet*> moonMap;
-string relative = "Earth";
+string relative = "Sun";
 
 // displayCallback() handles the animation and the redrawing of the graphics window contents.
 void displayCallback( void )
@@ -41,7 +41,14 @@ void displayCallback( void )
 
 		// If viewing system relative to a planet, move scene negated distance and orbit of planet
 		if (relative != "Sun"){
-			glTranslatef (-1 * (planetMap.at(relative)->getDistance() + planetMap.at(relative)->getRadius()), 0, 0);
+			float sRadius = planetMap.at("Sun")->getRadius();
+			float rRadius = planetMap.at(relative)->getRadius();
+			// how much bigger the sun is than relative body
+			float percent = 1 - (rRadius/sRadius);
+
+			// translate to position of planet center in x position
+			// translate in z direction forward or back depending on how big the planet is
+			glTranslatef (-1 * (sRadius + rRadius + planetMap.at(relative)->getDistance()), 0, 200*percent);
 			glRotatef( -1 * planetMap.at(relative)->getOrbit(), 0.0, 1.0, 0.0 );
 		}
 
@@ -182,13 +189,16 @@ void keyboardCallback(unsigned char key, int x, int y){
 
 		/*****Temporary for testing relative viewpoint*/
         case '0':
-        	relative = "Sun";
+        	setRelativeBody("Sun");
         break;
         case '9':
-        	relative = "Earth";
+        	setRelativeBody("Earth");
         break;
         case '8':
-        	relative = "Jupiter";
+	        setRelativeBody("Jupiter");
+        break;
+        case '7':
+	        setRelativeBody("Saturn");
         break;
 
         // Set drawing modes 1 -> wireframe, 2 -> flat, 3 -> smooth, 4 ->image
@@ -217,22 +227,22 @@ void specialKeyCallback(int key, int x, int y){
 	switch(key){
 		// Rotate counter clockwise about the x axis
         case GLUT_KEY_UP:
-			xRotate++;
+			xRotate+= 0.5;
 		break;
 
 		// Rotate clockwise about the x axis
         case GLUT_KEY_DOWN:
-			xRotate--;
+			xRotate-= 0.5;
 		break;
 
 		// Rotate counter clockwise about the y axis
         case GLUT_KEY_RIGHT:
-			yRotate++;
+			yRotate+= 0.5;
 		break;
 
 		// Rotate clockwise about the y axis
         case GLUT_KEY_LEFT:
-			yRotate--;
+			yRotate-= 0.5;
 		break;
 
 	}
