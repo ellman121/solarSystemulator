@@ -74,7 +74,7 @@ void OpenGLInit( void );
 void ResizeWindow( int w, int h );
 void initLighting();
 void InitSolarSystem();
-
+void initMenus();
 
 // Global things
 bool infoFlag = false;
@@ -112,6 +112,42 @@ float mouseX, mouseY;
 map<string,planet*> planetMap;
 map<string,planet*> moonMap;
 
+void initMenus() {
+	int primaryMenu;
+	int speedSelectSubmenu;
+	int planetSelectSubmenu;
+
+	// Create the speed selection submenu
+	speedSelectSubmenu = glutCreateMenu(processSpeedSelectSubmenuOption);
+	glutAddMenuEntry("Minimum Speed", 0);
+	glutAddMenuEntry("1 Hour/Frame", 1);
+	glutAddMenuEntry("12 Hours/Frame", 2);
+	glutAddMenuEntry("1 Day/Frame", 3);
+	glutAddMenuEntry("2 Days/Frame", 4);
+
+	// Create planet selection submenu
+	planetSelectSubmenu = glutCreateMenu(processPlanetSelectSubmenuOption);
+	glutAddMenuEntry("Sun", 0);
+	glutAddMenuEntry("Mercury", 1);
+	glutAddMenuEntry("Venus", 2);
+	glutAddMenuEntry("Earth", 3);
+	glutAddMenuEntry("Mars", 4);
+	glutAddMenuEntry("Jupiter", 5);
+	glutAddMenuEntry("Saturn", 6);
+	glutAddMenuEntry("Uranus", 7);
+	glutAddMenuEntry("Neptune", 8);
+
+	// Create our primary menu
+	primaryMenu = glutCreateMenu(processMenuOption);
+	glutAddSubMenu("Select Speed", speedSelectSubmenu);
+	glutAddSubMenu("Planet Focus", planetSelectSubmenu);
+	glutAddMenuEntry("Toggle Lights", 0);
+	glutAddMenuEntry("Toggle Planet Labels", 1);
+	glutAddMenuEntry("Toggle Moon Labels", 2);
+	glutAddMenuEntry("Reset Position", 3);
+	glutAddMenuEntry("Show Info Screen", 4);
+	glutAddMenuEntry("Exit", 5);
+}
 
 void initLighting() {
     // specify material reflectivity
@@ -177,6 +213,7 @@ void ResizeWindow( int w, int h )
 	glMatrixMode( GL_MODELVIEW );
 }
 
+// 200 Lines to emplace each sun/planet/moon in the solar system
 void InitSolarSystem(){
 	Image_s nullImage = {0, 0, NULL};
 
@@ -248,6 +285,7 @@ void InitSolarSystem(){
 
 	moonMap.emplace("Triton", new planet("Triton", "Neptune",1352.5, 354800, 5.877, 141.048, 156.885, 0, 0.76, moonColor, nullImage, satellites));
 }
+
 // Main routine
 // Set up OpenGL, hook up callbacks, and start the main loop
 int main( int argc, char** argv )

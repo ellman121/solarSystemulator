@@ -103,7 +103,11 @@ bool LoadBmpFile( string nameOfPlanet, int &NumRows, int &NumCols, unsigned char
         return false;
     }
 
-    fclose( infile );	// Close the file
+    // Close the file
+    fclose( infile );
+
+    // Free memory
+    free(filename);
 
     return true;
 }
