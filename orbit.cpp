@@ -139,8 +139,8 @@ void initMenus() {
 
 	// Create our primary menu
 	primaryMenu = glutCreateMenu(processMenuOption);
-	glutAddSubmenu("Select Speed", speedSelectSubmenu);
-	glutAddSubmenu("Planet Focus", planetSelectSubmenu);
+	glutAddSubMenu("Select Speed", speedSelectSubmenu);
+	glutAddSubMenu("Planet Focus", planetSelectSubmenu);
 	glutAddMenuEntry("Toggle Lights", 0);
 	glutAddMenuEntry("Toggle Planet Labels", 1);
 	glutAddMenuEntry("Toggle Moon Labels", 2);

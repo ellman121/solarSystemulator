@@ -33,7 +33,7 @@ bool LoadBmpFile( string nameOfPlanet, int &NumRows, int &NumCols, unsigned char
     for(int i = 0; i < filepath.size() + 1; i++)
         filename[i] = 0;
     strcpy(filename, filepath.c_str());
-e
+
     FILE* infile = fopen( filename, "rb" ); // Open for reading binary data
     if ( !infile )
     {
