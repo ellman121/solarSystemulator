@@ -62,6 +62,7 @@
 // Our headers
 // #include "globals.h"
 #include "planet.h"
+#include "rings.h"
 #include "imageReader.h"
 #include "setFuncs.h"
 #include "draw.h"
@@ -84,7 +85,9 @@ bool lightFlag = true;
 bool bodyLabelFlag = true;
 bool moonLabelFlag = false;
 bool velocityFlag = false;
-float hourSpeed = 1;
+bool texFlag = false;
+bool smoothFlag = false;
+float hourSpeed = 0.1;
 int width = 1200;
 int height = 720;
 
@@ -111,6 +114,9 @@ float yRotate = 0.0;
 float mouseX, mouseY;
 map<string,planet*> planetMap;
 map<string,planet*> moonMap;
+map<string,planet*> ringMap;
+map<string,planet*> textureRings;
+map<string,Image_s> texImgs;
 
 void initMenus() {
 	int primaryMenu;
@@ -118,7 +124,7 @@ void initMenus() {
 	int planetSelectSubmenu;
 
 	// Create the speed selection submenu
-	speedSelectSubmenu = glutCreateMenu(processSpeedSelectSubmenuOption);
+	speedSelectSubmenu = glutCreateMenu(setSpeedSelectSubmenuOption);
 	glutAddMenuEntry("Minimum Speed", 0);
 	glutAddMenuEntry("1 Hour/Frame", 1);
 	glutAddMenuEntry("12 Hours/Frame", 2);
@@ -126,7 +132,7 @@ void initMenus() {
 	glutAddMenuEntry("2 Days/Frame", 4);
 
 	// Create planet selection submenu
-	planetSelectSubmenu = glutCreateMenu(processPlanetSelectSubmenuOption);
+	planetSelectSubmenu = glutCreateMenu(setPlanetSelectSubmenuOption);
 	glutAddMenuEntry("Sun", 0);
 	glutAddMenuEntry("Mercury", 1);
 	glutAddMenuEntry("Venus", 2);
@@ -138,7 +144,7 @@ void initMenus() {
 	glutAddMenuEntry("Neptune", 8);
 
 	// Create our primary menu
-	primaryMenu = glutCreateMenu(processMenuOption);
+	primaryMenu = glutCreateMenu(setMenuOption);
 	glutAddSubMenu("Select Speed", speedSelectSubmenu);
 	glutAddSubMenu("Planet Focus", planetSelectSubmenu);
 	glutAddMenuEntry("Toggle Lights", 0);
@@ -147,6 +153,7 @@ void initMenus() {
 	glutAddMenuEntry("Reset Position", 3);
 	glutAddMenuEntry("Show Info Screen", 4);
 	glutAddMenuEntry("Exit", 5);
+	glutAttachMenu(GLUT_RIGHT_BUTTON);
 }
 
 void initLighting() {
@@ -219,71 +226,69 @@ void InitSolarSystem(){
 
 
 	vector<string> satellites = {};
-	planetMap.emplace("Sun", new planet ("Sun", "", 696000/10, 0, 0, 25, 0, 7.25, 0, sunColor, nullImage, satellites));
-	planetMap.emplace("Mercury", new planet ("Mercury", "Sun", 2439, 58000000, 88, 1416, 3.38, 2.04, 0.68, mercuryColor, nullImage, satellites));
-	planetMap.emplace("Venus", new planet ("Venus", "Sun", 6052, 108000000, 225, 5832, 3.86, 177.36, 0.9, venusColor, nullImage, satellites));
+	vector<string> rings = {};
+
+	planetMap.emplace("Sun", new planet ("Sun", "", 696000/10, 0, 0, 25, 0, 7.25, 0, sunColor, nullImage, satellites, rings));
+	planetMap.emplace("Mercury", new planet ("Mercury", "Sun", 2439, 58000000, 88, 1416, 3.38, 2.04, 0.68, mercuryColor, nullImage, satellites, rings));
+	planetMap.emplace("Venus", new planet ("Venus", "Sun", 6052, 108000000, 225, 5832, 3.86, 177.36, 0.9, venusColor, nullImage, satellites, rings));
 
 	satellites = {"Luna"};
-	planetMap.emplace("Earth", new planet ("Earth", "Sun", 6378, 150000000, 365, 24, 7.155, 23.4392811, 0.306, earthColor, nullImage, satellites));
+	planetMap.emplace("Earth", new planet ("Earth", "Sun", 6378, 150000000, 365, 24, 7.155, 23.4392811, 0.306, earthColor, nullImage, satellites, rings));
 
 	satellites = {"Deimos", "Phobos"};
-	planetMap.emplace("Mars", new planet ("Mars", "Sun", 3394, 228000000, 687, 24.6, 5.65, 25.19, 0.25, marsColor, nullImage, satellites));
+	planetMap.emplace("Mars", new planet ("Mars", "Sun", 3394, 228000000, 687, 24.6, 5.65, 25.19, 0.25, marsColor, nullImage, satellites, rings));
 
 	satellites = {"Adrastea", "Amalthea", "Callisto", "Europa", "Ganymede", "Io", "Metis", "Thebe"};
-	planetMap.emplace("Jupiter", new planet ("Jupiter", "Sun", 71398, 779000000, 4332, 9.8, 6.09, 3.13, 0.343, jupiterColor, nullImage, satellites));
+	planetMap.emplace("Jupiter", new planet ("Jupiter", "Sun", 71398, 779000000, 4332, 9.8, 6.09, 3.13, 0.343, jupiterColor, nullImage, satellites, rings));
 
 	satellites = {"Dione", "Enceladus", "Iapetus", "Mimas", "Rhea", "Tethys", "Titan"};
-	planetMap.emplace("Saturn", new planet ("Saturn", "Sun", 60270, 1424000000, 10761, 10.2, 5.51, 26.73, 0.342, saturnColor, nullImage,satellites));
+	planetMap.emplace("Saturn", new planet ("Saturn", "Sun", 60270, 1424000000, 10761, 10.2, 5.51, 26.73, 0.342, saturnColor, nullImage, satellites, rings));
 
 	satellites = {"Ariel", "Miranda", "Oberon", "Titania", "Umbriel"};
-	planetMap.emplace("Uranus", new planet ("Uranus", "Sun", 25550, 2867000000, 30682, 15.5, 6.48, 97.77, 0.3, uranusColor, nullImage, satellites));
+	planetMap.emplace("Uranus", new planet ("Uranus", "Sun", 25550, 2867000000, 30682, 15.5, 6.48, 97.77, 0.3, uranusColor, nullImage, satellites, rings));
 
 	satellites = {"Triton"};
-	planetMap.emplace("Neptune", new planet ("Neptune", "Sun", 24750, 4492000000, 60195, 15.8, 6.43, 28.32, 0.290, neptuneColor, nullImage, satellites));
-
-
-
-
-
-
-
-
+	planetMap.emplace("Neptune", new planet ("Neptune", "Sun", 24750, 4492000000, 60195, 15.8, 6.43, 28.32, 0.290, neptuneColor, nullImage, satellites, rings));
 
 	satellites.clear();
-//  									name, parent, radius, distance, daysPerYear, hoursPerDay, incline, tilt, reflectance, color[3], img, satellites)
-	moonMap.emplace("Luna", new planet("Luna", "Earth",1738, 384400, 27.322, 27.322, 5.145, 6.687, 0.136, moonColor, nullImage, satellites));
+	moonMap.emplace("Luna", new planet("Luna", "Earth",1738, 384400, 27.322, 27.322, 5.145, 6.687, 0.136, moonColor, nullImage, satellites, rings));
 	
-	moonMap.emplace("Deimos", new planet("Deimos", "Mars",4, 23460, 1.263, 30.312, 0.93, 0, 0.068, moonColor, nullImage, satellites));
-	moonMap.emplace("Phobos", new planet("Phobos", "Mars",280, 9270, 0.319, 7.656, 1.093, 0, 0.071, moonColor, nullImage, satellites));
+	moonMap.emplace("Deimos", new planet("Deimos", "Mars",4, 23460, 1.263, 30.312, 0.93, 0, 0.068, moonColor, nullImage, satellites, rings));
+	moonMap.emplace("Phobos", new planet("Phobos", "Mars",280, 9270, 0.319, 7.656, 1.093, 0, 0.071, moonColor, nullImage, satellites, rings));
+	
+	moonMap.emplace("Adrastea", new planet("Adrastea", "Jupiter", 208, 128980, 0.298, 7.152, 0.03, 0, 0.1, moonColor, nullImage, satellites, rings));
+	moonMap.emplace("Amalthea", new planet("Amalthea", "Jupiter", 83.5, 181300, 0.498, 11.952, 0.374, 0, 0.09, moonColor, nullImage, satellites, rings));
+	moonMap.emplace("Callisto", new planet("Callisto", "Jupiter", 2400, 1883000, 16.689, 400.536, 0.205, 0, 0.22, moonColor, nullImage, satellites, rings));
+	moonMap.emplace("Europa", new planet("Europa", "Jupiter", 1563, 670900, 3.551, 85, 0.471, 0.1, 0.67, moonColor, nullImage, satellites, rings));
+	moonMap.emplace("Ganymede", new planet("Ganymede", "Jupiter", 2638, 1070000, 7.155, 171.72, 0.204, 0.33, 0.43, moonColor, nullImage, satellites, rings));
+	moonMap.emplace("Io", new planet("Io", "Jupiter", 1814.5, 421600, 1.769, 42.456, 0.05, 0, 0.63, moonColor, nullImage, satellites, rings));
+	moonMap.emplace("Metis", new planet("Metis", "Jupiter", 20, 127960, 0.295, 7.08, 0.06, 0, 0.061, moonColor, nullImage, satellites, rings));
+	moonMap.emplace("Thebe", new planet("Thebe", "Jupiter", 50, 221900, 0.675, 16.2, 1.076, 0, 0.047, moonColor, nullImage, satellites, rings));
+	
+	moonMap.emplace("Dione", new planet("Dione", "Saturn",561.4, 377400, 2.737, 65.68596, 0.019, 0, 0.998, moonColor, nullImage, satellites, rings));
+	moonMap.emplace("Enceladus", new planet("Enceladus", "Saturn",249, 238020, 1.37, 32.885232, 0.019, 0, 0.99, moonColor, nullImage, satellites, rings));
+	moonMap.emplace("Iapetus", new planet("Iapetus", "Saturn",718, 3561300, 79.3215, 1903.716, 15.47, 0, 0.225, moonColor, nullImage, satellites, rings));
+	moonMap.emplace("Mimas", new planet("Mimas", "Saturn",199, 185520, 0.942, 22.608, 1.574, 0, 0.962,moonColor, nullImage, satellites, rings));
+	moonMap.emplace("Rhea", new planet("Rhea", "Saturn",764, 527040, 4.518, 108.437088, 0.345, 0, 0.949, moonColor, nullImage, satellites, rings));
+	moonMap.emplace("Tethys", new planet("Tethys", "Saturn",530, 294660, 1.888, 45.307248, 1.12, 0, 0.8, moonColor, nullImage, satellites, rings));
+	moonMap.emplace("Titan", new planet("Titan", "Saturn",2575, 1221850, 15.945, 382.68, 0.34854, 0, 0.22, moonColor, nullImage, satellites, rings));
+
+	moonMap.emplace("Ariel", new planet("Ariel", "Uranus",580, 191240, 2.52, 60.48, 0.260, 0, 0.23, moonColor, nullImage, satellites, rings));
+	moonMap.emplace("Miranda", new planet("Miranda", "Uranus",236, 129780, 1.414, 33.936, 4.232, 0, 0.32, moonColor, nullImage, satellites, rings));
+	moonMap.emplace("Oberon", new planet("Oberon", "Uranus",763, 582600, 13.463, 323.112, 0.058, 0, 0.14, moonColor, nullImage, satellites, rings));
+	moonMap.emplace("Titania", new planet("Titania", "Uranus",789, 435840, 8.706, 208.944, 0.340 , 0, 0.17, moonColor, nullImage, satellites, rings));
+	moonMap.emplace("Umbriel", new planet("Umbriel", "Uranus",595, 265970, 4.144, 99.456, 0.128, 0, 0.10, moonColor, nullImage, satellites, rings));
+
+	moonMap.emplace("Triton", new planet("Triton", "Neptune",1352.5, 354800, 5.877, 141.048, 156.885, 0, 0.76, moonColor, nullImage, satellites, rings));
 
 	
-	
-	moonMap.emplace("Adrastea", new planet("Adrastea", "Jupiter", 208, 128980, 0.298, 7.152, 0.03, 0, 0.1, moonColor, nullImage, satellites));
-	moonMap.emplace("Amalthea", new planet("Amalthea", "Jupiter", 83.5, 181300, 0.498, 11.952, 0.374, 0, 0.09, moonColor, nullImage, satellites));
-	moonMap.emplace("Callisto", new planet("Callisto", "Jupiter", 2400, 1883000, 16.689, 400.536, 0.205, 0, 0.22, moonColor, nullImage, satellites));
-	moonMap.emplace("Europa", new planet("Europa", "Jupiter", 1563, 670900, 3.551, 85, 0.471, 0.1, 0.67, moonColor, nullImage, satellites));
-	moonMap.emplace("Ganymede", new planet("Ganymede", "Jupiter", 2638, 1070000, 7.155, 171.72, 0.204, 0.33, 0.43, moonColor, nullImage, satellites));
-	moonMap.emplace("Io", new planet("Io", "Jupiter", 1814.5, 421600, 1.769, 42.456, 0.05, 0, 0.63, moonColor, nullImage, satellites));
-	moonMap.emplace("Metis", new planet("Metis", "Jupiter", 20, 127960, 0.295, 7.08, 0.06, 0, 0.061, moonColor, nullImage, satellites));
-	moonMap.emplace("Thebe", new planet("Thebe", "Jupiter", 50, 221900, 0.675, 16.2, 1.076, 0, 0.047, moonColor, nullImage, satellites));
-	
-	moonMap.emplace("Dione", new planet("Dione", "Saturn",561.4, 377400, 2.737, 65.68596, 0.019, 0, 0.998, moonColor, nullImage, satellites));
-	moonMap.emplace("Enceladus", new planet("Enceladus", "Saturn",249, 238020, 1.37, 32.885232, 0.019, 0, 0.99, moonColor, nullImage, satellites));
-	moonMap.emplace("Iapetus", new planet("Iapetus", "Saturn",718, 3561300, 79.3215, 1903.716, 15.47, 0, 0.225, moonColor, nullImage, satellites));
-	moonMap.emplace("Mimas", new planet("Mimas", "Saturn",199, 185520, 0.942, 22.608, 1.574, 0, 0.962,moonColor, nullImage, satellites));
-	moonMap.emplace("Rhea", new planet("Rhea", "Saturn",764, 527040, 4.518, 108.437088, 0.345, 0, 0.949, moonColor, nullImage, satellites));
-	moonMap.emplace("Tethys", new planet("Tethys", "Saturn",530, 294660, 1.888, 45.307248, 1.12, 0, 0.8, moonColor, nullImage, satellites));
-	moonMap.emplace("Titan", new planet("Titan", "Saturn",2575, 1221850, 15.945, 382.68, 0.34854, 0, 0.22, moonColor, nullImage, satellites));
+	// ringMap.emplace("");
+	// textureRings.emplace("Saturn");
+	// textureRings.emplace("Jupiter");
+	// textureRings.emplace("Saturn");
+	// textureRings.emplace("Saturn");
 
 
-	moonMap.emplace("Ariel", new planet("Ariel", "Uranus",580, 191240, 2.52, 60.48, 0.260, 0, 0.23, moonColor, nullImage, satellites));
-	moonMap.emplace("Miranda", new planet("Miranda", "Uranus",236, 129780, 1.414, 33.936, 4.232, 0, 0.32, moonColor, nullImage, satellites));
-	moonMap.emplace("Oberon", new planet("Oberon", "Uranus",763, 582600, 13.463, 323.112, 0.058, 0, 0.14, moonColor, nullImage, satellites));
-	moonMap.emplace("Titania", new planet("Titania", "Uranus",789, 435840, 8.706, 208.944, 0.340 , 0, 0.17, moonColor, nullImage, satellites));
-	moonMap.emplace("Umbriel", new planet("Umbriel", "Uranus",595, 265970, 4.144, 99.456, 0.128, 0, 0.10, moonColor, nullImage, satellites));
-	
-
-	moonMap.emplace("Triton", new planet("Triton", "Neptune",1352.5, 354800, 5.877, 141.048, 156.885, 0, 0.76, moonColor, nullImage, satellites));
 }
 
 // Main routine
@@ -302,7 +307,7 @@ int main( int argc, char** argv )
 
 	// Initialize OpenGL.
 	OpenGLInit();
-
+	initMenus();
 	// Set up the callback function for resizing windows
 	glutReshapeFunc( ResizeWindow );
 

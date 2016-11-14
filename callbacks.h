@@ -11,111 +11,6 @@ extern map<string,planet*> planetMap;
 extern map<string,planet*> moonMap;
 string relative = "Sun";
 
-void processSpeedSelectSubmenuOption(int option) {
-	switch (option) {
-	case 0: // Minimum speed
-		hourSpeed = 0.1;
-	break;
-
-	case 1: // 1 Hour/Step
-		hourSpeed = 1;
-	break;
-
-	case 2: // 12 Hour/Step
-		hourSpeed = 12;
-	break;
-
-	case 3: // 1 Day/Step
-		hourSpeed = 24;
-	break;
-
-	case 4: // 2 Day/Step
-		hourSpeed = 48;
-	break;
-	}
-
-	glutPostRedisplay();
-}
-
-void processPlanetSelectSubmenuOption(int option) {
-	switch (option) {
-	// Planets in order
-	// "Marys Virgin Explanation Made Joseph 
-	// Suspect Upstairs Neighbour"
-	// 
-	// Source: xkcd.com/992
-	case 0:
-		relative = "Sun";
-	break;
-
-	case 1:
-		relative = "Mercury";
-	break;
-
-	case 2:
-		relative = "Venus";
-	break;
-
-	case 3:
-		relative = "Earth";
-	break;
-
-	case 4:
-		relative = "Mars";
-	break;
-
-	case 5:
-		relative = "Jupiter";
-	break;
-
-	case 6:
-		relative = "Saturn";
-	break;
-
-	case 7:
-		relative = "Uranus";
-	break;
-
-	case 8:
-		relative = "Neptune";
-	break;
-	}
-
-	glutPostRedisplay();
-}
-
-void processMenuOption(int option) {
-	switch (option) {
-	case 0: // Toggle lighting
-		lightFlag = !lightFlag;
-		(lightFlag) ? glEnable(GL_LIGHTING) : glDisable(GL_LIGHTING);
-	break;
-
-	case 1: // Toggle planatary labels
-		bodyLabelFlag = !bodyLabelFlag;
-	break;
-
-	case 2: // Toggle moon labels
-		moonLabelFlag = !moonLabelFlag;
-	break;
-
-	case 3: // Reset position
-		xRotate = 0.0;
-		yRotate = 0.0;
-		xTranslate = 0.0;
-		zTranslate = -200.0;
-	break;
-
-	case 4: // Info Screen
-	break;
-
-	case 5: // Exit
-		exit(0);
-	break;
-	}
-
-	glutPostRedisplay();
-}
 
 // displayCallback() handles the animation and the redrawing of the graphics window contents.
 void displayCallback( void )
@@ -174,7 +69,7 @@ void displayCallback( void )
 
 }
 
-void mouseCallback(int x, int y){
+void passiveMouseCallback(int x, int y){
 	// get  current mouse position on screen
 	float deltaX = x - ( width / 2.0 );
 	float deltaY = height - y - ( height / 2.0 );
@@ -198,7 +93,7 @@ void mouseCallback (int button, int state, int x, int y){
 			mouseX = x - ( width / 2.0 );
 			mouseY = height - y - ( height / 2.0 );
 			// Register mouse callback
-			glutMotionFunc(mouseCallback);
+			glutMotionFunc(passiveMouseCallback);
 		} else {
 			// Unregister mouse callback
 			glutMotionFunc(NULL);
@@ -259,10 +154,7 @@ void keyboardCallback(unsigned char key, int x, int y){
 		// Reset scene to original position
 		case 'R':
 		case 'r':
-			xRotate = 0.0;
-			yRotate = 0.0;
-			xTranslate = 0.0;
-			zTranslate = -200.0;
+			resetView();
 		break;
 
 		//Toggle lighting

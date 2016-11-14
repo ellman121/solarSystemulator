@@ -52,7 +52,7 @@ void drawSun(planet* sun, bool sat){
 
 	// Set material properties
 	if (lightFlag){
-	    setMaterials(color, sun->getAlbedo(), true);
+	    setMaterials(sphere, color, sun->getAlbedo(), true);
 	}
 
 	glPushMatrix();
@@ -73,26 +73,10 @@ void drawSun(planet* sun, bool sat){
 	glPopMatrix();
 }
 void drawRings (string name){
-	/*
-		inner radius will be radius of planet + distance from surface (min)
-		Outer radius will be radius of planet + distance from surface (max)
-		height will be zero
-		6,630 km to 120,700 km 
-
-		outter ring
-		12 million km 27degree retrograde orbit
-
-	*/
-
-	// Get body color and parent name
-
-	// planet *rings = moonMap.at(name);
+	
 	float color[3] = {1, 1, 1};
-	// body->getColor(color);
 
 	// get distance between body surface and start of rings	
-	// float iRadius = planetMap.at(name)->getRadius() + rings->getDistance();
-	// float oRadius = body->getRadius();
 	float iRadius = planetMap.at("Saturn")->getRadius() + (6630/1000);
 	float oRadius = planetMap.at("Saturn")->getRadius() + (80000/1000);
 
@@ -100,83 +84,19 @@ void drawRings (string name){
 
 	// Set material properties
 	if (lightFlag){
-	    setMaterials(color, 1, false);
-	    	    // Set material property values
-	    // GLfloat ambient[] = { (float)(color[0] * 0.6), (float)(color[1] * 0.6), (float)(color[2] * 0.6), 1.0 };
-	    // GLfloat diffuse[] = { (float)(color[0]), (float)(color[1]), (float)(color[2]), 1.0 };
-	    // GLfloat specular[] = { (float)(color[0]), (float)(color[1]), (float)(color[2]), 1.0 };
-	    // GLfloat shininess = { float(100 * 1) };
-	    // GLfloat emission[4];
-	    // Set material properties
-	    // glMaterialfv( GL_FRONT, GL_AMBIENT, ambient );
-	    // glMaterialfv( GL_FRONT, GL_DIFFUSE, diffuse );
-	    // glMaterialfv( GL_FRONT, GL_SPECULAR, specular );
-	    // glMaterialf( GL_FRONT, GL_SHININESS, shininess );
-        // Set emissivity, if emiss flag is true, emissivity to body colors, else set to zeros
-        // if (emiss) {
-        //     GLfloat emission[] = { (float)(color[0]), (float)(color[1]), (float)(color[2]), 1.0 }; 
-        //     glMaterialfv( GL_FRONT_AND_BACK, GL_EMISSION, emission );
-        // } else {
-            // GLfloat emission[] = { 0.0, 0.0, 0.0, 1.0};
-            // glMaterialfv( GL_FRONT_AND_BACK, GL_EMISSION, emission );
-        // }
+	    setMaterials(ring, color, 1, false);
 
 	}
 
-	// make sure system is not being viewed relative to current body
-	// roate about the z axis for orbital incline
-	// if (name != relative){
-	// 	glRotatef( body->getIncline(), 0.0, 0.0, 1.0 );
-	// }
-
-
-	// rotate around y axis to get orbital position
-	// glRotatef( body->getOrbit(), 0.0, 1.0, 0.0 );
-	// translate distance in x plane  to place body
-	// glTranslatef( distance, 0.0, 0.0 );
-
 	glPushMatrix();
-
-	// Rotate about y axis for body rotation
-	// glRotatef( body->getRotation(), 0.0, 1.0, 0.0 );
-
-	// rotate about x axis for body axial tilt
-	// glRotatef( body->getTilt()+90, 1.0, 0.0, 0.0 );
-  	int a;
 	glColor3fv(color);
 	// Draw body
 	glDisable(GL_CULL_FACE);
 	gluCylinder( ring, iRadius, oRadius, 0, 100, 100);
 	glEnable(GL_CULL_FACE);
-	// glBegin(GL_QUAD_STRIP);
-	// 	for( a = 0; a < (2*3.1495); a += (2*3.1459/100)){
-	// 	  glVertex3f(iRadius*cos(a), iRadius*sin(a), 0);
-	// 	  glVertex3f(oRadius*cos(a), oRadius*sin(a), 0);
-	// 	}
-	// glEnd();
-
-	// (solidFlag) ? gluSphere( sphere, radius, (int) (radius*10), (int) (radius*10) ) : glutWireSphere( radius, 10, 10 );
-
-	// reverse axial tilt before drawing label
-	// glRotatef( -1 * (body->getTilt()+90), 1.0, 0.0, 0.0 );
- //    if ((!sat && bodyLabelFlag) || (sat && moonLabelFlag)){
-	// 	drawBodyName(name, radius);
- //    }
-
     
     glPopMatrix();
     
-
-    // Draw satellite for body
-	// vector<string> satellites = body->getSatellites();
-	// for (int s = 0; s < satellites.size(); s++){	
-	// 	drawBody(moonMap.at(satellites.at(s)), true);
-	// }
-	
-	// Move back to starting position
-	// glTranslatef( -1 * distance, 0.0, 0.0 );
-	// glRotatef( -1 * body->getOrbit(), 0.0, 1.0, 0.0 );
-	// glRotatef( -1 * body->getIncline(), 0.0, 0.0, 1.0 );
 }
 
 void drawBody(planet* body, bool sat){
@@ -190,10 +110,20 @@ void drawBody(planet* body, bool sat){
 	GLUquadricObj* sphere = gluNewQuadric();
 	// get distance between body surface and parent surface
 	float distance = planetMap.at(parent)->getRadius()+ radius +body->getDistance();
-
 	// Set material properties
 	if (lightFlag){
-	    setMaterials(color, body->getAlbedo(), false);
+	    setMaterials(sphere, color, body->getAlbedo(), false);
+	}
+
+	if (texFlag && !sat){
+		Image_s texImg = body->getImage();
+		glEnable(GL_TEXTURE_2D);
+		gluBuild2DMipmaps(GL_TEXTURE_2D, GL_RGB, texImg.nRows, texImg.nCols, GL_RGB, GL_UNSIGNED_BYTE, texImg.img);
+        glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT );     // or GL_CLAMP
+        glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT );
+        glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
+        glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
+        glTexEnvi( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE );
 	}
 
 	// make sure system is not being viewed relative to current body
@@ -239,10 +169,12 @@ void drawBody(planet* body, bool sat){
 		drawBody(moonMap.at(satellites.at(s)), true);
 	}
 	
+	glDisable(GL_TEXTURE_2D);
 	// Move back to starting position
 	glTranslatef( -1 * distance, 0.0, 0.0 );
 	glRotatef( -1 * body->getOrbit(), 0.0, 1.0, 0.0 );
 	glRotatef( -1 * body->getIncline(), 0.0, 0.0, 1.0 );
+
 }
 
 void drawBodies(){

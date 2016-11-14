@@ -16,7 +16,7 @@ GL_LIBS = -lglut -lGLU -lGL -lm
 
 #-----------------------------------------------------------------------
 
-default: orbit.cpp planet.o imageReader.o globals.h
+default: orbit.cpp planet.o imageReader.o rings.o globals.h
 	g++ -o solar orbit.cpp planet.o imageReader.o -lglut -lGLU -lGL -lm -std=c++11
 
 osx: orbit.cpp planet.o imageReader.o globals.h
@@ -24,6 +24,9 @@ osx: orbit.cpp planet.o imageReader.o globals.h
 
 planet.o: planet.cpp planet.h
 	g++ -o planet.o planet.cpp -c -std=c++11
+
+rings.o: rings.cpp rings.h
+	g++ -o rings.o rings.cpp -c -std=c++11
 
 imageReader.o: imageReader.cpp imageReader.h
 	g++ -o imageReader.o imageReader.cpp -c -std=c++11
