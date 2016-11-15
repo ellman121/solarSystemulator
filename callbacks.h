@@ -53,7 +53,11 @@ void displayCallback( void )
 			glRotatef( -1 * planetMap.at(relative)->getOrbit(), 0.0, 1.0, 0.0 );
 		}
 
-		drawBodies();
+		// Draw each planet
+		for (auto& p: planetMap){
+			(p.second->getName() != "Sun") ? drawBody(p.second, false) : drawSun(p.second, false);
+		}
+		
 		drawLighSource();
 		drawStatus();
 		

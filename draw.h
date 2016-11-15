@@ -1,5 +1,6 @@
 extern bool lightFlag, solidFlag, bodyLabelFlag, moonLabelFlag, velocityFlag, pauseFlag;
 extern map<string,planet*> planetMap, moonMap;
+extern map<string, ring*> ringMap;
 extern float zTranslate, hourSpeed, xVelocity, yVelocity, zVelocity, xTranslate, yTranslate;
 extern int height, width;
 extern string relative;
@@ -54,9 +55,11 @@ void drawSun(planet* sun, bool sat){
 	if (lightFlag){
 	    setMaterials(sphere, color, sun->getAlbedo(), true);
 	}
-
+	if (texFlag){
+		setTexture(sun);
+	}
 	glPushMatrix();
-
+	
 	// rotate about x axis to adjust latitude and longinal lines in wireframe
 	glRotatef( 90, 1.0, 0.0, 0.0 );
 
@@ -72,13 +75,14 @@ void drawSun(planet* sun, bool sat){
 
 	glPopMatrix();
 }
-void drawRings (string name){
+void drawRings (ring* body){
 	
-	float color[3] = {1, 1, 1};
+	float color[3];
+	body->getColor(color);
 
 	// get distance between body surface and start of rings	
-	float iRadius = planetMap.at("Saturn")->getRadius() + (6630/1000);
-	float oRadius = planetMap.at("Saturn")->getRadius() + (80000/1000);
+	float iRadius = body->getInnerRadius();
+	float oRadius = body->getOuterRadius();
 
 	GLUquadricObj* ring = gluNewQuadric();
 
@@ -88,11 +92,16 @@ void drawRings (string name){
 
 	}
 
+	if (texFlag){
+		setTexture(body);
+	}
 	glPushMatrix();
 	glColor3fv(color);
+	// glRotatef(-90, 0, 1, 0);
 	// Draw body
 	glDisable(GL_CULL_FACE);
-	gluCylinder( ring, iRadius, oRadius, 0, 100, 100);
+	// gluDisk( ring, iRadius, oRadius, 100, 100);
+	gluCylinder( ring, iRadius, oRadius, 0, 100, 1);
 	glEnable(GL_CULL_FACE);
     
     glPopMatrix();
@@ -115,23 +124,11 @@ void drawBody(planet* body, bool sat){
 	    setMaterials(sphere, color, body->getAlbedo(), false);
 	}
 
-	if (texFlag && !sat){
-		Image_s texImg = body->getImage();
-		glEnable(GL_TEXTURE_2D);
-		gluBuild2DMipmaps(GL_TEXTURE_2D, GL_RGB, texImg.nRows, texImg.nCols, GL_RGB, GL_UNSIGNED_BYTE, texImg.img);
-        glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT );     // or GL_CLAMP
-        glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT );
-        glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
-        glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
-        glTexEnvi( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE );
-	}
-
 	// make sure system is not being viewed relative to current body
 	// roate about the z axis for orbital incline
 	if (name != relative){
 		glRotatef( body->getIncline(), 0.0, 0.0, 1.0 );
 	}
-
 
 	// rotate around y axis to get orbital position
 	glRotatef( body->getOrbit(), 0.0, 1.0, 0.0 );
@@ -143,45 +140,44 @@ void drawBody(planet* body, bool sat){
 	// Rotate about y axis for body rotation
 	glRotatef( body->getRotation(), 0.0, 1.0, 0.0 );
 
-	// rotate about x axis for body axial tilt
-	glRotatef( body->getTilt()+90, 1.0, 0.0, 0.0 );
+	if (texFlag){
+		setTexture(body);
+	}
   
 	glColor3fv(color);
+	// rotate about x axis for body axial tilt
+	glRotatef( body->getTilt()+270, 1.0, 0.0, 0.0 );
+
 	// Draw body
 	(solidFlag) ? gluSphere( sphere, radius, (int) (radius*10), (int) (radius*10) ) : glutWireSphere( radius, 10, 10 );
-	if (name == "Saturn") {
-		drawRings("Saturn");
+	
+	// Draw any rings around the body
+	vector<string> rings = body->getRings();
+	for (int r = 0; r < rings.size(); r++){	
+		drawRings(ringMap.at(rings.at(r)));
 	}
 
+	glDisable(GL_TEXTURE_2D);
+
 	// reverse axial tilt before drawing label
-	glRotatef( -1 * (body->getTilt()+90), 1.0, 0.0, 0.0 );
+	glRotatef( -1 * (body->getTilt()+270), 1.0, 0.0, 0.0 );
     if ((!sat && bodyLabelFlag) || (sat && moonLabelFlag)){
 		drawBodyName(name, radius);
     }
 
-    
     glPopMatrix();
     
-
     // Draw satellite for body
 	vector<string> satellites = body->getSatellites();
 	for (int s = 0; s < satellites.size(); s++){	
 		drawBody(moonMap.at(satellites.at(s)), true);
 	}
 	
-	glDisable(GL_TEXTURE_2D);
 	// Move back to starting position
 	glTranslatef( -1 * distance, 0.0, 0.0 );
 	glRotatef( -1 * body->getOrbit(), 0.0, 1.0, 0.0 );
 	glRotatef( -1 * body->getIncline(), 0.0, 0.0, 1.0 );
 
-}
-
-void drawBodies(){
-	// Draw each planet
-	for (auto& p: planetMap){
-		(p.second->getName() != "Sun") ? drawBody(p.second, false) : drawSun(p.second, false);
-	}
 }
 
 void drawStatus(){

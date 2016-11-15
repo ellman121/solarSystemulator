@@ -17,7 +17,7 @@ GL_LIBS = -lglut -lGLU -lGL -lm
 #-----------------------------------------------------------------------
 
 default: orbit.cpp planet.o imageReader.o rings.o globals.h
-	g++ -o solar orbit.cpp planet.o imageReader.o -lglut -lGLU -lGL -lm -std=c++11
+	g++ -o solar orbit.cpp planet.o imageReader.o rings.o -lglut -lGLU -lGL -lm -std=c++11
 
 osx: orbit.cpp planet.o imageReader.o globals.h
 	g++ -o solar orbit.cpp planet.o imageReader.o -framework OpenGL -framework GLUT -framework Cocoa -Wno-deprecated-declarations -std=c++11

@@ -27,8 +27,14 @@ planet::planet(string name, string parent, float radius, float distance, float d
 	} else {
 		_rotSpeed = 360.0/hoursPerDay;						//rotational degree change per hour		
 	}
+
 	_orbit = 0;											//start at 0 degree orbit position
-	_orbitalSpeed = 360.0/(24.0*daysPerYear);				//orbital degree change per hour
+	if (daysPerYear == 0){
+		_orbitalSpeed = 0;
+	} else {
+		_orbitalSpeed = 360.0/(24.0*daysPerYear);				//orbital degree change per hour
+	}
+	
 	
 	_incline = incline;									// the angle in y at which the body orbits
 	_axialTilt = tilt;									// the angle at which the body rotates
