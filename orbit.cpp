@@ -45,8 +45,12 @@
 *
 */
 
-// C++ STL Libraries*/
+// C Libraries
 #include <cstdlib>
+#include <cmath>
+#include <ctime>
+
+// C++ Libraries
 #include <iostream>
 #include <algorithm>
 #include <string>
@@ -223,6 +227,7 @@ int main( int argc, char** argv )
 	setPlanets();
 	setMoons();
 	setRings();
+	setAstroidBelt();
 	// Set up the callback function for resizing windows
 	glutReshapeFunc( ResizeWindow );
 

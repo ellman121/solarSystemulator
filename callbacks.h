@@ -9,6 +9,7 @@ extern int width, height;
 extern float  hourSpeed, xVelocity, yVelocity, zVelocity, xTranslate, yTranslate, zTranslate, xRotate , yRotate, mouseX, mouseY;
 extern map<string,planet*> planetMap;
 extern map<string,planet*> moonMap;
+extern map<int,planet*> asteroidBelt;
 string relative = "Sun";
 
 
@@ -56,6 +57,12 @@ void displayCallback( void )
 		// Draw each planet
 		for (auto& p: planetMap){
 			(p.second->getName() != "Sun") ? drawBody(p.second, false) : drawSun(p.second, false);
+		}
+
+		// Draw the asteroid belt
+		for (auto& a: asteroidBelt) {
+			// cout << "Drawing asteroid " << a.first << endl;
+			drawBody(a.second, false);
 		}
 		
 		drawLighSource();

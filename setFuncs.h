@@ -16,6 +16,7 @@ float moonColor[3] = {0.4, 0.4, 0.5};
 
 map<string,planet*> planetMap;
 map<string,planet*> moonMap;
+map<int,planet*> asteroidBelt;
 map<string,ring*> ringMap;
 // map<string,planet*> textureRings;
 // map<string,Image_s> texImgs;
@@ -49,8 +50,8 @@ void setTexImage (){
         texImage = {numR, numC, image};
         ringMap.at("Saturn")->setImage(texImage);
     }
-
 }
+
 void setNextFrame(){
     // Move bodies if not paused
     if (!pauseFlag){
@@ -68,6 +69,7 @@ void setNextFrame(){
         zTranslate += zVelocity;
     }
 }
+
 void setPlanets(){
     Image_s nullImage = {0, 0, NULL};
     vector<string> satellites = {};
@@ -95,7 +97,8 @@ void setPlanets(){
 
     satellites = {"Triton"};
     planetMap.emplace("Neptune", new planet ("Neptune", "Sun", 24750, 4492000000, 60195, 15.8, 6.43, 28.32, 0.290, neptuneColor, nullImage, satellites, rings));
-};
+}
+
 void setMoons(){
     Image_s nullImage = {0, 0, NULL};
     vector<string> satellites = {};
@@ -130,15 +133,47 @@ void setMoons(){
     moonMap.emplace("Umbriel", new planet("Umbriel", "Uranus",595, 265970, 4.144, 99.456, 0.128, 0, 0.10, moonColor, nullImage, satellites, rings));
 
     moonMap.emplace("Triton", new planet("Triton", "Neptune",1352.5, 354800, 5.877, 141.048, 156.885, 0, 0.76, moonColor, nullImage, satellites, rings));
+}
 
-};
+void setAstroidBelt() {
+    // We're going to generate around 200 asteroids becasue those are the larger (i.e. over 100km radius)
+    // ones and there is no consensus on exactly how many there are
+    srand(0);
+    int numAsteroids = 190 + (rand() % 20);
+    float days = 0;
+    Image_s nullImage = {0, 0, NULL};
+    vector<string> satellites = {};
+    vector<string> rings = {};
+    float incline = 0;
+    float tilt = 0;
+    float albedo = 0;
+
+    for (int i = 0; i < numAsteroids; ++i)
+    {
+        // Random radius near 100km
+        float radius = 90 + (rand() % 20);
+
+        // Random distance near 1/2 way between jupiter and mars
+        float dist = 228000000;
+        // cout << dist << endl;
+
+        // Random number of days to orbit
+        days += (rand() % 300);
+
+        // Random number of hours per rotation
+        float hours = (rand() % 25);
+
+        // No names, they all orbit the sun, colours & images are the same as Earth's moon, no satellites and no rings
+        asteroidBelt.emplace(i, new planet("", "Sun", radius, dist, days, hours, incline, tilt, albedo, moonColor, nullImage, satellites, rings));
+    }
+}
+
 void setRings(){
     Image_s nullImage = {0, 0, NULL};
 
     float ringColor[] = {1, 1, 1};
     ringMap.emplace("Saturn", new ring ("SaturnRings", "Saturn", 67270, 140270, 0, 10.2, 0.342, ringColor, nullImage));
-};
-
+}
 
 /**Set Functions For View Controls**/
 void setDrawMode(Mode mode){
