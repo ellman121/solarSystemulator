@@ -59,14 +59,14 @@ void drawSun(planet* sun, bool sat){
 		setTexture(sun);
 	}
 	glPushMatrix();
-	
+
 	// rotate about x axis to adjust latitude and longinal lines in wireframe
 	glRotatef( 90, 1.0, 0.0, 0.0 );
 
 	// Draw body
     glColor3fv(color);
 	(solidFlag) ? gluSphere( sphere, radius, (int) (radius*10), (int) (radius*10) ) : glutWireSphere( radius, 10, 10 );
-    
+
 	// reverse axial tilt before drawing label
 	glRotatef( -90, 1.0, 0.0, 0.0 );
  	if (bodyLabelFlag){
@@ -76,11 +76,11 @@ void drawSun(planet* sun, bool sat){
 	glPopMatrix();
 }
 void drawRings (ring* body){
-	
+
 	float color[3];
 	body->getColor(color);
 
-	// get distance between body surface and start of rings	
+	// get distance between body surface and start of rings
 	float iRadius = body->getInnerRadius();
 	float oRadius = body->getOuterRadius();
 
@@ -89,23 +89,26 @@ void drawRings (ring* body){
 	// Set material properties
 	if (lightFlag){
 	    setMaterials(ring, color, 1, false);
-
 	}
 
-	if (texFlag){
-		setTexture(body);
-	}
-	glPushMatrix();
-	glColor3fv(color);
-	// glRotatef(-90, 0, 1, 0);
-	// Draw body
-	glDisable(GL_CULL_FACE);
-	// gluDisk( ring, iRadius, oRadius, 100, 100);
+	Image_s texImg = body->getImage();
+    gluBuild2DMipmaps(GL_TEXTURE_2D, GL_RGB, texImg.nCols, texImg.nRows, GL_RGB, GL_UNSIGNED_BYTE, texImg.img);
+    glDisable(GL_CULL_FACE);
+    // glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );     // or GL_CLAMP
+    // glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE );     // or GL_CLAMP
+    // glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
+    // glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
+    // glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
+    // glTexEnvi( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE );
+    // glEnable(GL_TEXTURE_2D);
+
+	// Draw a texture mapped top ring
+	gluQuadricNormals(ring, GLU_SMOOTH);
+	gluQuadricTexture(ring, GL_TRUE);
+
 	gluCylinder( ring, iRadius, oRadius, 0, 100, 1);
-	glEnable(GL_CULL_FACE);
-    
-    glPopMatrix();
-    
+
+	gluDeleteQuadric(ring);
 }
 
 void drawBody(planet* body, bool sat){
@@ -143,17 +146,17 @@ void drawBody(planet* body, bool sat){
 	if (texFlag){
 		setTexture(body);
 	}
-  
+
 	glColor3fv(color);
 	// rotate about x axis for body axial tilt
 	glRotatef( body->getTilt()+270, 1.0, 0.0, 0.0 );
 
 	// Draw body
 	(solidFlag) ? gluSphere( sphere, radius, (int) (radius*10), (int) (radius*10) ) : glutWireSphere( radius, 10, 10 );
-	
+
 	// Draw any rings around the body
 	vector<string> rings = body->getRings();
-	for (int r = 0; r < rings.size(); r++){	
+	for (int r = 0; r < rings.size(); r++){
 		drawRings(ringMap.at(rings.at(r)));
 	}
 
@@ -166,13 +169,13 @@ void drawBody(planet* body, bool sat){
     }
 
     glPopMatrix();
-    
+
     // Draw satellite for body
 	vector<string> satellites = body->getSatellites();
-	for (int s = 0; s < satellites.size(); s++){	
+	for (int s = 0; s < satellites.size(); s++){
 		drawBody(moonMap.at(satellites.at(s)), true);
 	}
-	
+
 	// Move back to starting position
 	glTranslatef( -1 * distance, 0.0, 0.0 );
 	glRotatef( -1 * body->getOrbit(), 0.0, 1.0, 0.0 );
@@ -183,11 +186,11 @@ void drawBody(planet* body, bool sat){
 void drawStatus(){
 
 	//Set ortho view
-	glMatrixMode (GL_PROJECTION); 
-	glLoadIdentity(); 
+	glMatrixMode (GL_PROJECTION);
+	glLoadIdentity();
 	// change to ortho view for 2D drawing
 	glOrtho(-1, 1, -1, 1, 0.0, 1);
-	glMatrixMode(GL_MODELVIEW); 
+	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 
 	// create variables
@@ -204,7 +207,7 @@ void drawStatus(){
 
   	glRasterPos3f(-0.97, 0.9, 0);
 	glutBitmapString(GLUT_BITMAP_HELVETICA_10, (const unsigned char*)speed);
-	
+
   	glRasterPos3f(-0.95, 0.85, 0);
 	glutBitmapString(GLUT_BITMAP_HELVETICA_10, (const unsigned char*)"Velocity");
 
@@ -217,7 +220,7 @@ void drawStatus(){
 		sprintf(xV, "X:  %d", (int)(-1 * xVelocity));
 		sprintf(yV, "Y:  %d", (int)(-1 * yVelocity));
 		sprintf(zV, "Z:  %d", (int)(zVelocity));
-	
+
 		// draw strings
 	  	glRasterPos3f(-0.95, 0.8, 0);
 		glutBitmapString(GLUT_BITMAP_HELVETICA_10, (const unsigned char*)xV);
@@ -231,6 +234,6 @@ void drawStatus(){
 	} else {
 		// Let user know that velocity is off
 	  	glRasterPos3f(-0.95, 0.8, 0);
-		glutBitmapString(GLUT_BITMAP_HELVETICA_10, (const unsigned char*)"OFF");	
+		glutBitmapString(GLUT_BITMAP_HELVETICA_10, (const unsigned char*)"OFF");
 	}
 }
