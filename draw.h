@@ -60,6 +60,9 @@ void drawSun(planet* sun, bool sat){
 	}
 	glPushMatrix();
 
+	// Rotate about y axis for body rotation
+	glRotatef( sun->getRotation(), 0.0, 1.0, 0.0 );
+
 	// rotate about x axis to adjust latitude and longinal lines in wireframe
 	glRotatef( 90, 1.0, 0.0, 0.0 );
 
@@ -72,6 +75,9 @@ void drawSun(planet* sun, bool sat){
  	if (bodyLabelFlag){
 	    drawBodyName("Sun", radius);
  	}
+
+ 	// Reverse body rotation
+ 	glRotatef( -1 * sun->getOrbit(), 0.0, 1.0, 0.0 );
 
 	glPopMatrix();
 }

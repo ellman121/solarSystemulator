@@ -45,7 +45,7 @@ private:
 	vector<string> _rings;
 
 	float _radius;			// Radius of the planet
-	float _rotation;		// How many degrees the planet spins/hour
+	float _rotation;		// How many degrees the planet has spun around
 	float _rotSpeed;		// How many degrees the planet rotates around its axis/hour
 
 	float _distance;		// Distance from the parent
