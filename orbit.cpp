@@ -68,8 +68,11 @@
 #include "planet.h"
 #include "rings.h"
 #include "imageReader.h"
+#include "initSystem.h"
 #include "setFuncs.h"
-#include "draw.h"
+#include "menu.h"
+#include "drawInfo.h"
+#include "drawObjects.h"
 #include "callbacks.h"
 
 using namespace std;
@@ -78,24 +81,23 @@ using namespace std;
 void OpenGLInit( void );
 void ResizeWindow( int w, int h );
 void initLighting();
-void InitSolarSystem();
 void initMenus();
 
 // Global things
-bool infoFlag = false;
+bool infoFlag = true;
 bool pauseFlag = false;
-bool solidFlag = false;
 bool lightFlag = true;
+bool solidFlag = false;
+bool smoothFlag = false;
+bool texFlag = false;
 bool bodyLabelFlag = true;
 bool moonLabelFlag = false;
 bool velocityFlag = false;
-bool texFlag = false;
-bool smoothFlag = false;
-float hourSpeed = 0.1;
+
 int width = 1200;
 int height = 720;
 
-
+float hourSpeed = 0.1;
 float xTranslate = 0.0;
 float yTranslate = 0.0;
 float zTranslate = -200;
@@ -145,10 +147,10 @@ void initMenus() {
 }
 
 void initLighting() {
-    // specify material reflectivity
-    GLfloat mat_ambient[] = { 1.0, 1.0, 1.0, 0.10 };
-    GLfloat mat_diffuse[] = { 1.0, 1.0, 1.0, 1.0 };
-    GLfloat mat_specular[] = { 1.0, 1.0, 1.0, 1.0 };
+	// Specify material properties for info screen
+    GLfloat mat_ambient[] = { 0.6, 0.6, 1.0, 0.10 };
+    GLfloat mat_diffuse[] = { 0.6, 0.6, 1.0, 1.0 };
+    GLfloat mat_specular[] = { 0.6, 0.6, 1.0, 1.0 };
     GLfloat mat_shininess = { 100.0 };
     
     glMaterialfv( GL_FRONT_AND_BACK, GL_AMBIENT, mat_ambient );
@@ -156,28 +158,28 @@ void initLighting() {
     glMaterialfv( GL_FRONT_AND_BACK, GL_SPECULAR, mat_specular );
     glMaterialf( GL_FRONT_AND_BACK, GL_SHININESS, mat_shininess );
     
-    // specify light source properties
+    // Specify light properties
     GLfloat light_position[] = { 0.0, 400.0, 0.0, 1.0 };
-    GLfloat light_ambient[] = { 1.0, 1.0, 1.0, 1.0 };       // ambient light
-    GLfloat light_diffuse[] = { 1.0, 1.0, 1.0, 1.0 };       // diffuse light
-    GLfloat light_specular[] = { 1.0, 1.0, 1.0, 1.0 };      // highlights
+    GLfloat light_ambient[] = { 1.0, 1.0, 1.0, 1.0 };
+    GLfloat light_diffuse[] = { 1.0, 1.0, 1.0, 1.0 };
+    GLfloat light_specular[] = { 1.0, 1.0, 1.0, 1.0 };
 
-    glEnable( GL_LIGHT0 );      // enable one light source
+    // Enable a light source
+    glEnable( GL_LIGHT0 );
     glLightfv( GL_LIGHT0, GL_POSITION, light_position );
     glLightfv( GL_LIGHT0, GL_AMBIENT, light_ambient );
     glLightfv( GL_LIGHT0, GL_DIFFUSE, light_diffuse );
     glLightfv( GL_LIGHT0, GL_SPECULAR, light_specular );
 
-    glShadeModel( GL_FLAT );    // start with flat shading (smooth is default)
+    // Set shading model
+    glShadeModel( GL_FLAT );
 
     glEnable( GL_DEPTH_TEST );  // enable depth buffer for hidden-surface elimination
     glEnable( GL_NORMALIZE );   // automatic normalization of normals
-    glEnable( GL_CULL_FACE );   // eliminate backfacing polygons
+    // Hide back of objects
+    glEnable( GL_CULL_FACE );
     glCullFace( GL_BACK );
-    // glLightModeli( GL_LIGHT_MODEL_TWO_SIDE, GL_TRUE );   // render back faces
 
-    glClearColor( 0.0, 0.0, 0.0, 1.0 );     // black background
-    glColor3f ( 0.8, 0.8, 0.0 );            // draw in yellow
 }
 
 
@@ -227,13 +229,19 @@ int main( int argc, char** argv )
 	setPlanets();
 	setMoons();
 	setRings();
-	setAstroidBelt();
+	setTexImage();
+	// setAstroidBelt();
 	// Set up the callback function for resizing windows
 	glutReshapeFunc( ResizeWindow );
 
     // Set up lighting
     initLighting();
     glEnable(GL_LIGHTING);
+
+    // Set initial wireframe draw mode
+    glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
+    glShadeModel( GL_FLAT );
+
 
 	// Callback for graphics image redrawing
 	glutDisplayFunc( displayCallback );
