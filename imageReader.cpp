@@ -11,6 +11,7 @@
 
 using namespace std;
 
+// Function headers
 static short readShort( FILE* infile );
 static int readLong( FILE* infile );
 static void skipChars( FILE* infile, int numChars );
@@ -30,7 +31,7 @@ bool LoadBmpFile( string nameOfPlanet, int &NumRows, int &NumCols, unsigned char
     filename = (char *) malloc( sizeof(char) * filepath.size() + 1);
 
     // Copy the c++ string to a c string so we can use it
-    for(int i = 0; i < filepath.size() + 1; i++)
+    for (int i = 0; i < filepath.size() + 1; i++)
         filename[i] = 0;
     strcpy(filename, filepath.c_str());
 
@@ -45,13 +46,13 @@ bool LoadBmpFile( string nameOfPlanet, int &NumRows, int &NumCols, unsigned char
     int bChar = fgetc( infile );
     int mChar = fgetc( infile );
     if ( bChar == 'B' && mChar == 'M' )
-    {			// If starts with "BM" for "BitMap"
-        skipChars( infile, 4 + 2 + 2 + 4 + 4 );			// Skip 4 fields we don't care about
+    {   // If starts with "BM" for "BitMap"
+        skipChars( infile, 4 + 2 + 2 + 4 + 4 );         // Skip 4 fields we don't care about
         NumCols = readLong( infile );
         NumRows = readLong( infile );
-        skipChars( infile, 2 );					// Skip one field
+        skipChars( infile, 2 );                 // Skip one field
         int bitsPerPixel = readShort( infile );
-        skipChars( infile, 4 + 4 + 4 + 4 + 4 + 4 );		// Skip 6 more fields
+        skipChars( infile, 4 + 4 + 4 + 4 + 4 + 4 );     // Skip 6 more fields
 
         if ( NumCols > 0 && NumCols <= 100000 && NumRows > 0 && NumRows <= 100000
                 && bitsPerPixel == 24 && !feof( infile ) )
@@ -83,15 +84,15 @@ bool LoadBmpFile( string nameOfPlanet, int &NumRows, int &NumCols, unsigned char
         int j;
         for ( j = 0; j < NumCols; j++ )
         {
-            *( cPtr + 2 ) = fgetc( infile );	// Blue color value
-            *( cPtr + 1 ) = fgetc( infile );	// Green color value
-            *cPtr = fgetc( infile );		// Red color value
+            *( cPtr + 2 ) = fgetc( infile );    // Blue color value
+            *( cPtr + 1 ) = fgetc( infile );    // Green color value
+            *cPtr = fgetc( infile );        // Red color value
             cPtr += 3;
         }
-        int k = 3 * NumCols;					// Num bytes already read
+        int k = 3 * NumCols;                    // Num bytes already read
         for ( ; k < GetNumBytesPerRow( NumCols ); k++ )
         {
-            fgetc( infile );				// Read and ignore padding;
+            fgetc( infile );                // Read and ignore padding;
             *( cPtr++ ) = 0;
         }
     }

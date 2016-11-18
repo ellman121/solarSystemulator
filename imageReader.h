@@ -6,7 +6,7 @@
 #ifndef __IMAGE_READER_H__
 #define __IMAGE_READER_H__
 
-// Function defs
+// Function declerations
 bool LoadBmpFile( string nameOfPlanet, int &NumRows, int &NumCols, unsigned char* &ImagePtr );
 
 #endif

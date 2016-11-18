@@ -1,3 +1,12 @@
+/******************************************************************************
+ * File: planet.cpp
+ *
+ * Authors: Elliott Rarden & Katie MacMillan
+ *
+ * Description: This file contains implementation for the ring class
+ *
+ ******************************************************************************/
+
 #include "rings.h"
 #include <cmath>
 #include <iostream>

@@ -1,3 +1,12 @@
+/******************************************************************************
+ * File: planet.cpp
+ *
+ * Authors: Elliott Rarden & Katie MacMillan
+ *
+ * Description: This file contains class declerations for the ring class
+ *
+ ******************************************************************************/
+
 #ifndef __RING_H_
 #define __RING_H_
 

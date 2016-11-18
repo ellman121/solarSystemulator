@@ -1,12 +1,11 @@
 /******************************************************************************
- * File: drawInfo.h
+ * File: callbacks.h
  *
  * Authors: Elliott Rarden & Katie MacMillan
  *
  * Description: 
  * 		This file is a collection of OpenGL and GLUT callbacks
  ******************************************************************************/
-
 
 // Defined constants
 #define GLUT_WHEEL_UP 3
@@ -19,10 +18,8 @@ string relative = "Sun";			// Initial relative body is the sun
 
 
 /* displayCallback()
- *
- * Parameters:
- *
- * Returns: 
+ * 
+ * OpenGL Callback for displaying
  */
 void displayCallback( void ){
 	float aspectRatio = ( float ) width / ( float ) height;
@@ -116,6 +113,8 @@ void passiveMouseCallback(int x, int y){
 
 /* mouseCallback()
  *
+ * GLUT Callback to handle mouse clicks
+ *
  * Parameters:
  *		int button - The button that was pressed
  *		int state  - The state of the button
@@ -159,10 +158,12 @@ void mouseCallback (int button, int state, int x, int y){
 
 /* keyboardCallback()
  *
+ * GLUT callback to handle keyboard input
+ *
  * Parameters:
  * 		uchar key - The key that was pressed
- *		int x 	  - The x location of the mouse
- * 		int y     - The y locatino of the mouse
+ *		int x 	  - The x location of the mouse when the key was pressed
+ * 		int y     - The y locatino of the mouse when the key was pressed
  * Returns: 
  */
 void keyboardCallback(unsigned char key, int x, int y){
@@ -261,7 +262,6 @@ void keyboardCallback(unsigned char key, int x, int y){
 	        break;
 
 		}
-
 	}
 	switch(key){
 		// Pause animation
@@ -298,6 +298,8 @@ void keyboardCallback(unsigned char key, int x, int y){
 }
 
 /* specialKeyCallback()
+ *
+ * GLUT callback to handle special keyboard input (e.g. arrow keys) 
  *
  * Parameters:
  *		int key - The key that was pressed

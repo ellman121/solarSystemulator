@@ -1,3 +1,12 @@
+/******************************************************************************
+ * File: planet.cpp
+ *
+ * Authors: Elliott Rarden & Katie MacMillan
+ *
+ * Description: This file contains class declerations for the planet class
+ *
+ ******************************************************************************/
+
 #ifndef __PLANET_H_
 #define __PLANET_H_
 

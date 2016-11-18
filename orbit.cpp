@@ -2,14 +2,14 @@
 * orbit.cpp
 *
 * Program to simulate the solar system and allow eht user to fly around, viewing
-* individual planets.  
+* individual planets.
 *
 * Authors: Elliott Rarden && Katie MacMillan
 *
-* This code is based on the code provided by Dr. Weiss at 
+* This code is based on the code provided by Dr. Weiss at
 * www.mds.sdsmt.edu/csc344/Assignments/PA3
 *
-* Compile and run using 
+* Compile and run using
 *
 *   $ make
 *   $ ./solar
@@ -20,19 +20,19 @@
 *   $ ./solar
 *
 * Notes:
-*	  	If program is closed from comandline there will be a mem leak from 
+*	  	If program is closed from comandline there will be a mem leak from
 *		dynamically allocated bmp images
 *
-*	Moons - 
+*	Moons -
 *		If a value could not be found to define a moon's day length, the default
 *		was set to that of Luna, the Earth's moon.
 *
 *		For Jupiters moons, we used only the Inner and Gallilean moons, as many
-* 		of the other moons had very small diameters < 10 km and were fairly 
+* 		of the other moons had very small diameters < 10 km and were fairly
 *		inconcequential.
 *
-*		Saturn has a total of 62 satellite bodies, however, 7 of them comprise 
-*		99.96% of the mass which orbits Saturn. For this reason we used only the 
+*		Saturn has a total of 62 satellite bodies, however, 7 of them comprise
+*		99.96% of the mass which orbits Saturn. For this reason we used only the
 *		primary 7 moons in this model.
 *
 *		For Uranus we used only the five major moons. These moons are quite dark
@@ -112,12 +112,7 @@ float mouseX, mouseY;
 
 /* initMenus()
  *
- * Initialize the menus for our program
- *
- * Parameters:
- *
- * Returns:
- *
+ * Initialize the right-click menu for our program
  */
 void initMenus() {
 	int primaryMenu;
@@ -162,56 +157,46 @@ void initMenus() {
 /* initLighting()
  *
  * Initialize OpenGL's lighting features for our solar system
- *
- * Parameters:
- *
- * Returns:
- *
  */
 void initLighting() {
 	// Specify material properties for info screen
-    GLfloat mat_ambient[] = { 0.6, 0.6, 1.0, 0.10 };
-    GLfloat mat_diffuse[] = { 0.6, 0.6, 1.0, 1.0 };
-    GLfloat mat_specular[] = { 0.6, 0.6, 1.0, 1.0 };
-    GLfloat mat_shininess = { 100.0 };
-    
-    glMaterialfv( GL_FRONT_AND_BACK, GL_AMBIENT, mat_ambient );
-    glMaterialfv( GL_FRONT_AND_BACK, GL_DIFFUSE, mat_diffuse );
-    glMaterialfv( GL_FRONT_AND_BACK, GL_SPECULAR, mat_specular );
-    glMaterialf( GL_FRONT_AND_BACK, GL_SHININESS, mat_shininess );
-    
-    // Specify light properties
-    GLfloat light_position[] = { 0.0, 400.0, 0.0, 1.0 };
-    GLfloat light_ambient[] = { 1.0, 1.0, 1.0, 1.0 };
-    GLfloat light_diffuse[] = { 1.0, 1.0, 1.0, 1.0 };
-    GLfloat light_specular[] = { 1.0, 1.0, 1.0, 1.0 };
+	GLfloat mat_ambient[] = { 0.6, 0.6, 1.0, 0.10 };
+	GLfloat mat_diffuse[] = { 0.6, 0.6, 1.0, 1.0 };
+	GLfloat mat_specular[] = { 0.6, 0.6, 1.0, 1.0 };
+	GLfloat mat_shininess = { 100.0 };
 
-    // Enable a light source
-    glEnable( GL_LIGHT0 );
-    glLightfv( GL_LIGHT0, GL_POSITION, light_position );
-    glLightfv( GL_LIGHT0, GL_AMBIENT, light_ambient );
-    glLightfv( GL_LIGHT0, GL_DIFFUSE, light_diffuse );
-    glLightfv( GL_LIGHT0, GL_SPECULAR, light_specular );
+	glMaterialfv( GL_FRONT_AND_BACK, GL_AMBIENT, mat_ambient );
+	glMaterialfv( GL_FRONT_AND_BACK, GL_DIFFUSE, mat_diffuse );
+	glMaterialfv( GL_FRONT_AND_BACK, GL_SPECULAR, mat_specular );
+	glMaterialf( GL_FRONT_AND_BACK, GL_SHININESS, mat_shininess );
 
-    // Set shading model
-    glShadeModel( GL_FLAT );
+	// Specify light properties
+	GLfloat light_position[] = { 0.0, 400.0, 0.0, 1.0 };
+	GLfloat light_ambient[] = { 1.0, 1.0, 1.0, 1.0 };
+	GLfloat light_diffuse[] = { 1.0, 1.0, 1.0, 1.0 };
+	GLfloat light_specular[] = { 1.0, 1.0, 1.0, 1.0 };
 
-    glEnable( GL_DEPTH_TEST );  // enable depth buffer for hidden-surface elimination
-    glEnable( GL_NORMALIZE );   // automatic normalization of normals
-    // Hide back of objects
-    glEnable( GL_CULL_FACE );
-    glCullFace( GL_BACK );
+	// Enable a light source
+	glEnable( GL_LIGHT0 );
+	glLightfv( GL_LIGHT0, GL_POSITION, light_position );
+	glLightfv( GL_LIGHT0, GL_AMBIENT, light_ambient );
+	glLightfv( GL_LIGHT0, GL_DIFFUSE, light_diffuse );
+	glLightfv( GL_LIGHT0, GL_SPECULAR, light_specular );
+
+	// Set shading model
+	glShadeModel( GL_FLAT );
+
+	glEnable( GL_DEPTH_TEST );  // enable depth buffer for hidden-surface elimination
+	glEnable( GL_NORMALIZE );   // automatic normalization of normals
+	// Hide back of objects
+	glEnable( GL_CULL_FACE );
+	glCullFace( GL_BACK );
 
 }
 
 /* drawLightSource()
  *
  * Initalize OpenGL
- *
- * Parameters:
- *
- * Returns:
- *
  */
 void OpenGLInit( void )
 {
@@ -229,8 +214,6 @@ void OpenGLInit( void )
  * Parameters:
  *		int w - The new width of the window
  *		int h - The new height of the window
- * Returns:
- *
  */
 void ResizeWindow( int w, int h )
 {
@@ -249,9 +232,6 @@ void ResizeWindow( int w, int h )
 	glMatrixMode( GL_MODELVIEW );
 }
 
-// Main routine
-// Set up OpenGL, hook up callbacks, and start the main loop
-
 /* main()
  *
  * Main will initailze OpenGL, GLUT, the Solar System, and drop into GlutMainLoop();
@@ -259,8 +239,6 @@ void ResizeWindow( int w, int h )
  * Parameters:
  *		int argc 	- Argument count
  *		char** argv - Argument values
- * Returns:
- *
  */
 int main( int argc, char** argv )
 {
@@ -285,13 +263,13 @@ int main( int argc, char** argv )
 	// Set up the callback function for resizing windows
 	glutReshapeFunc( ResizeWindow );
 
-    // Set up lighting
-    initLighting();
-    glEnable(GL_LIGHTING);
+	// Set up lighting
+	initLighting();
+	glEnable(GL_LIGHTING);
 
-    // Set initial wireframe draw mode
-    glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
-    glShadeModel( GL_FLAT );
+	// Set initial wireframe draw mode
+	glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
+	glShadeModel( GL_FLAT );
 
 
 	// Callback for graphics image redrawing

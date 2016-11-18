@@ -10,7 +10,13 @@
 // If we are showing the info screen or not
 extern bool infoFlag, orbitFlag;
 
-// Set the functions for the Speed Selection submenu
+/* setSpeedSelectSubmenuOption()
+ *
+ * This submenu allows the user to set the speed of simulation
+ *
+ * Parameters:
+ *      int option - The option chosen by the user
+ */
 void setSpeedSelectSubmenuOption(int option) {
     switch (option) {
     case 0: // Minimum speed
@@ -37,7 +43,13 @@ void setSpeedSelectSubmenuOption(int option) {
     glutPostRedisplay();
 }
 
-// Set the functions for the Planet Focus Selection submenu
+/* setSpeedSelectSubmenuOption()
+ *
+ * This submenu allows the user to set the planet of focus
+ *
+ * Parameters:
+ *      int option - The option chosen by the user
+ */
 void setPlanetSelectSubmenuOption(int option) {
     switch (option) {
     // Planets in order
@@ -95,7 +107,14 @@ void setPlanetSelectSubmenuOption(int option) {
     glutPostRedisplay();
 }
 
-// Set the options for the main menu
+/* setMenuOption()
+ *
+ * This menu allows the user to perform certain actions with 
+ * the mouse instead of keybaord shortcuts
+ *
+ * Parameters:
+ *      int option - The option chosen by the user
+ */
 void setMenuOption(int option) {
     switch (option) {
     case 0: // Toggle lighting

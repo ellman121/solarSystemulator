@@ -1,3 +1,13 @@
+/******************************************************************************
+ * File: planet.cpp
+ *
+ * Authors: Elliott Rarden & Katie MacMillan
+ *
+ * Description: This file is a collection of functions that will set
+ * and initialize different things throughout the solar system.
+ *
+ ******************************************************************************/
+
 extern bool solidFlag, lightFlag, smoothFlag, texFlag, bodyLabelFlag, moonLabelFlag, pauseFlag, velocityFlag, stepFlag;
 extern float hourSpeed, xVelocity, yVelocity, zVelocity, xTranslate, yTranslate, zTranslate, xRotate, yRotate;
 extern string relative;
@@ -6,7 +16,6 @@ extern GLuint texNames[];
 /* setNextFrame()
  *
  * Simulate the next frame
- *
  */
 void setNextFrame(){
     // Move bodies if not paused
@@ -34,8 +43,6 @@ void setNextFrame(){
  *
  * Parameters:
  *      Mode mode - The new mode we are drawing in
- * Returns:
- *
  */
 void setDrawMode(Mode mode){
     switch (mode) {
@@ -79,11 +86,6 @@ void setDrawMode(Mode mode){
 /* resetView()
  *
  * Reset our view to the original position
- *
- * Parameters:
- *
- * Returns:
- *
  */
 void resetView(){
     if (relative == "Sun"){
@@ -103,18 +105,6 @@ void resetView(){
     }
 }
 
-/* drawLightSource()
- *
- * Sets our velocity.  Not currently implemented or used
- *
- * Parameters:
- *
- * Returns:
- *
- */
-void setVelocity(int x, int y, int z){
-}
-
 /* setMaterials()
  *
  * Set the material properties for a given quadric
@@ -124,8 +114,6 @@ void setVelocity(int x, int y, int z){
  *      float color[]    - Array of colors to set the quadric to
  *      float albedo     - Diffuse light value
  *      float emiss      - The emissivity of the quadric
- * Returns:
- *
  */
 void setMaterials(GLUquadric* quad, float color[], float albedo, bool emiss){
     gluQuadricDrawStyle( quad, GLU_FILL );
@@ -186,9 +174,7 @@ void setMaterials(GLUquadric* quad, float color[], float albedo, bool emiss){
  * Give a planet the texture it desrerves
  *
  * Parameters:
- *      planet* body - The planet to change.
- * Returns:
- *
+ *      int tex - The texture "name" (OpenGL anmes for textures are ints).
  */
 void setTexture(int tex){
     glBindTexture(GL_TEXTURE_2D, tex);
@@ -200,5 +186,3 @@ void setTexture(int tex){
     glTexEnvi( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE );
     glEnable(GL_TEXTURE_2D);
 }
-
-
