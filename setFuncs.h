@@ -8,29 +8,24 @@
  *
  ******************************************************************************/
 
-extern bool solidFlag, lightFlag, smoothFlag, texFlag, bodyLabelFlag, moonLabelFlag, pauseFlag, velocityFlag, stepFlag;
-extern float hourSpeed, xVelocity, yVelocity, zVelocity, xTranslate, yTranslate, zTranslate, xRotate, yRotate;
-extern string relative;
-extern GLuint texNames[];
-
 /* setNextFrame()
  *
  * Simulate the next frame
  */
-void setNextFrame(){
+void setNextFrame() {
     // Move bodies if not paused
-    if (!pauseFlag || stepFlag){
+    if (!pauseFlag || stepFlag) {
         // Move planets ahead by hour speed
-        for (auto& p: planetMap)
+        for (auto& p : planetMap)
             p.second->step(hourSpeed);
         // Move satellites ahead by hour speed
-        for (auto& m: moonMap)
+        for (auto& m : moonMap)
             m.second->step(hourSpeed);
 
         stepFlag = false;
     }
     // increment x,y,z by corresponding velocity values
-    if (velocityFlag){
+    if (velocityFlag) {
         xTranslate += xVelocity;
         yTranslate += yVelocity;
         zTranslate += zVelocity;
@@ -44,41 +39,41 @@ void setNextFrame(){
  * Parameters:
  *      Mode mode - The new mode we are drawing in
  */
-void setDrawMode(Mode mode){
+void setDrawMode(Mode mode) {
     switch (mode) {
-        case wire:
-            solidFlag = false;
-            smoothFlag = false;
-            texFlag = false;
-            glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
-            glDisable(GL_TEXTURE_2D);
+    case wire:
+        solidFlag = false;
+        smoothFlag = false;
+        texFlag = false;
+        glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
+        glDisable(GL_TEXTURE_2D);
         break;
 
-        case flat:
-            solidFlag = true;
-            smoothFlag = false;
-            texFlag = false;
-            glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
-            glShadeModel( GL_FLAT );
-            glDisable(GL_TEXTURE_2D);
+    case flat:
+        solidFlag = true;
+        smoothFlag = false;
+        texFlag = false;
+        glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
+        glShadeModel( GL_FLAT );
+        glDisable(GL_TEXTURE_2D);
         break;
 
-        case smooth:
-            solidFlag = true;
-            smoothFlag = true;
-            texFlag = false;
-            glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
-            glShadeModel( GL_SMOOTH );
-            glDisable(GL_TEXTURE_2D);
+    case smooth:
+        solidFlag = true;
+        smoothFlag = true;
+        texFlag = false;
+        glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
+        glShadeModel( GL_SMOOTH );
+        glDisable(GL_TEXTURE_2D);
         break;
 
-        case image:
-            solidFlag = true;
-            smoothFlag = true;
-            texFlag = true;
-            glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
-            glShadeModel( GL_SMOOTH );
-            glEnable(GL_TEXTURE_2D);
+    case image:
+        solidFlag = true;
+        smoothFlag = true;
+        texFlag = true;
+        glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
+        glShadeModel( GL_SMOOTH );
+        glEnable(GL_TEXTURE_2D);
         break;
     }
 }
@@ -87,8 +82,8 @@ void setDrawMode(Mode mode){
  *
  * Reset our view to the original position
  */
-void resetView(){
-    if (relative == "Sun"){
+void resetView() {
+    if (relative == "Sun") {
         xRotate = 20.0;
         yRotate = 50.0;
         xTranslate = 0.0;
@@ -115,11 +110,11 @@ void resetView(){
  *      float albedo     - Diffuse light value
  *      float emiss      - The emissivity of the quadric
  */
-void setMaterials(GLUquadric* quad, float color[], float albedo, bool emiss){
+void setMaterials(GLUquadric* quad, float color[], float albedo, bool emiss) {
     gluQuadricDrawStyle( quad, GLU_FILL );
     // set normals for object based on draw mode
     if (solidFlag) {
-        if (smoothFlag){
+        if (smoothFlag) {
             gluQuadricNormals(quad, GLU_SMOOTH);
         } else {
             gluQuadricNormals(quad, GLU_FLAT);
@@ -133,40 +128,40 @@ void setMaterials(GLUquadric* quad, float color[], float albedo, bool emiss){
     GLfloat specular[4] = {0, 0, 0, 1.0};
 
     // set texture coordinates based  texture flag
-    if (texFlag){
+    if (texFlag) {
         gluQuadricTexture(quad, GLU_TRUE);
         // Set material property values
-        for (int i = 0; i < 3; i++){
+        for (int i = 0; i < 3; i++) {
             ambient[i] = 0.4;
             diffuse[i] = albedo;
             specular[i] = 0.8;
         }
 
-        } else {
-            gluQuadricTexture(quad, GLU_FALSE);
-            for (int i = 0; i < 3; i++){
-                ambient[i] = color[i] * 0.6;
-                diffuse[i] = color[i] * albedo;
-                specular[i] = color[i];
-            }
+    } else {
+        gluQuadricTexture(quad, GLU_FALSE);
+        for (int i = 0; i < 3; i++) {
+            ambient[i] = color[i] * 0.6;
+            diffuse[i] = color[i] * albedo;
+            specular[i] = color[i];
         }
+    }
 
-	    GLfloat shininess = 3.5;
-	    GLfloat emission[4];
+    GLfloat shininess = 3.5;
+    GLfloat emission[4];
 
-	    // Set material properties
-	    glMaterialfv( GL_FRONT_AND_BACK, GL_AMBIENT, ambient );
-	    glMaterialfv( GL_FRONT_AND_BACK, GL_DIFFUSE, diffuse );
-	    glMaterialfv( GL_FRONT_AND_BACK, GL_SPECULAR, specular );
-	    glMaterialf( GL_FRONT_AND_BACK, GL_SHININESS, shininess );
-        // Set emissivity, if emiss flag is true, emissivity to body colors, else set to zeros
-        if (emiss) {
-            GLfloat emission[] = { (float)(color[0]), (float)(color[1]), (float)(color[2]), 1.0 }; 
-            glMaterialfv( GL_FRONT_AND_BACK, GL_EMISSION, emission );
-        } else {
-            GLfloat emission[] = { 0.0, 0.0, 0.0, 1.0};
-            glMaterialfv( GL_FRONT_AND_BACK, GL_EMISSION, emission );
-        }
+    // Set material properties
+    glMaterialfv( GL_FRONT_AND_BACK, GL_AMBIENT, ambient );
+    glMaterialfv( GL_FRONT_AND_BACK, GL_DIFFUSE, diffuse );
+    glMaterialfv( GL_FRONT_AND_BACK, GL_SPECULAR, specular );
+    glMaterialf( GL_FRONT_AND_BACK, GL_SHININESS, shininess );
+    // Set emissivity, if emiss flag is true, emissivity to body colors, else set to zeros
+    if (emiss) {
+        GLfloat emission[] = { (float)(color[0]), (float)(color[1]), (float)(color[2]), 1.0 };
+        glMaterialfv( GL_FRONT_AND_BACK, GL_EMISSION, emission );
+    } else {
+        GLfloat emission[] = { 0.0, 0.0, 0.0, 1.0};
+        glMaterialfv( GL_FRONT_AND_BACK, GL_EMISSION, emission );
+    }
 }
 
 /* setTexture()
@@ -176,7 +171,7 @@ void setMaterials(GLUquadric* quad, float color[], float albedo, bool emiss){
  * Parameters:
  *      int tex - The texture "name" (OpenGL anmes for textures are ints).
  */
-void setTexture(int tex){
+void setTexture(int tex) {
     glBindTexture(GL_TEXTURE_2D, tex);
     glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT );     // or GL_CLAMP
     glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_R, GL_REPEAT );     // or GL_CLAMP

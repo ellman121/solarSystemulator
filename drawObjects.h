@@ -7,8 +7,6 @@
  * 		This file is a collection of routines to draw celestial bodies
  ******************************************************************************/
 
-extern int height, width;
-
 /* drawLighSource()
  *
  * Initialize light source at the center of the solar system
@@ -36,7 +34,7 @@ void drawLighSource () {
 }
 
 /* drawOrbit()
- * 
+ *
  * Draws the orbital path for the given celesital body
  *
  * Input:
@@ -82,7 +80,7 @@ void drawOrbit (planet* body) {
 }
 
 /* drawRings()
- * 
+ *
  * Draws the rings around a celestial body (e.g. Saturn)
  *
  * Input:
@@ -121,7 +119,7 @@ void drawRings (ring* body) {
 }
 
 /* drawSun()
- * 
+ *
  * Draws the sun at (0, 0, 0)
  *
  * Input:
@@ -165,7 +163,7 @@ void drawSun(planet* sun) {
 }
 
 /* drawBody()
- * 
+ *
  * Draws the given celesital body
  *
  * Input:
