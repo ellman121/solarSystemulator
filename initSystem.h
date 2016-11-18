@@ -10,6 +10,7 @@
 map<string,planet*> planetMap;
 map<string,planet*> moonMap;
 map<string,ring*> ringMap;
+vector<GLuint> mipmaps;
 
 // Set colors for bodies
 float sunColor[3] = {1.0, 1.0, 0.3};
@@ -25,7 +26,7 @@ float moonColor[3] = {0.4, 0.4, 0.5};
 
 // All of the planets
 void setPlanets(){
-    Image_s nullImage = {0, 0, NULL};
+    int nullImage = -1;
     vector<string> satellites = {};
     vector<string> rings = {};
 
@@ -56,7 +57,7 @@ void setPlanets(){
 
 // All of the moons for each planet (that we could find)
 void setMoons(){
-    Image_s nullImage = {0, 0, NULL};
+    int nullImage = -1;
     vector<string> satellites = {};
     vector<string> rings = {};
 
@@ -91,7 +92,7 @@ void setMoons(){
 // Set rings on planets that have them.  Yeah, yeah, the asteroid belt isn't
 // technially a ring, but it's close enough
 void setRings(){
-    Image_s nullImage = {0, 0, NULL};
+    int nullImage = -1;
 
     float ringColor[] = {1, 1, 1};
     ringMap.emplace("Saturn", new ring ("SaturnRings", "Saturn", 67270, 140270, 0, 10.2, 0.342, ringColor, nullImage));
@@ -102,37 +103,41 @@ void setRings(){
 // Read out and store texture maps
 void setTexImage (){
     int numR, numC;
+    int temp;
     unsigned char *image;
 
     // For each planet, read out the associated file with the same name
     // e.g. "Earth" -> "earth.bmp"
     for (auto& p: planetMap){
         if(LoadBmpFile(p.second->getName(), numR, numC, image)) {
-            p.second->setImage({numR, numC, image});
+            mipmaps.push_back(gluBuild2DMipmaps(GL_TEXTURE_2D, GL_RGB, numC, numR, GL_RGB, GL_UNSIGNED_BYTE, image));
+            p.second->setImage(mipmaps.size()-1);
         } else {
-            p.second->setImage({0, 0, nullptr});
+            p.second->setImage(-1);
         }
     }
 
     // For each moon, read out the associated file with the same name
-    // Note, if we don't have a texmap for a moon, we just use Luna
     for (auto& m: moonMap){
         if(LoadBmpFile(m.second->getName(), numR, numC, image)) {
-            m.second->setImage({numR, numC, image});
+            mipmaps.push_back(gluBuild2DMipmaps(GL_TEXTURE_2D, GL_RGB, numC, numR, GL_RGB, GL_UNSIGNED_BYTE, image));
+            m.second->setImage(mipmaps.size()-1);
         } else {
-            m.second->setImage({0, 0, nullptr});
+            m.second->setImage(-1);
         }
     }
 
     // Read out the texture maps for Saturn's rings and the asteroid belt
     if(LoadBmpFile("SaturnRings", numR, numC, image)) {
-        ringMap.at("Saturn")->setImage({numR, numC, image});
+        mipmaps.push_back(gluBuild2DMipmaps(GL_TEXTURE_2D, GL_RGB, numC, numR, GL_RGB, GL_UNSIGNED_BYTE, image));
+        ringMap.at("Saturn")->setImage(mipmaps.size()-1);
     } else {
-        ringMap.at("Saturn")->setImage({0, 0, nullptr});
+        ringMap.at("Saturn")->setImage(-1);
     }
     if(LoadBmpFile("asteroidbelt", numR, numC, image)) {
-        ringMap.at("Sun")->setImage({numR, numC, image});
+        mipmaps.push_back(gluBuild2DMipmaps(GL_TEXTURE_2D, GL_RGB, numC, numR, GL_RGB, GL_UNSIGNED_BYTE, image));
+        ringMap.at("Sun")->setImage(mipmaps.size()-1);
     } else {
-        ringMap.at("Sun")->setImage({0, 0, nullptr});
+        ringMap.at("Sun")->setImage(-1);
     }
 }

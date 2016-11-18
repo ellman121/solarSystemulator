@@ -13,7 +13,7 @@ class planet
 public:
 	// Constructors
 	planet();
-	planet(string name, string parent, float radius, float distance, float daysPerYear, float hoursPerDay, float incline, float tilt, float albedo, float color[3], Image_s img, vector<string> satellites, vector<string> rings);
+	planet(string name, string parent, float radius, float distance, float daysPerYear, float hoursPerDay, float incline, float tilt, float albedo, float color[3], int img, vector<string> satellites, vector<string> rings);
 	~planet();
 
 	// Getters
@@ -27,7 +27,7 @@ public:
 	float getAlbedo();
 
 	void getColor(float returned[]);
-	Image_s getImage();
+	int getImage();
 	string getName();
 	string getParent();
 	vector<string> getSatellites();
@@ -36,7 +36,7 @@ public:
 	// Action functions
 	void step(float speed);
 	// Set texture image
-	void setImage(Image_s image);
+	void setImage(int image);
 
 private:
 	string _name;				// Name of the planet
@@ -57,7 +57,7 @@ private:
 	float _albedo;				// The reflectivity coefficient of the body
 
 	float _color[3];			// Default color of the planet's
-	Image_s _img;				// Image data
+	int _img;					// Index into image array data
 };
 
 #endif

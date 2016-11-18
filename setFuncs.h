@@ -188,8 +188,8 @@ void setMaterials(GLUquadric* quad, float color[], float albedo, bool emiss){
  *
  */
 void setTexture(planet* body){
-    Image_s texImg = body->getImage();
-    gluBuild2DMipmaps(GL_TEXTURE_2D, GL_RGB, texImg.nCols, texImg.nRows, GL_RGB, GL_UNSIGNED_BYTE, texImg.img);
+    // Image_s texImg = body->getImage();
+    // gluBuild2DMipmaps(GL_TEXTURE_2D, GL_RGB, texImg.nCols, texImg.nRows, GL_RGB, GL_UNSIGNED_BYTE, texImg.img);
     glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );     // or GL_CLAMP
     glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE );     // or GL_CLAMP
     glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
@@ -210,8 +210,8 @@ void setTexture(planet* body){
  *
  */
 void setTexture(ring* body){
-    Image_s texImg = body->getImage();
-    gluBuild2DMipmaps(GL_TEXTURE_2D, GL_RGB, texImg.nCols, texImg.nRows, GL_RGB, GL_UNSIGNED_BYTE, texImg.img);
+    // Image_s texImg = body->getImage();
+    // gluBuild2DMipmaps(GL_TEXTURE_2D, GL_RGB, texImg.nCols, texImg.nRows, GL_RGB, GL_UNSIGNED_BYTE, texImg.img);
     glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );     // or GL_CLAMP
     glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE );     // or GL_CLAMP
     glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );

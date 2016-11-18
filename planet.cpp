@@ -16,7 +16,7 @@ planet::planet() {
 }
 
 // Use this constructor
-planet::planet(string name, string parent, float radius, float distance, float daysPerYear, float hoursPerDay, float incline, float tilt, float albedo, float color[3], Image_s img, vector<string> satellites, vector<string> rings){
+planet::planet(string name, string parent, float radius, float distance, float daysPerYear, float hoursPerDay, float incline, float tilt, float albedo, float color[3], int img, vector<string> satellites, vector<string> rings){
 	_name = name;
 	_parent = parent;
 	_radius = radius/1000;								//scale down radius
@@ -101,7 +101,7 @@ void planet::getColor(float *returned){
 }
 
 // Return a pionter to the bitmap image for the planet
-Image_s planet::getImage(){
+int planet::getImage(){
 	return _img;
 }
 
@@ -130,7 +130,7 @@ vector<string> planet::getRings(){
  * Setters
 ****************/
 // Return a pionter to the bitmap image for the planet
-void planet::setImage(Image_s image){
+void planet::setImage(int image){
 	_img = image;
 }
 

@@ -1,4 +1,5 @@
 extern int height, width;
+
 void drawLighSource (){
 	    GLfloat position[] = { 0.0, 0.0, 0.0, 1.0 };
 	    GLfloat ambient[] = { 0.05, 0.05, 0.05, 1.0 };       // ambient light
@@ -19,6 +20,7 @@ void drawLighSource (){
 	    glEnable( GL_CULL_FACE );
 	    glCullFace( GL_BACK );
 }
+
 void drawOrbit (planet* body){
 	glPushMatrix();
 	// Get body color and parent name
@@ -55,6 +57,7 @@ void drawOrbit (planet* body){
 	glEnable(GL_CULL_FACE);
 	glPopMatrix();
 }
+
 void drawRings (ring* body){
 	glPushMatrix();
 

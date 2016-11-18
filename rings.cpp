@@ -8,7 +8,7 @@ using namespace std;
  ***************/
 
 // Use this constructor
-ring::ring(string group, string planet, float iRadius, float oRadius, float incline, float hoursPerDay, float albedo, float color[3], Image_s img) {
+ring::ring(string group, string planet, float iRadius, float oRadius, float incline, float hoursPerDay, float albedo, float color[3], int img) {
 	_group = group;
 	_planet = planet;
 	_innerRadius = iRadius / 1000;			// scale down radius
@@ -75,7 +75,7 @@ void ring::getColor(float *returned) {
 }
 
 // Return a pionter to the bitmap image for the ring
-Image_s ring::getImage() {
+int ring::getImage() {
 	return _img;
 }
 
@@ -94,7 +94,7 @@ string ring::getPlanet() {
  * Setters
  ***************/
 // sets the image for the ring
-void ring::setImage(Image_s image) {
+void ring::setImage(int image) {
 	_img = image;
 }
 

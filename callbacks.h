@@ -86,6 +86,9 @@ void displayCallback( void ){
 
 /* passiveMouseCallback()
  *
+ * This function is the GLUT Callback for mouse activity while a button 
+ * is held down
+ *
  * Parameters:
  *		int x - the x location of the mouse
  * 		int y - the y location of the mouse

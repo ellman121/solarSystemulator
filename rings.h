@@ -12,7 +12,7 @@ class ring
 {
 public:
 	// Constructors
-	ring(string group, string planet, float iRadius, float oRadius, float incline, float hoursPerDay, float albedo, float color[3], Image_s img);
+	ring(string group, string planet, float iRadius, float oRadius, float incline, float hoursPerDay, float albedo, float color[3], int img);
 	~ring();
 
 	// Getters
@@ -23,11 +23,11 @@ public:
 	float getRotation();
 
 	void getColor(float returned[]);
-	Image_s getImage();
+	int getImage();
 	string getGroup();
 	string getPlanet();
 	// Setter functions
-	void setImage (Image_s image);
+	void setImage (int image);
 	// Action functions
 	void step(float speed);
 
@@ -44,7 +44,7 @@ private:
 	float _albedo;			// The reflectivity coefficient of the body
 
 	float _color[3];		// Default color of the ring's
-	Image_s _img;			// Image data
+	int _img;			// Image data
 };
 
 #endif
