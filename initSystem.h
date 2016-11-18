@@ -11,7 +11,7 @@ map<string,planet*> planetMap;
 map<string,planet*> moonMap;
 map<string,ring*> ringMap;
 vector<GLuint> mipmaps;
-
+GLuint texNames[32];
 // Set colors for bodies
 float sunColor[3] = {1.0, 1.0, 0.3};
 float mercuryColor[3] = {0.8, 0.5, 0.5};
@@ -105,23 +105,29 @@ void setTexImage (){
     int numR, numC;
     int temp;
     unsigned char *image;
-
+    glGenTextures(32, texNames);
+    int i = 0;
     // For each planet, read out the associated file with the same name
     // e.g. "Earth" -> "earth.bmp"
     for (auto& p: planetMap){
         if(LoadBmpFile(p.second->getName(), numR, numC, image)) {
-            mipmaps.push_back(gluBuild2DMipmaps(GL_TEXTURE_2D, GL_RGB, numC, numR, GL_RGB, GL_UNSIGNED_BYTE, image));
-            p.second->setImage(mipmaps.size()-1);
+            gluBuild2DMipmaps(GL_TEXTURE_2D, GL_RGB, numC, numR, GL_RGB, GL_UNSIGNED_BYTE, image);
+            glBindTexture(GL_TEXTURE_2D, texNames[i]);
+            p.second->setImage(i);
+            cout << texNames[i] << " " << p.first << " " << i << endl;
+            i++;
         } else {
             p.second->setImage(-1);
         }
     }
-
     // For each moon, read out the associated file with the same name
     for (auto& m: moonMap){
         if(LoadBmpFile(m.second->getName(), numR, numC, image)) {
-            mipmaps.push_back(gluBuild2DMipmaps(GL_TEXTURE_2D, GL_RGB, numC, numR, GL_RGB, GL_UNSIGNED_BYTE, image));
-            m.second->setImage(mipmaps.size()-1);
+            gluBuild2DMipmaps(GL_TEXTURE_2D, GL_RGB, numC, numR, GL_RGB, GL_UNSIGNED_BYTE, image);
+            glBindTexture(GL_TEXTURE_2D, texNames[i]);
+            cout << texNames[i] << " " << m.first << " " << i << endl;
+            m.second->setImage(i);
+            i++;
         } else {
             m.second->setImage(-1);
         }
@@ -129,14 +135,19 @@ void setTexImage (){
 
     // Read out the texture maps for Saturn's rings and the asteroid belt
     if(LoadBmpFile("SaturnRings", numR, numC, image)) {
-        mipmaps.push_back(gluBuild2DMipmaps(GL_TEXTURE_2D, GL_RGB, numC, numR, GL_RGB, GL_UNSIGNED_BYTE, image));
-        ringMap.at("Saturn")->setImage(mipmaps.size()-1);
+        gluBuild2DMipmaps(GL_TEXTURE_2D, GL_RGB, numC, numR, GL_RGB, GL_UNSIGNED_BYTE, image);
+        glBindTexture(GL_TEXTURE_2D, texNames[i]);
+        ringMap.at("Saturn")->setImage(i);
+        i++;
     } else {
         ringMap.at("Saturn")->setImage(-1);
     }
+
     if(LoadBmpFile("asteroidbelt", numR, numC, image)) {
-        mipmaps.push_back(gluBuild2DMipmaps(GL_TEXTURE_2D, GL_RGB, numC, numR, GL_RGB, GL_UNSIGNED_BYTE, image));
-        ringMap.at("Sun")->setImage(mipmaps.size()-1);
+        gluBuild2DMipmaps(GL_TEXTURE_2D, GL_RGB, numC, numR, GL_RGB, GL_UNSIGNED_BYTE, image);
+        glBindTexture(GL_TEXTURE_2D, texNames[i]);
+        ringMap.at("Sun")->setImage(i);
+        i++;
     } else {
         ringMap.at("Sun")->setImage(-1);
     }

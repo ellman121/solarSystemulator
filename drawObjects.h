@@ -24,7 +24,7 @@ void drawLighSource (){
 void drawOrbit (planet* body){
 	glPushMatrix();
 	// Get body color and parent name
-	float orbitColor[3] = {0.0, 0.0, 1.0};
+	float orbitColor[3] = {0.5, 0.5, 1};
 
 	string parent = body->getParent();
 	float radius = body->getRadius();
@@ -47,14 +47,14 @@ void drawOrbit (planet* body){
 	}
 	glDisable(GL_TEXTURE_2D);
 	gluQuadricTexture(orbit, GL_FALSE);
-	glBindTexture(GL_TEXTURE_2D, 5);
+	// glBindTexture(GL_TEXTURE_2D, 5);
 	
 	if (body->getName() != relative){
 		glRotatef( body->getIncline(), 0.0, 0.0, 1.0 );
 	}
 
 	glRotatef(90.0, 1.0, 0.0, 0.0);
-	gluCylinder( orbit, distance, distance+0.1, 0, 100, 1);
+	gluCylinder( orbit, distance, distance, 0.1, 1000, 10);
 
 	gluDeleteQuadric(orbit);
 	glEnable(GL_CULL_FACE);
@@ -78,7 +78,7 @@ void drawRings (ring* body){
 	    setMaterials(ring, ringColor, 1, false);
 	}
 	if (texFlag){
-		setTexture(body);
+		setTexture(body->getImage());
 	}
     glDisable(GL_CULL_FACE);
 
@@ -114,7 +114,7 @@ void drawSun(planet* sun){
 	    setMaterials(sphere, sunColor, sun->getAlbedo(), true);
 	}
 	if (texFlag){
-		setTexture(sun);
+		setTexture(sun->getImage());
 	}
 
 	// Rotate about y axis for body rotation
@@ -171,7 +171,7 @@ void drawBody(planet* body, bool sat){
 	glRotatef( body->getRotation(), 0.0, 1.0, 0.0 );
 
 	if (texFlag){
-		setTexture(body);
+		setTexture(body->getImage());
 	}
 
 	glColor3fv(color);
