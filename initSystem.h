@@ -90,7 +90,8 @@ void setRings(){
 
     float ringColor[] = {1, 1, 1};
     ringMap.emplace("Saturn", new ring ("SaturnRings", "Saturn", 67270, 140270, 0, 10.2, 0.342, ringColor, nullImage));
-    ringMap.emplace("Sun", new ring ("AstroidBelt", "Saturn", 2200000, 3200000, 0, 10.2, 0.342, moonColor, nullImage));
+    float beltColor[] = {0.1, 0.1, 0.1};
+    ringMap.emplace("Sun", new ring ("AstroidBelt", "Saturn", 2200000, 3200000, 0, 10.2, 0.342, beltColor, nullImage));
 }
 
 void setTexImage (){
