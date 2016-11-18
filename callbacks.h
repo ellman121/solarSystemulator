@@ -62,19 +62,25 @@ void displayCallback( void ){
 			glTranslatef (-1 * (sRadius + rRadius + planetMap.at(relative)->getDistance()), 0, 200*percent);
 			glRotatef( -1 * planetMap.at(relative)->getOrbit(), 0.0, 1.0, 0.0 );
 		}
-
+		for (auto& p: planetMap){
+			if (p.second->getName() != "Sun") {
+				drawOrbit(p.second);
+			}
+			glFlush();
+		}
 		// Draw each planet
 		for (auto& p: planetMap){
 			if (p.second->getName() != "Sun") {
-				// drawOrbit(p.second);
+				drawOrbit(p.second);
 				drawBody(p.second, false);
 			} else {
 				drawSun(p.second);
 			}
+			glFlush();
 		}
-
 		drawLighSource();
 		drawStatus();
+		glFlush();
 	}else {
 		drawInfoScreen();
 	}
