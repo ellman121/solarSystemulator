@@ -4,20 +4,19 @@
  * Authors: Elliott Rarden & Katie MacMillan
  *
  * Description:
- *		Contains draw routines for different parts of the solar system
+ *		Contains routines to draw informative elements of the program.
  ******************************************************************************/
 extern void initLighting();
 
 
 /* drawBodyName()
  *
- * Draw the name of a celestial body near it
+ * Draw the name of a celestial body near slightly above the outer
+ * edge of the object.
  *
  * Parameters:
  *		string sName - The name of the body in question
  *		float radius - The radius of the body in question
- * Returns:
- *
  */
 void drawBodyName(string sName, float radius) {
 	glPushMatrix();
@@ -42,16 +41,12 @@ void drawBodyName(string sName, float radius) {
 
 /* drawBodyName()
  *
- * Draw the status of the program in the top left corner (i.e. current speed,
- * current camera velocity)
- *
- * Parameters:
- *
- * Returns:
- *
+ * Draw the current motion status in the top left corner  of the screen.
+ * This information includes the current time progression per frame,
+ * as well as travel velocities.
  */
 void drawStatus() {
-
+	glPushMatrix();
 	//Set ortho view
 	glMatrixMode (GL_PROJECTION);
 	glLoadIdentity();
@@ -65,12 +60,11 @@ void drawStatus() {
 	char yV [40];
 	char zV [40];
 	char speed[40];
-	float color[3] = {1.0, 1.0, 1.0};
 
 	// set speed text
 	(pauseFlag) ? sprintf(speed, "Speed:  PAUSED") : sprintf(speed, "Speed:  %f  hours / frame", hourSpeed);
 
-	glColor3fv(color);
+	glColor3f(1.0, 1.0, 1.0);
 
 	glRasterPos3f(-0.97, 0.9, 0);
 	glutBitmapString(GLUT_BITMAP_HELVETICA_10, (const unsigned char*)speed);
@@ -103,6 +97,7 @@ void drawStatus() {
 		glRasterPos3f(-0.95, 0.8, 0);
 		glutBitmapString(GLUT_BITMAP_HELVETICA_10, (const unsigned char*)"OFF");
 	}
+	glPopMatrix();
 }
 
 /* drawText()
@@ -114,8 +109,6 @@ void drawStatus() {
  *		float x    - The x location to draw at
  *		float y    - The y locatino to draw at
  * 		void* font - The font to use
- * Returns:
- *
  */
 void drawText(const char *msg, float x, float y, void *font) {
 	glRasterPos2f(x, y);
@@ -124,13 +117,11 @@ void drawText(const char *msg, float x, float y, void *font) {
 
 /* drawInfoScreen()
  *
- * Draw the splash screen
+ * Draw the info screen to indicate program controls
  *
- * Parameters:
- *
- * Returns:
- *
- */void drawInfoScreen() {
+ */
+void drawInfoScreen() {
+	glPushMatrix();
 	initLighting();
 
 	float leftCol1 = -0.70;
@@ -183,7 +174,7 @@ void drawText(const char *msg, float x, float y, void *font) {
 	drawText("Increase Speed", leftCol2, 0.25, GLUT_BITMAP_HELVETICA_12);
 	drawText("Decrease Speed", leftCol2, 0.20, GLUT_BITMAP_HELVETICA_12);
 	drawText("Progress One Frame", leftCol2, 0.15, GLUT_BITMAP_HELVETICA_12);
-	drawText("Pause Time", leftCol1, 0.10, GLUT_BITMAP_HELVETICA_12);
+	drawText("Pause Time", leftCol2, 0.10, GLUT_BITMAP_HELVETICA_12);
 	drawText("Move Forward", leftCol2, 0.05, GLUT_BITMAP_HELVETICA_12);
 	drawText("Move Backward", leftCol2, 0.0, GLUT_BITMAP_HELVETICA_12);
 	drawText("Move Left", leftCol2, -0.05, GLUT_BITMAP_HELVETICA_12);
@@ -233,4 +224,5 @@ void drawText(const char *msg, float x, float y, void *font) {
 	glVertex2f(-0.85, 0.75);
 	glVertex2f(0.85, 0.75);
 	glEnd();
+	glPopMatrix();
 }

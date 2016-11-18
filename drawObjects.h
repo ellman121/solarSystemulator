@@ -1,4 +1,3 @@
-extern int height, width;
 
 void drawLighSource (){
 	    GLfloat position[] = { 0.0, 0.0, 0.0, 1.0 };

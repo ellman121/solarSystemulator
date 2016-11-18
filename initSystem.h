@@ -11,7 +11,7 @@ map<string,planet*> planetMap;
 map<string,planet*> moonMap;
 map<string,ring*> ringMap;
 vector<GLuint> mipmaps;
-GLuint texNames[32];
+
 // Set colors for bodies
 float sunColor[3] = {1.0, 1.0, 0.3};
 float mercuryColor[3] = {0.8, 0.5, 0.5};
@@ -26,7 +26,6 @@ float moonColor[3] = {0.4, 0.4, 0.5};
 
 // All of the planets
 void setPlanets(){
-    int nullImage = -1;
     vector<string> satellites = {};
     vector<string> rings = {};
 
@@ -57,7 +56,6 @@ void setPlanets(){
 
 // All of the moons for each planet (that we could find)
 void setMoons(){
-    int nullImage = -1;
     vector<string> satellites = {};
     vector<string> rings = {};
 
@@ -92,8 +90,6 @@ void setMoons(){
 // Set rings on planets that have them.  Yeah, yeah, the asteroid belt isn't
 // technially a ring, but it's close enough
 void setRings(){
-    int nullImage = -1;
-
     float ringColor[] = {1, 1, 1};
     ringMap.emplace("Saturn", new ring ("SaturnRings", "Saturn", 67270, 140270, 0, 10.2, 0.342, ringColor, nullImage));
     float beltColor[] = {0.3, 0.3, 0.3};

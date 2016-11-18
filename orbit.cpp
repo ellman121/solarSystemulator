@@ -45,26 +45,8 @@
 *
 */
 
-// C Libraries
-#include <cstdlib>
-#include <cmath>
-#include <ctime>
-
-// C++ Libraries
-#include <iostream>
-#include <algorithm>
-#include <string>
-#include <map>
-
-// Steve Jobs made me
-#ifdef __APPLE__
-#include <GLUT/glut.h>
-#else
-#include <GL/freeglut.h>
-#endif
-
 // Our headers
-// #include "globals.h"
+#include "globals.h"
 #include "planet.h"
 #include "rings.h"
 #include "imageReader.h"
@@ -75,40 +57,12 @@
 #include "drawObjects.h"
 #include "callbacks.h"
 
-using namespace std;
-
 // function prototypes
 void OpenGLInit( void );
 void ResizeWindow( int w, int h );
 void initLighting();
 void initMenus();
 
-// Global things
-bool infoFlag = true;
-bool pauseFlag = false;
-bool stepFlag = false;
-bool orbitFlag = true;
-bool lightFlag = true;
-bool solidFlag = false;
-bool smoothFlag = false;
-bool texFlag = false;
-bool bodyLabelFlag = true;
-bool moonLabelFlag = false;
-bool velocityFlag = false;
-
-int width = 1200;
-int height = 720;
-
-float hourSpeed = 0.1;
-float xTranslate = 0.0;
-float yTranslate = 0.0;
-float zTranslate = -250;
-float xVelocity = 0;
-float yVelocity = 0;
-float zVelocity = 0;
-float xRotate = 0.0;
-float yRotate = 50.0;
-float mouseX, mouseY;
 
 /* initMenus()
  *

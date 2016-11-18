@@ -7,9 +7,6 @@
  *
  ******************************************************************************/
 
-// If we are showing the info screen or not
-extern bool infoFlag, orbitFlag;
-
 // Set the functions for the Speed Selection submenu
 void setSpeedSelectSubmenuOption(int option) {
     switch (option) {

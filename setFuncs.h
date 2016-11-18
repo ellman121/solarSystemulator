@@ -1,7 +1,3 @@
-extern bool solidFlag, lightFlag, smoothFlag, texFlag, bodyLabelFlag, moonLabelFlag, pauseFlag, velocityFlag, stepFlag;
-extern float hourSpeed, xVelocity, yVelocity, zVelocity, xTranslate, yTranslate, zTranslate, xRotate, yRotate;
-extern string relative;
-extern GLuint texNames[];
 
 /* setNextFrame()
  *

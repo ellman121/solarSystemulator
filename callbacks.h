@@ -8,16 +8,6 @@
  ******************************************************************************/
 
 
-// Defined constants
-#define GLUT_WHEEL_UP 3
-#define GLUT_WHEEL_DOWN 4
-
-// Global things
-extern bool infoFlag, orbitFlag;
-extern float  mouseX, mouseY;
-string relative = "Sun";			// Initial relative body is the sun
-
-
 /* displayCallback()
  *
  * Parameters:
