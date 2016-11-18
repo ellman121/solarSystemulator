@@ -40,16 +40,19 @@ void drawOrbit (planet* body){
     glDisable(GL_CULL_FACE);
 
 	// Draw a texture mapped top ring
-	// if (smoothFlag){
-	// 	gluQuadricNormals(orbit, GLU_SMOOTH);
-	// } else {
-	// 	gluQuadricNormals(orbit, GLU_FLAT);
-	// }
-	gluQuadricTexture(orbit, GL_TRUE);
-	// glDisable(GL_TEXTURE_2D);
+	if (smoothFlag){
+		gluQuadricNormals(orbit, GLU_SMOOTH);
+	} else {
+		gluQuadricNormals(orbit, GLU_FLAT);
+	}
+	glDisable(GL_TEXTURE_2D);
+	gluQuadricTexture(orbit, GL_FALSE);
+	glBindTexture(GL_TEXTURE_2D, 5);
+	
 	if (body->getName() != relative){
 		glRotatef( body->getIncline(), 0.0, 0.0, 1.0 );
 	}
+
 	glRotatef(90.0, 1.0, 0.0, 0.0);
 	gluCylinder( orbit, distance, distance+0.1, 0, 100, 1);
 
@@ -134,10 +137,6 @@ void drawSun(planet* sun){
 	    drawBodyName("Sun", radius);
  	}
 
-
- 	// Reverse body rotation
- 	// glRotatef( -1 * sun->getOrbit(), 0.0, 1.0, 0.0 );
-
 }
 void drawBody(planet* body, bool sat){
 	glPushMatrix();
@@ -205,11 +204,4 @@ void drawBody(planet* body, bool sat){
     }
 	glPopMatrix();
     
-
-    
-
-	// // Move back to starting position
-	// glTranslatef( -1 * distance, 0.0, 0.0 );
-	// glRotatef( -1 * body->getOrbit(), 0.0, 1.0, 0.0 );
-	// glRotatef( -1 * body->getIncline(), 0.0, 0.0, 1.0 );
 }

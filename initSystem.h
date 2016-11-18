@@ -97,7 +97,7 @@ void setRings(){
     float ringColor[] = {1, 1, 1};
     ringMap.emplace("Saturn", new ring ("SaturnRings", "Saturn", 67270, 140270, 0, 10.2, 0.342, ringColor, nullImage));
     float beltColor[] = {0.3, 0.3, 0.3};
-    ringMap.emplace("Sun", new ring ("AstroidBelt", "Saturn", 1100000, 1600000, 0, 10.2, 0.342, beltColor, nullImage));
+    ringMap.emplace("Sun", new ring ("AstroidBelt", "Sun", 1100000, 1600000, 0, 10.2, 0.342, beltColor, nullImage));
 }
 
 // Read out and store texture maps
