@@ -1,4 +1,4 @@
-extern bool solidFlag, lightFlag, smoothFlag, texFlag, bodyLabelFlag, moonLabelFlag, pauseFlag, velocityFlag;
+extern bool solidFlag, lightFlag, smoothFlag, texFlag, bodyLabelFlag, moonLabelFlag, pauseFlag, velocityFlag, stepOneFrame;
 extern float hourSpeed, xVelocity, yVelocity, zVelocity, xTranslate, yTranslate, zTranslate, xRotate, yRotate;
 extern string relative;
 extern GLuint texNames[];
@@ -10,13 +10,15 @@ extern GLuint texNames[];
  */
 void setNextFrame(){
     // Move bodies if not paused
-    if (!pauseFlag){
+    if (!pauseFlag || stepOneFrame){
         // Move planets ahead by hour speed
         for (auto& p: planetMap)
             p.second->step(hourSpeed);
         // Move satellites ahead by hour speed
         for (auto& m: moonMap)
             m.second->step(hourSpeed);
+
+        stepOneFrame = false;
     }
     // increment x,y,z by corresponding velocity values
     if (velocityFlag){
