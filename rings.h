@@ -33,10 +33,10 @@ public:
 
 private:
 	string _group;			// Name of the ring
-	string _planet;		// The object that this ring orbits
+	string _planet;			// The object that this ring orbits
 
-	float _innerRadius;			// Radius of the ring
-	float _outerRadius;			// Radius of the ring
+	float _innerRadius;		// Radius of the ring
+	float _outerRadius;		// Radius of the ring
 	float _rotation;		// How many degrees the ring spins/hour
 	float _rotSpeed;		// How many degrees the ring rotates around its axis/hour
 
@@ -44,7 +44,7 @@ private:
 	float _albedo;			// The reflectivity coefficient of the body
 
 	float _color[3];		// Default color of the ring's
-	Image_s _img;				// Image data
+	Image_s _img;			// Image data
 };
 
 #endif

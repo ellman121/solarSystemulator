@@ -4,7 +4,7 @@
  * Authors: Elliott Rarden & Katie MacMillan
  *
  * Description: 
- *
+ * 		This file is a collection of OpenGL and GLUT callbacks
  ******************************************************************************/
 
 
@@ -18,7 +18,12 @@ extern float  mouseX, mouseY;
 string relative = "Sun";			// Initial relative body is the sun
 
 
-// displayCallback() handles the animation and the redrawing of the graphics window contents.
+/* displayCallback()
+ *
+ * Parameters:
+ *
+ * Returns: 
+ */
 void displayCallback( void ){
 	float aspectRatio = ( float ) width / ( float ) height;
 	// Set up the projection view matrix (not very well!)
@@ -60,7 +65,7 @@ void displayCallback( void ){
 
 		// Draw each planet
 		for (auto& p: planetMap){
-			(p.second->getName() != "Sun") ? drawBody(p.second, false) : drawSun(p.second, false);
+			(p.second->getName() != "Sun") ? drawBody(p.second, false) : drawSun(p.second);
 		}
 
 		drawLighSource();
@@ -74,6 +79,13 @@ void displayCallback( void ){
 	glutPostRedisplay();
 }
 
+/* passiveMouseCallback()
+ *
+ * Parameters:
+ *		int x - the x location of the mouse
+ * 		int y - the y location of the mouse
+ * Returns: 
+ */
 void passiveMouseCallback(int x, int y){
 	// get  current mouse position on screen
 	float deltaX = x - ( width / 2.0 );
@@ -90,6 +102,15 @@ void passiveMouseCallback(int x, int y){
 	glutPostRedisplay();
 }
 
+/* mouseCallback()
+ *
+ * Parameters:
+ *		int button - The button that was pressed
+ *		int state  - The state of the button
+ *		int x 	   - The x location of the mouse
+ *		int y 	   - The y location of the mouse
+ * Returns: 
+ */
 void mouseCallback (int button, int state, int x, int y){
 	// Variables to hold initial click cooridnates on mouse down
 	static int recentClickX, recentClickY;
@@ -124,6 +145,14 @@ void mouseCallback (int button, int state, int x, int y){
 	glutPostRedisplay();
 }
 
+/* keyboardCallback()
+ *
+ * Parameters:
+ * 		uchar key - The key that was pressed
+ *		int x 	  - The x location of the mouse
+ * 		int y     - The y locatino of the mouse
+ * Returns: 
+ */
 void keyboardCallback(unsigned char key, int x, int y){
 
 	if (!infoFlag){
@@ -240,6 +269,14 @@ void keyboardCallback(unsigned char key, int x, int y){
 	glutPostRedisplay();
 }
 
+/* specialKeyCallback()
+ *
+ * Parameters:
+ *		int key - The key that was pressed
+ *		int x   - The x location of the mouse
+ *		int y   - The y location of the mouse
+ * Returns: 
+ */
 void specialKeyCallback(int key, int x, int y){
 	switch(key){
 		// Rotate counter clockwise about the x axis

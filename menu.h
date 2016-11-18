@@ -1,5 +1,16 @@
+/******************************************************************************
+ * File: menu.h
+ *
+ * Authors: Elliott Rarden & Katie MacMillan
+ *
+ * Description: This file contains the code for the right click menu.
+ *
+ ******************************************************************************/
+
+// If we are showing the info screen or not
 extern bool infoFlag;
-/**Set Functions For Dropdown Menu**/
+
+// Set the functions for the Speed Selection submenu
 void setSpeedSelectSubmenuOption(int option) {
     switch (option) {
     case 0: // Minimum speed
@@ -26,6 +37,7 @@ void setSpeedSelectSubmenuOption(int option) {
     glutPostRedisplay();
 }
 
+// Set the functions for the Planet Focus Selection submenu
 void setPlanetSelectSubmenuOption(int option) {
     switch (option) {
     // Planets in order
@@ -83,6 +95,7 @@ void setPlanetSelectSubmenuOption(int option) {
     glutPostRedisplay();
 }
 
+// Set the options for the main menu
 void setMenuOption(int option) {
     switch (option) {
     case 0: // Toggle lighting

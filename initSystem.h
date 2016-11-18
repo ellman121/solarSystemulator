@@ -3,8 +3,8 @@
  *
  * Authors: Elliott Rarden & Katie MacMillan
  *
- * Description: This file contains functions with hard-coded in initialization
- * of the solar system bodies and their associated texture map images.
+ * Description: This file contains functions with hard-coded initialization values
+ * for the solar system's bodies and their associated texture map images.
  *
  ******************************************************************************/
 map<string,planet*> planetMap;
@@ -23,6 +23,7 @@ float uranusColor[3] = {0.2, 1.0, 0.6};
 float neptuneColor[3] = {0.2, 0.4, 0.8};
 float moonColor[3] = {0.4, 0.4, 0.5};
 
+// All of the planets
 void setPlanets(){
     Image_s nullImage = {0, 0, NULL};
     vector<string> satellites = {};
@@ -52,6 +53,7 @@ void setPlanets(){
     planetMap.emplace("Neptune", new planet ("Neptune", "Sun", 24750, 4492000000, 60195, 15.8, 6.43, 28.32, 0.290, neptuneColor, nullImage, satellites, rings));
 }
 
+// All of the moons for each planet (that we could find)
 void setMoons(){
     Image_s nullImage = {0, 0, NULL};
     vector<string> satellites = {};
@@ -85,6 +87,8 @@ void setMoons(){
     moonMap.emplace("Triton", new planet("Triton", "Neptune",1352.5, 354800, 5.877, 141.048, 156.885, 0, 0.76, moonColor, nullImage, satellites, rings));
 }
 
+// Set rings on planets that have them.  Yeah, yeah, the asteroid belt isn't
+// technially a ring, but it's close enough
 void setRings(){
     Image_s nullImage = {0, 0, NULL};
 
@@ -94,9 +98,13 @@ void setRings(){
     ringMap.emplace("Sun", new ring ("AstroidBelt", "Saturn", 2200000, 3200000, 0, 10.2, 0.342, beltColor, nullImage));
 }
 
+// Read out and store texture maps
 void setTexImage (){
     int numR, numC;
     unsigned char *image;
+
+    // For each planet, read out the associated file with the same name
+    // e.g. "Earth" -> "earth.bmp"
     for (auto& p: planetMap){
         if(LoadBmpFile(p.second->getName(), numR, numC, image)) {
             p.second->setImage({numR, numC, image});
@@ -105,6 +113,8 @@ void setTexImage (){
         }
     }
 
+    // For each moon, read out the associated file with the same name
+    // Note, if we don't have a texmap for a moon, we just use Luna
     for (auto& m: moonMap){
         if(LoadBmpFile(m.second->getName(), numR, numC, image)) {
             m.second->setImage({numR, numC, image});
@@ -112,15 +122,8 @@ void setTexImage (){
             m.second->setImage({0, 0, nullptr});
         }
     }
-    // Image_s texImage = {0, 0, nullptr};
-    // if(LoadBmpFile("Luna", numR, numC, image)) {
-    //     texImage = {numR, numC, image};
-    // }
 
-    // for (auto& m: moonMap){
-    //     m.second->setImage(texImage);
-    // }
-
+    // Read out the texture maps for Saturn's rings and the asteroid belt
     if(LoadBmpFile("SaturnRings", numR, numC, image)) {
         ringMap.at("Saturn")->setImage({numR, numC, image});
     } else {
@@ -132,4 +135,3 @@ void setTexImage (){
         ringMap.at("Sun")->setImage({0, 0, nullptr});
     }
 }
-

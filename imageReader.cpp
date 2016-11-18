@@ -112,7 +112,8 @@ bool LoadBmpFile( string nameOfPlanet, int &NumRows, int &NumCols, unsigned char
     return true;
 }
 
-// Rows are word aligned
+// Rows are word aligned, this function find teh number
+// of bytes in a row given the number of columns
 static inline int GetNumBytesPerRow( int NumCols )
 {
     return ( ( 3 * NumCols + 3 ) >> 2 ) << 2;

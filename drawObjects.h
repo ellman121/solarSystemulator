@@ -1,4 +1,14 @@
 extern int height, width;
+
+/* drawLightSource()
+ *
+ * Draw the light source (i.e. sun's lighting) in all it's glory
+ *
+ * Parameters:
+ *
+ * Returns:
+ *
+ */
 void drawLighSource (){
 	    GLfloat position[] = { 0.0, 0.0, 0.0, 1.0 };
 	    GLfloat ambient[] = { 0.05, 0.05, 0.05, 1.0 };       // ambient light
@@ -19,6 +29,16 @@ void drawLighSource (){
 	    glEnable( GL_CULL_FACE );
 	    glCullFace( GL_BACK );
 }
+
+/* drawRings()
+ *
+ * Draw some rings on the screen
+ *
+ * Parameters:
+ *		ring* body - The rings to be drawn
+ * Returns:
+ *
+ */
 void drawRings (ring* body){
 
 	float color[3];
@@ -57,7 +77,18 @@ void drawRings (ring* body){
 	glEnable(GL_CULL_FACE);
 }
 
-void drawSun(planet* sun, bool sat){
+/* drawSun()
+ *
+ * Draw the sun at the centre of the solar system (heliocentrism provided by
+ * these sponsors: Aristarchus, Copernicus, Kepler, and Galilei)
+ *
+ * Parameters:
+ *		planet* sun - The sun's planet object in memroy (probably a bad idea
+ *						to name our ADT planet, but too late)
+ * Returns:
+ *
+ */
+void drawSun(planet* sun){
 	// Get sun color
 	float color[3] = {};
 	sun->getColor(color);
@@ -95,6 +126,17 @@ void drawSun(planet* sun, bool sat){
 
 	glPopMatrix();
 }
+
+/* drawBody()
+ *
+ * Draw a heavenly body
+ *
+ * Parameters:
+ *		planet* body - The body to be drawn
+ *		bool sat 	 - Wether or not the body has rings to be drawn
+ * Returns:
+ *
+ */
 void drawBody(planet* body, bool sat){
 	// Get body color and parent name
 	float color[3] = {};

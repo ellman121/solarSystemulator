@@ -22,9 +22,4 @@ struct Position_s {
 // Current draw mode
 enum Mode {wire, flat, smooth, image};
 
-// Global things
-// extern bool infoFlag, pauseFlag, solidFlag, lightFlag;
-// extern int width, height;
-// extern float hourSpeed, xTranslate, zTranslate, xRotate , yRotate, mouseX, mouseY;
-
 #endif

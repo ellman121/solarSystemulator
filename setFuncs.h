@@ -2,6 +2,15 @@ extern bool solidFlag, lightFlag, smoothFlag, texFlag, bodyLabelFlag, moonLabelF
 extern float hourSpeed, xVelocity, yVelocity, zVelocity, xTranslate, yTranslate, zTranslate, xRotate, yRotate;
 extern string relative;
 
+/* setNextFrame()
+ *
+ * Simulate the next frame
+ *
+ * Parameters:
+ *
+ * Returns:
+ *
+ */
 void setNextFrame(){
     // Move bodies if not paused
     if (!pauseFlag){
@@ -20,7 +29,15 @@ void setNextFrame(){
     }
 }
 
-/**Set Functions For View Controls**/
+/* setDrawMode()
+ *
+ * Change the draw mode to the new mode
+ *
+ * Parameters:
+ *      Mode mode - The new mode we are drawing in
+ * Returns:
+ *
+ */
 void setDrawMode(Mode mode){
     switch (mode) {
         case wire:
@@ -60,6 +77,15 @@ void setDrawMode(Mode mode){
     }
 }
 
+/* resetView()
+ *
+ * Reset our view to the original position
+ *
+ * Parameters:
+ *
+ * Returns:
+ *
+ */
 void resetView(){
     xRotate = 0.0;
     yRotate = 0.0;
@@ -68,10 +94,30 @@ void resetView(){
     zTranslate = -200.0;
 }
 
+/* drawLightSource()
+ *
+ * Sets our velocity.  Not currently implemented or used
+ *
+ * Parameters:
+ *
+ * Returns:
+ *
+ */
 void setVelocity(int x, int y, int z){
 }
 
-/**Set Functions for Drawing Bodies**/
+/* setMaterials()
+ *
+ * Set the material properties for a given quadric
+ *
+ * Parameters:
+ *      GLUquadric* quad - The quadric to modify
+ *      float color[]    - Array of colors to set the quadric to
+ *      float albedo     - Diffuse light value
+ *      float emiss      - The emissivity of the quadric
+ * Returns:
+ *
+ */
 void setMaterials(GLUquadric* quad, float color[], float albedo, bool emiss){
     gluQuadricDrawStyle( quad, GLU_FILL );
     // set normals for object based on draw mode
@@ -126,6 +172,15 @@ void setMaterials(GLUquadric* quad, float color[], float albedo, bool emiss){
         }
 }
 
+/* setTexture()
+ *
+ * Give a planet the texture it desrerves
+ *
+ * Parameters:
+ *      planet* body - The planet to change.
+ * Returns:
+ *
+ */
 void setTexture(planet* body){
     Image_s texImg = body->getImage();
     gluBuild2DMipmaps(GL_TEXTURE_2D, GL_RGB, texImg.nRows, texImg.nCols, GL_RGB, GL_UNSIGNED_BYTE, texImg.img);

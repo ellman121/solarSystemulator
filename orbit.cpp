@@ -108,6 +108,15 @@ float xRotate = 0.0;
 float yRotate = 0.0;
 float mouseX, mouseY;
 
+/* initMenus()
+ *
+ * Initialize the menus for our program
+ *
+ * Parameters:
+ *
+ * Returns:
+ *
+ */
 void initMenus() {
 	int primaryMenu;
 	int speedSelectSubmenu;
@@ -146,6 +155,16 @@ void initMenus() {
 	glutAttachMenu(GLUT_RIGHT_BUTTON);
 }
 
+
+/* initLighting()
+ *
+ * Initialize OpenGL's lighting features for our solar system
+ *
+ * Parameters:
+ *
+ * Returns:
+ *
+ */
 void initLighting() {
 	// Specify material properties for info screen
     GLfloat mat_ambient[] = { 0.6, 0.6, 1.0, 0.10 };
@@ -182,8 +201,15 @@ void initLighting() {
 
 }
 
-
-// Initialize OpenGL's rendering modes
+/* drawLightSource()
+ *
+ * Initalize OpenGL
+ *
+ * Parameters:
+ *
+ * Returns:
+ *
+ */
 void OpenGLInit( void )
 {
 	glShadeModel( GL_FLAT );
@@ -192,7 +218,17 @@ void OpenGLInit( void )
 	glEnable( GL_DEPTH_TEST );
 }
 
-// ResizeWindow is called when the window is resized
+
+/* ResizeWindow()
+ *
+ * Funciton that is called when the user resizes the window for GLUT
+ *
+ * Parameters:
+ *		int w - The new width of the window
+ *		int h - The new height of the window
+ * Returns:
+ *
+ */
 void ResizeWindow( int w, int h )
 {
 	float aspectRatio;
@@ -212,6 +248,17 @@ void ResizeWindow( int w, int h )
 
 // Main routine
 // Set up OpenGL, hook up callbacks, and start the main loop
+
+/* main()
+ *
+ * Main will initailze OpenGL, GLUT, the Solar System, and drop into GlutMainLoop();
+ *
+ * Parameters:
+ *		int argc 	- Argument count
+ *		char** argv - Argument values
+ * Returns:
+ *
+ */
 int main( int argc, char** argv )
 {
 	// Need to double buffer for animation
