@@ -125,7 +125,6 @@ void setTexImage (){
         if(LoadBmpFile(m.second->getName(), numR, numC, image)) {
             gluBuild2DMipmaps(GL_TEXTURE_2D, GL_RGB, numC, numR, GL_RGB, GL_UNSIGNED_BYTE, image);
             glBindTexture(GL_TEXTURE_2D, texNames[i]);
-            cout << texNames[i] << " " << m.first << " " << i << endl;
             m.second->setImage(i);
             i++;
         } else {

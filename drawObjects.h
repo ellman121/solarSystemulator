@@ -22,7 +22,7 @@ void drawLighSource (){
 }
 
 void drawOrbit (planet* body){
-	glPushMatrix();
+
 	// Get body color and parent name
 	float orbitColor[3] = {0.5, 0.5, 1};
 
@@ -33,11 +33,31 @@ void drawOrbit (planet* body){
 
 	GLUquadricObj* orbit = gluNewQuadric();
 
+	glPushMatrix();
+	// glDisable(GL_TEXTURE_2D);
+	// Show the under side of the disk
+    glDisable(GL_CULL_FACE);
+
+	// Set material properties
+	// if (lightFlag){
+	//     setMaterials(orbit, orbitColor, 1, false);
+	// }
+
+	// Draw a texture mapped top ring
+	// if (smoothFlag){
+	// 	gluQuadricNormals(orbit, GLU_SMOOTH);
+	// } else {
+	// 	gluQuadricNormals(orbit, GLU_FLAT);
+	// }
+
+	// gluQuadricTexture(orbit, GL_FALSE);
+	// glBindTexture(GL_TEXTURE_2D, 0);
+	
 	// Set material properties
 	if (lightFlag){
 	    setMaterials(orbit, orbitColor, 1, false);
 	}
-    glDisable(GL_CULL_FACE);
+	glDisable(GL_CULL_FACE);
 
 	// Draw a texture mapped top ring
 	if (smoothFlag){
@@ -45,19 +65,22 @@ void drawOrbit (planet* body){
 	} else {
 		gluQuadricNormals(orbit, GLU_FLAT);
 	}
-	glDisable(GL_TEXTURE_2D);
-	gluQuadricTexture(orbit, GL_FALSE);
-	// glBindTexture(GL_TEXTURE_2D, 5);
-	
+	if (texFlag){
+		gluQuadricTexture(orbit, GL_TRUE);
+	} else {
+		gluQuadricTexture(orbit, GL_FALSE);
+	}
 	if (body->getName() != relative){
 		glRotatef( body->getIncline(), 0.0, 0.0, 1.0 );
 	}
 
+	// Rotate the orbital ring
 	glRotatef(90.0, 1.0, 0.0, 0.0);
-	gluCylinder( orbit, distance, distance, 0.1, 1000, 10);
+	gluCylinder( orbit, distance-0.5, distance+0.5, 0, 100, 10);
 
 	gluDeleteQuadric(orbit);
-	glEnable(GL_CULL_FACE);
+	// Hide future object backfaces
+	// glEnable(GL_CULL_FACE);
 	glPopMatrix();
 }
 
