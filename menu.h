@@ -8,7 +8,7 @@
  ******************************************************************************/
 
 // If we are showing the info screen or not
-extern bool infoFlag;
+extern bool infoFlag, orbitFlag;
 
 // Set the functions for the Speed Selection submenu
 void setSpeedSelectSubmenuOption(int option) {
@@ -102,24 +102,26 @@ void setMenuOption(int option) {
         lightFlag = !lightFlag;
         (lightFlag) ? glEnable(GL_LIGHTING) : glDisable(GL_LIGHTING);
     break;
+    case 1: // Toggle orbital paths
+        orbitFlag = !orbitFlag;
 
-    case 1: // Toggle planatary labels
+    case 2: // Toggle planatary labels
         bodyLabelFlag = !bodyLabelFlag;
     break;
 
-    case 2: // Toggle moon labels
+    case 3: // Toggle moon labels
         moonLabelFlag = !moonLabelFlag;
     break;
 
-    case 3: // Reset position
+    case 4: // Reset position
         resetView();
     break;
 
-    case 4: // Info Screen
+    case 5: // Info Screen
         infoFlag = !infoFlag;
     break;
 
-    case 5: // Exit
+    case 6: // Exit
         exit(0);
     break;
     }

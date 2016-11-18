@@ -86,7 +86,8 @@ void initMenus();
 // Global things
 bool infoFlag = true;
 bool pauseFlag = false;
-bool stepOneFrame = false;
+bool stepFlag = false;
+bool orbitFlag = true;
 bool lightFlag = true;
 bool solidFlag = false;
 bool smoothFlag = false;
@@ -148,11 +149,12 @@ void initMenus() {
 	glutAddSubMenu("Select Speed", speedSelectSubmenu);
 	glutAddSubMenu("Planet Focus", planetSelectSubmenu);
 	glutAddMenuEntry("Toggle Lights", 0);
-	glutAddMenuEntry("Toggle Planet Labels", 1);
-	glutAddMenuEntry("Toggle Moon Labels", 2);
-	glutAddMenuEntry("Reset Position", 3);
-	glutAddMenuEntry("Show Info Screen", 4);
-	glutAddMenuEntry("Exit", 5);
+	glutAddMenuEntry("Toggle Orbital Paths", 1);
+	glutAddMenuEntry("Toggle Planet Labels", 2);
+	glutAddMenuEntry("Toggle Moon Labels", 3);
+	glutAddMenuEntry("Reset Position", 4);
+	glutAddMenuEntry("Show Info Screen", 5);
+	glutAddMenuEntry("Exit", 6);
 	glutAttachMenu(GLUT_RIGHT_BUTTON);
 }
 

@@ -34,25 +34,8 @@ void drawOrbit (planet* body){
 	GLUquadricObj* orbit = gluNewQuadric();
 
 	glPushMatrix();
-	// glDisable(GL_TEXTURE_2D);
 	// Show the under side of the disk
     glDisable(GL_CULL_FACE);
-
-	// Set material properties
-	// if (lightFlag){
-	//     setMaterials(orbit, orbitColor, 1, false);
-	// }
-
-	// Draw a texture mapped top ring
-	// if (smoothFlag){
-	// 	gluQuadricNormals(orbit, GLU_SMOOTH);
-	// } else {
-	// 	gluQuadricNormals(orbit, GLU_FLAT);
-	// }
-
-	// gluQuadricTexture(orbit, GL_FALSE);
-	// glBindTexture(GL_TEXTURE_2D, 0);
-	
 	// Set material properties
 	if (lightFlag){
 	    setMaterials(orbit, orbitColor, 1, false);
@@ -60,16 +43,9 @@ void drawOrbit (planet* body){
 	glDisable(GL_CULL_FACE);
 
 	// Draw a texture mapped top ring
-	if (smoothFlag){
-		gluQuadricNormals(orbit, GLU_SMOOTH);
-	} else {
-		gluQuadricNormals(orbit, GLU_FLAT);
-	}
-	if (texFlag){
-		gluQuadricTexture(orbit, GL_TRUE);
-	} else {
-		gluQuadricTexture(orbit, GL_FALSE);
-	}
+	(smoothFlag) ? gluQuadricNormals(orbit, GLU_SMOOTH) : gluQuadricNormals(orbit, GLU_FLAT);
+	(texFlag) ? gluQuadricTexture(orbit, GL_TRUE) :gluQuadricTexture(orbit, GL_FALSE);
+	
 	if (body->getName() != relative){
 		glRotatef( body->getIncline(), 0.0, 0.0, 1.0 );
 	}
@@ -80,7 +56,7 @@ void drawOrbit (planet* body){
 
 	gluDeleteQuadric(orbit);
 	// Hide future object backfaces
-	// glEnable(GL_CULL_FACE);
+	glEnable(GL_CULL_FACE);
 	glPopMatrix();
 }
 
@@ -106,16 +82,8 @@ void drawRings (ring* body){
     glDisable(GL_CULL_FACE);
 
 	// Draw a texture mapped top ring
-	if (smoothFlag){
-		gluQuadricNormals(ring, GLU_SMOOTH);
-	} else {
-		gluQuadricNormals(ring, GLU_FLAT);
-	}
-	if (texFlag){
-		gluQuadricTexture(ring, GL_TRUE);
-	} else {
-		gluQuadricTexture(ring, GL_FALSE);
-	}
+	(smoothFlag) ? gluQuadricNormals(ring, GLU_SMOOTH) : gluQuadricNormals(ring, GLU_FLAT);
+	(texFlag) ? gluQuadricTexture(ring, GL_TRUE) :gluQuadricTexture(ring, GL_FALSE);
 
 	gluCylinder( ring, iRadius, oRadius, 0, 100, 1);
 
@@ -210,17 +178,16 @@ void drawBody(planet* body, bool sat){
 		drawRings(ringMap.at(rings.at(r)));
 	}
 
-
-
 	// reverse axial tilt before drawing label
 	glRotatef( -1 * (body->getTilt()+270), 1.0, 0.0, 0.0 );
 	
-	// Draw satellite for body
+	// Draw satellites for body
 	vector<string> satellites = body->getSatellites();
 	for (int s = 0; s < satellites.size(); s++){
 		drawBody(moonMap.at(satellites.at(s)), true);
 	}
     
+    // Draw labels
     if ((!sat && bodyLabelFlag) || (sat && moonLabelFlag)){
 		glDisable(GL_TEXTURE_2D);
 		drawBodyName(name, radius);

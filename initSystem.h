@@ -114,7 +114,6 @@ void setTexImage (){
             gluBuild2DMipmaps(GL_TEXTURE_2D, GL_RGB, numC, numR, GL_RGB, GL_UNSIGNED_BYTE, image);
             glBindTexture(GL_TEXTURE_2D, texNames[i]);
             p.second->setImage(i);
-            cout << texNames[i] << " " << p.first << " " << i << endl;
             i++;
         } else {
             p.second->setImage(-1);

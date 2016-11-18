@@ -170,22 +170,26 @@ void drawText(const char *msg, float x, float y, void *font) {
 	drawText("Arrow Keys", leftCol1, 0.30, GLUT_BITMAP_HELVETICA_12);
 	drawText("+", leftCol1, 0.25, GLUT_BITMAP_HELVETICA_12);
 	drawText("-", leftCol1, 0.20, GLUT_BITMAP_HELVETICA_12);
-	drawText("W", leftCol1, 0.15, GLUT_BITMAP_HELVETICA_12);
-	drawText("S", leftCol1, 0.10, GLUT_BITMAP_HELVETICA_12);
-	drawText("A", leftCol1, 0.05, GLUT_BITMAP_HELVETICA_12);
-	drawText("D", leftCol1, 0.00, GLUT_BITMAP_HELVETICA_12);
-	drawText("Q", leftCol1, -0.05, GLUT_BITMAP_HELVETICA_12);
-	drawText("Z", leftCol1, -0.10, GLUT_BITMAP_HELVETICA_12);
+	drawText("F", leftCol1, 0.15, GLUT_BITMAP_HELVETICA_12);
+	drawText("P", leftCol1, 0.10, GLUT_BITMAP_HELVETICA_12);
+	drawText("W", leftCol1, 0.05, GLUT_BITMAP_HELVETICA_12);
+	drawText("S", leftCol1, 0.0, GLUT_BITMAP_HELVETICA_12);
+	drawText("A", leftCol1, -0.05, GLUT_BITMAP_HELVETICA_12);
+	drawText("D", leftCol1, -0.10, GLUT_BITMAP_HELVETICA_12);
+	drawText("Q", leftCol1, -0.15, GLUT_BITMAP_HELVETICA_12);
+	drawText("Z", leftCol1, -0.20, GLUT_BITMAP_HELVETICA_12);
 
 	drawText("Rotate Scene", leftCol2, 0.30, GLUT_BITMAP_HELVETICA_12);
 	drawText("Increase Speed", leftCol2, 0.25, GLUT_BITMAP_HELVETICA_12);
 	drawText("Decrease Speed", leftCol2, 0.20, GLUT_BITMAP_HELVETICA_12);
-	drawText("Move Forward", leftCol2, 0.15, GLUT_BITMAP_HELVETICA_12);
-	drawText("Move Backward", leftCol2, 0.10, GLUT_BITMAP_HELVETICA_12);
-	drawText("Move Left", leftCol2, 0.05, GLUT_BITMAP_HELVETICA_12);
-	drawText("Move Right", leftCol2, 0.0, GLUT_BITMAP_HELVETICA_12);
-	drawText("Move Up", leftCol2, -0.05, GLUT_BITMAP_HELVETICA_12);
-	drawText("Move Down", leftCol2, -0.10, GLUT_BITMAP_HELVETICA_12);
+	drawText("Progress One Frame", leftCol2, 0.15, GLUT_BITMAP_HELVETICA_12);
+	drawText("Pause Time", leftCol1, 0.10, GLUT_BITMAP_HELVETICA_12);
+	drawText("Move Forward", leftCol2, 0.05, GLUT_BITMAP_HELVETICA_12);
+	drawText("Move Backward", leftCol2, 0.0, GLUT_BITMAP_HELVETICA_12);
+	drawText("Move Left", leftCol2, -0.05, GLUT_BITMAP_HELVETICA_12);
+	drawText("Move Right", leftCol2, -0.10, GLUT_BITMAP_HELVETICA_12);
+	drawText("Move Up", leftCol2, -0.15, GLUT_BITMAP_HELVETICA_12);
+	drawText("Move Down", leftCol2, -0.20, GLUT_BITMAP_HELVETICA_12);
 
 	drawText("Draw Mode Keys", rightCol1 + 0.1, 0.65, GLUT_BITMAP_HELVETICA_18);
 
@@ -203,7 +207,7 @@ void drawText(const char *msg, float x, float y, void *font) {
 
 	drawText("B", rightCol1, 0.30, GLUT_BITMAP_HELVETICA_12);
 	drawText("M", rightCol1, 0.25, GLUT_BITMAP_HELVETICA_12);
-	drawText("P", rightCol1, 0.20, GLUT_BITMAP_HELVETICA_12);
+	drawText("O", rightCol1, 0.20, GLUT_BITMAP_HELVETICA_12);
 	drawText("L", rightCol1, 0.15, GLUT_BITMAP_HELVETICA_12);
 	drawText("V", rightCol1, 0.10, GLUT_BITMAP_HELVETICA_12);
 	drawText("I", rightCol1, 0.05, GLUT_BITMAP_HELVETICA_12);
@@ -212,7 +216,7 @@ void drawText(const char *msg, float x, float y, void *font) {
 
 	drawText("Display Planet Body Names", rightCol2, 0.30, GLUT_BITMAP_HELVETICA_12);
 	drawText("Display Moon Names", rightCol2, 0.25, GLUT_BITMAP_HELVETICA_12);
-	drawText("Pause Time", rightCol2, 0.20, GLUT_BITMAP_HELVETICA_12);
+	drawText("Display Orbital Paths", rightCol2, 0.20, GLUT_BITMAP_HELVETICA_12);
 	drawText("Turn Lighting On/Off", rightCol2, 0.15, GLUT_BITMAP_HELVETICA_12);
 	drawText("Turn Velocity Travel On/Off", rightCol2, 0.10, GLUT_BITMAP_HELVETICA_12);
 	drawText("Display Info Screen", rightCol2, 0.05, GLUT_BITMAP_HELVETICA_12);
@@ -220,10 +224,10 @@ void drawText(const char *msg, float x, float y, void *font) {
 	drawText("Exit program", rightCol2, -0.05, GLUT_BITMAP_HELVETICA_12);
 
 
-	drawText("Press 'I' to close this screen", -0.14, -0.30, GLUT_BITMAP_HELVETICA_12);
+	drawText("Press 'I' to close this screen", -0.14, -0.45, GLUT_BITMAP_HELVETICA_12);
 	glBegin(GL_LINES);
 	glVertex2f(0.0, 0.75);
-	glVertex2f(0.0, -0.20);
+	glVertex2f(0.0, -0.35);
 	glEnd();
 	glBegin(GL_LINES);
 	glVertex2f(-0.85, 0.75);

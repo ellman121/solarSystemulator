@@ -13,7 +13,7 @@
 #define GLUT_WHEEL_DOWN 4
 
 // Global things
-extern bool infoFlag;
+extern bool infoFlag, orbitFlag;
 extern float  mouseX, mouseY;
 string relative = "Sun";			// Initial relative body is the sun
 
@@ -63,21 +63,18 @@ void displayCallback( void ){
 			glTranslatef (-1 * (sRadius + rRadius + planetMap.at(relative)->getDistance()), 0, 200*percent);
 			glRotatef( -1 * planetMap.at(relative)->getOrbit(), 0.0, 1.0, 0.0 );
 		}
-		for (auto& p: planetMap){
-			if (p.second->getName() != "Sun") {
-				drawOrbit(p.second);
-			}
-			glFlush();
-		}
+
 		// Draw each planet
 		for (auto& p: planetMap){
 			if (p.second->getName() != "Sun") {
-				drawOrbit(p.second);
+				if(orbitFlag) {
+					drawOrbit(p.second);
+				}
 				drawBody(p.second, false);
 			} else {
 				drawSun(p.second);
 			}
-			glFlush();
+			// glFlush();
 		}
 		drawLighSource();
 		drawStatus();
@@ -243,6 +240,26 @@ void keyboardCallback(unsigned char key, int x, int y){
 				moonLabelFlag = !moonLabelFlag;
 			break;
 
+			// toggle labels for moons
+			case 'O':
+			case 'o':
+				orbitFlag = !orbitFlag;
+			break;
+
+	        // Set drawing modes 1 -> wireframe, 2 -> flat, 3 -> smooth, 4 ->image
+	        case '1':
+	            setDrawMode(wire);
+	        break;
+	        case '2':
+	            setDrawMode(flat);
+	        break;
+	        case '3':
+	            setDrawMode(smooth);
+	        break;
+	        case '4':
+	            setDrawMode(image);
+	        break;
+
 		}
 
 	}
@@ -269,22 +286,8 @@ void keyboardCallback(unsigned char key, int x, int y){
 		case 'F':
 		case 'f':
 			pauseFlag = true;
-			stepOneFrame = true;
+			stepFlag = true;
 		break;			
-
-        // Set drawing modes 1 -> wireframe, 2 -> flat, 3 -> smooth, 4 ->image
-        case '1':
-            setDrawMode(wire);
-        break;
-        case '2':
-            setDrawMode(flat);
-        break;
-        case '3':
-            setDrawMode(smooth);
-        break;
-        case '4':
-            setDrawMode(image);
-        break;
 
         // Escape key to quit
         case 27:
