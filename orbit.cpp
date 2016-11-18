@@ -86,6 +86,7 @@ void initMenus();
 // Global things
 bool infoFlag = true;
 bool pauseFlag = false;
+bool stepOneFrame = false;
 bool lightFlag = true;
 bool solidFlag = false;
 bool smoothFlag = false;

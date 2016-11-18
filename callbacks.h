@@ -40,6 +40,7 @@ void displayCallback( void ){
 	if(!infoFlag){
 		// Progress frame objects and variables to the next hour
 		setNextFrame();
+
 		// Clear the current matrix
 		glLoadIdentity();
 
@@ -241,6 +242,7 @@ void keyboardCallback(unsigned char key, int x, int y){
 			case 'm':
 				moonLabelFlag = !moonLabelFlag;
 			break;
+
 		}
 
 	}
@@ -250,16 +252,25 @@ void keyboardCallback(unsigned char key, int x, int y){
 		case 'p':
 			pauseFlag = !pauseFlag;
 		break;
+
 		// Pause animation
         case 'I':
 		case 'i':
 			infoFlag = !infoFlag;
 		break;
+		
 		// Reset scene to original position
 		case 'R':
 		case 'r':
 			resetView();
 		break;
+
+        // Run one frame at a time
+		case 'F':
+		case 'f':
+			pauseFlag = true;
+			stepOneFrame = true;
+		break;			
 
         // Set drawing modes 1 -> wireframe, 2 -> flat, 3 -> smooth, 4 ->image
         case '1':
