@@ -20,6 +20,8 @@ extern void initLighting();
  *
  */
 void drawBodyName(string sName, float radius) {
+	glPushMatrix();
+
 	const char* name = sName.c_str();
 	if (lightFlag) {
 		// Set material property values to max
@@ -34,6 +36,8 @@ void drawBodyName(string sName, float radius) {
 	// Position label above body and draw
 	glRasterPos3f(0, radius + (radius * 0.1), 0);
 	glutBitmapString(GLUT_BITMAP_HELVETICA_12, (const unsigned char *)name);
+
+	glPopMatrix();
 }
 
 /* drawBodyName()

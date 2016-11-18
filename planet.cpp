@@ -20,7 +20,7 @@ planet::planet(string name, string parent, float radius, float distance, float d
 	_name = name;
 	_parent = parent;
 	_radius = radius/1000;								//scale down radius
-	_distance = distance/200000;							//scale down distance
+	_distance = distance/400000;							//scale down distance
 	_rotation = 0;										//start at 0 degree rotation position
 	if (hoursPerDay == 0){
 		_rotSpeed = 0;

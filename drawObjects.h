@@ -1,14 +1,4 @@
 extern int height, width;
-
-/* drawLightSource()
- *
- * Draw the light source (i.e. sun's lighting) in all it's glory
- *
- * Parameters:
- *
- * Returns:
- *
- */
 void drawLighSource (){
 	    GLfloat position[] = { 0.0, 0.0, 0.0, 1.0 };
 	    GLfloat ambient[] = { 0.05, 0.05, 0.05, 1.0 };       // ambient light
@@ -29,20 +19,47 @@ void drawLighSource (){
 	    glEnable( GL_CULL_FACE );
 	    glCullFace( GL_BACK );
 }
+void drawOrbit (planet* body){
+	glPushMatrix();
+	// Get body color and parent name
+	float orbitColor[3] = {0.0, 0.0, 1.0};
 
-/* drawRings()
- *
- * Draw some rings on the screen
- *
- * Parameters:
- *		ring* body - The rings to be drawn
- * Returns:
- *
- */
+	string parent = body->getParent();
+	float radius = body->getRadius();
+	// get distance between body surface and parent surface
+	float distance = planetMap.at(parent)->getRadius()+ radius +body->getDistance();
+
+	GLUquadricObj* orbit = gluNewQuadric();
+
+	// Set material properties
+	if (lightFlag){
+	    setMaterials(orbit, orbitColor, 1, false);
+	}
+    glDisable(GL_CULL_FACE);
+
+	// Draw a texture mapped top ring
+	// if (smoothFlag){
+	// 	gluQuadricNormals(orbit, GLU_SMOOTH);
+	// } else {
+	// 	gluQuadricNormals(orbit, GLU_FLAT);
+	// }
+	gluQuadricTexture(orbit, GL_TRUE);
+	// glDisable(GL_TEXTURE_2D);
+	if (body->getName() != relative){
+		glRotatef( body->getIncline(), 0.0, 0.0, 1.0 );
+	}
+	glRotatef(90.0, 1.0, 0.0, 0.0);
+	gluCylinder( orbit, distance, distance+0.1, 0, 100, 1);
+
+	gluDeleteQuadric(orbit);
+	glEnable(GL_CULL_FACE);
+	glPopMatrix();
+}
 void drawRings (ring* body){
+	glPushMatrix();
 
-	float color[3];
-	body->getColor(color);
+	float ringColor[3];
+	body->getColor(ringColor);
 
 	// get distance between body surface and start of rings
 	float iRadius = body->getInnerRadius();
@@ -52,11 +69,11 @@ void drawRings (ring* body){
 
 	// Set material properties
 	if (lightFlag){
-	    setMaterials(ring, color, 1, false);
+	    setMaterials(ring, ringColor, 1, false);
 	}
-
-	Image_s texImg = body->getImage();
-    gluBuild2DMipmaps(GL_TEXTURE_2D, GL_RGB, texImg.nCols, texImg.nRows, GL_RGB, GL_UNSIGNED_BYTE, texImg.img);
+	if (texFlag){
+		setTexture(body);
+	}
     glDisable(GL_CULL_FACE);
 
 	// Draw a texture mapped top ring
@@ -75,34 +92,24 @@ void drawRings (ring* body){
 
 	gluDeleteQuadric(ring);
 	glEnable(GL_CULL_FACE);
+	glPopMatrix();
 }
 
-/* drawSun()
- *
- * Draw the sun at the centre of the solar system (heliocentrism provided by
- * these sponsors: Aristarchus, Copernicus, Kepler, and Galilei)
- *
- * Parameters:
- *		planet* sun - The sun's planet object in memroy (probably a bad idea
- *						to name our ADT planet, but too late)
- * Returns:
- *
- */
 void drawSun(planet* sun){
+	glPushMatrix();
 	// Get sun color
-	float color[3] = {};
-	sun->getColor(color);
+	float sunColor[3] = {};
+	sun->getColor(sunColor);
 	float radius = sun->getRadius();
 	GLUquadricObj* sphere = gluNewQuadric();
 
 	// Set material properties
 	if (lightFlag){
-	    setMaterials(sphere, color, sun->getAlbedo(), true);
+	    setMaterials(sphere, sunColor, sun->getAlbedo(), true);
 	}
 	if (texFlag){
 		setTexture(sun);
 	}
-	glPushMatrix();
 
 	// Rotate about y axis for body rotation
 	glRotatef( sun->getRotation(), 0.0, 1.0, 0.0 );
@@ -111,33 +118,27 @@ void drawSun(planet* sun){
 	glRotatef( 90, 1.0, 0.0, 0.0 );
 
 	// Draw body
-    glColor3fv(color);
+    glColor3fv(sunColor);
 	(solidFlag) ? gluSphere( sphere, radius, (int) (radius*10), (int) (radius*10) ) : glutWireSphere( radius, 10, 10 );
+
+	// Draw Rings
 	drawRings(ringMap.at("Sun"));		
 
-	// reverse axial tilt before drawing label
-	glRotatef( -90, 1.0, 0.0, 0.0 );
+	glPopMatrix();
+
  	if (bodyLabelFlag){
+		glDisable(GL_TEXTURE_2D);
 	    drawBodyName("Sun", radius);
  	}
 
+
  	// Reverse body rotation
- 	glRotatef( -1 * sun->getOrbit(), 0.0, 1.0, 0.0 );
+ 	// glRotatef( -1 * sun->getOrbit(), 0.0, 1.0, 0.0 );
 
-	glPopMatrix();
 }
-
-/* drawBody()
- *
- * Draw a heavenly body
- *
- * Parameters:
- *		planet* body - The body to be drawn
- *		bool sat 	 - Wether or not the body has rings to be drawn
- * Returns:
- *
- */
 void drawBody(planet* body, bool sat){
+	glPushMatrix();
+
 	// Get body color and parent name
 	float color[3] = {};
 	body->getColor(color);
@@ -164,8 +165,6 @@ void drawBody(planet* body, bool sat){
 	// translate distance in x plane  to place body
 	glTranslatef( distance, 0.0, 0.0 );
 
-	glPushMatrix();
-
 	// Rotate about y axis for body rotation
 	glRotatef( body->getRotation(), 0.0, 1.0, 0.0 );
 
@@ -186,24 +185,28 @@ void drawBody(planet* body, bool sat){
 		drawRings(ringMap.at(rings.at(r)));
 	}
 
-	glDisable(GL_TEXTURE_2D);
+
 
 	// reverse axial tilt before drawing label
 	glRotatef( -1 * (body->getTilt()+270), 1.0, 0.0, 0.0 );
-    if ((!sat && bodyLabelFlag) || (sat && moonLabelFlag)){
-		drawBodyName(name, radius);
-    }
-
-    glPopMatrix();
-
-    // Draw satellite for body
+	
+	// Draw satellite for body
 	vector<string> satellites = body->getSatellites();
 	for (int s = 0; s < satellites.size(); s++){
 		drawBody(moonMap.at(satellites.at(s)), true);
 	}
+    
+    if ((!sat && bodyLabelFlag) || (sat && moonLabelFlag)){
+		glDisable(GL_TEXTURE_2D);
+		drawBodyName(name, radius);
+    }
+	glPopMatrix();
+    
 
-	// Move back to starting position
-	glTranslatef( -1 * distance, 0.0, 0.0 );
-	glRotatef( -1 * body->getOrbit(), 0.0, 1.0, 0.0 );
-	glRotatef( -1 * body->getIncline(), 0.0, 0.0, 1.0 );
+    
+
+	// // Move back to starting position
+	// glTranslatef( -1 * distance, 0.0, 0.0 );
+	// glRotatef( -1 * body->getOrbit(), 0.0, 1.0, 0.0 );
+	// glRotatef( -1 * body->getIncline(), 0.0, 0.0, 1.0 );
 }

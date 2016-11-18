@@ -100,12 +100,12 @@ int height = 720;
 float hourSpeed = 0.1;
 float xTranslate = 0.0;
 float yTranslate = 0.0;
-float zTranslate = -200;
+float zTranslate = -250;
 float xVelocity = 0;
 float yVelocity = 0;
 float zVelocity = 0;
 float xRotate = 0.0;
-float yRotate = 0.0;
+float yRotate = 50.0;
 float mouseX, mouseY;
 
 /* initMenus()
@@ -277,6 +277,7 @@ int main( int argc, char** argv )
 	setMoons();
 	setRings();
 	setTexImage();
+	resetView();
 	// setAstroidBelt();
 	// Set up the callback function for resizing windows
 	glutReshapeFunc( ResizeWindow );

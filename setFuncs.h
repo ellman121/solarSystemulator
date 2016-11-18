@@ -6,10 +6,6 @@ extern string relative;
  *
  * Simulate the next frame
  *
- * Parameters:
- *
- * Returns:
- *
  */
 void setNextFrame(){
     // Move bodies if not paused
@@ -87,11 +83,21 @@ void setDrawMode(Mode mode){
  *
  */
 void resetView(){
-    xRotate = 0.0;
-    yRotate = 0.0;
-    xTranslate = 0.0;
-    yTranslate = 0.0;
-    zTranslate = -200.0;
+    if (relative == "Sun"){
+        xRotate = 20.0;
+        yRotate = 50.0;
+        xTranslate = 0.0;
+        yTranslate = 0.0;
+        zTranslate = -250.0;
+
+    } else {
+        xRotate = 0.0;
+        yRotate = 0.0;
+        xTranslate = 0.0;
+        yTranslate = 0.0;
+        zTranslate = -200.0;
+
+    }
 }
 
 /* drawLightSource()
@@ -183,7 +189,29 @@ void setMaterials(GLUquadric* quad, float color[], float albedo, bool emiss){
  */
 void setTexture(planet* body){
     Image_s texImg = body->getImage();
-    gluBuild2DMipmaps(GL_TEXTURE_2D, GL_RGB, texImg.nRows, texImg.nCols, GL_RGB, GL_UNSIGNED_BYTE, texImg.img);
+    gluBuild2DMipmaps(GL_TEXTURE_2D, GL_RGB, texImg.nCols, texImg.nRows, GL_RGB, GL_UNSIGNED_BYTE, texImg.img);
+    glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );     // or GL_CLAMP
+    glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE );     // or GL_CLAMP
+    glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
+    glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
+    glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
+    glTexEnvi( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE );
+    glEnable(GL_TEXTURE_2D);
+}
+
+
+/* setTexture()
+ *
+ * Give a planet the texture it desrerves
+ *
+ * Parameters:
+ *      planet* body - The planet to change.
+ * Returns:
+ *
+ */
+void setTexture(ring* body){
+    Image_s texImg = body->getImage();
+    gluBuild2DMipmaps(GL_TEXTURE_2D, GL_RGB, texImg.nCols, texImg.nRows, GL_RGB, GL_UNSIGNED_BYTE, texImg.img);
     glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );     // or GL_CLAMP
     glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE );     // or GL_CLAMP
     glTexParameterf( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );

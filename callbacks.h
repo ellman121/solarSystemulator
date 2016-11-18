@@ -65,7 +65,12 @@ void displayCallback( void ){
 
 		// Draw each planet
 		for (auto& p: planetMap){
-			(p.second->getName() != "Sun") ? drawBody(p.second, false) : drawSun(p.second);
+			if (p.second->getName() != "Sun") {
+				// drawOrbit(p.second);
+				drawBody(p.second, false);
+			} else {
+				drawSun(p.second);
+			}
 		}
 
 		drawLighSource();

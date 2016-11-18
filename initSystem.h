@@ -46,6 +46,7 @@ void setPlanets(){
     rings = {"Saturn"};
     planetMap.emplace("Saturn", new planet ("Saturn", "Sun", 60270, 1424000000, 10585, 10.7, 5.51, 26.73, 0.342, saturnColor, nullImage, satellites, rings));
 
+    rings.clear();
     satellites = {"Ariel", "Miranda", "Oberon", "Titania", "Umbriel"};
     planetMap.emplace("Uranus", new planet ("Uranus", "Sun", 25550, 2867000000, 30682, 15.5, 6.48, 97.77, 0.3, uranusColor, nullImage, satellites, rings));
 
@@ -94,8 +95,8 @@ void setRings(){
 
     float ringColor[] = {1, 1, 1};
     ringMap.emplace("Saturn", new ring ("SaturnRings", "Saturn", 67270, 140270, 0, 10.2, 0.342, ringColor, nullImage));
-    float beltColor[] = {0.1, 0.1, 0.1};
-    ringMap.emplace("Sun", new ring ("AstroidBelt", "Saturn", 2200000, 3200000, 0, 10.2, 0.342, beltColor, nullImage));
+    float beltColor[] = {0.3, 0.3, 0.3};
+    ringMap.emplace("Sun", new ring ("AstroidBelt", "Saturn", 1100000, 1600000, 0, 10.2, 0.342, beltColor, nullImage));
 }
 
 // Read out and store texture maps
