@@ -4,7 +4,9 @@
  * Authors: Elliott Rarden & Katie MacMillan
  *
  * Description:
- * 		This file is a collection of routines to draw celestial bodies
+ * 		This file is a collection of routines to draw celestial bodies. Planets
+ * 		are drawn in drawBody() which is called recursively to also draw any
+ * 		moons orbiting the planet.
  ******************************************************************************/
 
 /* drawLighSource()
@@ -13,10 +15,11 @@
  * (i.e. the sun)
  */
 void drawLighSource () {
+	// Set lighting parameters
 	GLfloat position[] = { 0.0, 0.0, 0.0, 1.0 };
-	GLfloat ambient[] = { 0.05, 0.05, 0.05, 1.0 };       // ambient light
-	GLfloat diffuse[] = { 0.7, 0.7, 0.7, 1.0 };       // diffuse light
-	GLfloat specular[] = { 1.0, 1.0, 1.0, 1.0 };      // highlights
+	GLfloat ambient[] = { 0.05, 0.05, 0.05, 1.0 };
+	GLfloat diffuse[] = { 0.7, 0.7, 0.7, 1.0 };
+	GLfloat specular[] = { 1.0, 1.0, 1.0, 1.0 };
 	GLfloat	attenuation[] = {0.0, 1.0, 1.0};
 	// Set up solar system light source
 	glEnable( GL_LIGHT0 );
@@ -25,25 +28,49 @@ void drawLighSource () {
 	glLightfv( GL_LIGHT0, GL_SPECULAR, specular );
 	glLightfv( GL_LIGHT0, GL_POSITION, position );
 	glLightfv( GL_LIGHT0,  GL_QUADRATIC_ATTENUATION, attenuation );
-	// Eliminate hidden surfaces
-	glEnable(GL_BLEND);
-	glEnable( GL_DEPTH_TEST );
-	glEnable( GL_NORMALIZE );
-	glEnable( GL_CULL_FACE );
-	glCullFace( GL_BACK );
+}
+/* drawName()
+ *
+ * Draw the name of a celestial body slightly above the outer
+ * edge of the object.
+ *
+ * Parameters:
+ *		string sName - The name of the body in question
+ *		float radius - The radius of the body in question
+ */
+void drawName(string sName, float radius) {
+	glPushMatrix();
+	// Store the name as a char* data type
+	const char* name = sName.c_str();
+	// Set material property values to max
+	GLfloat labelMat[] = { 1.0, 1.0, 1.0, 1.0 };
+	glMaterialfv( GL_FRONT_AND_BACK, GL_AMBIENT, labelMat );
+	glMaterialfv( GL_FRONT_AND_BACK, GL_DIFFUSE, labelMat );
+	glMaterialfv( GL_FRONT_AND_BACK, GL_SPECULAR, labelMat );
+
+	// Set color to white
+	glColor3f(1.0, 1.0, 1.0);
+
+	// Position label above body and draw
+	glRasterPos3f(0, radius + (radius * 0.1), 0);
+	glutBitmapString(GLUT_BITMAP_HELVETICA_12, (const unsigned char *)name);
+
+	glPopMatrix();
 }
 
 /* drawOrbit()
  *
- * Draws the orbital path for the given celesital body
+ * Draws the orbital path for the given celesital body. These
+ * do not rener well when drawn as solid objects
  *
  * Input:
  *		planet* body - the body who's orbital path is to be drawn
  */
 void drawOrbit (planet* body) {
+	glPushMatrix();
 
 	// Get body color and parent name
-	float orbitColor[3] = {0.5, 0.5, 1};
+	float orbitColor[3] = {0.5, 0.4, 1};
 
 	string parent = body->getParent();
 	float radius = body->getRadius();
@@ -51,15 +78,6 @@ void drawOrbit (planet* body) {
 	float distance = planetMap.at(parent)->getRadius() + radius + body->getDistance();
 
 	GLUquadricObj* orbit = gluNewQuadric();
-
-	glPushMatrix();
-	// Show the under side of the disk
-	glDisable(GL_CULL_FACE);
-	// Set material properties
-	if (lightFlag) {
-		setMaterials(orbit, orbitColor, 1, false);
-	}
-	glDisable(GL_CULL_FACE);
 
 	// Draw a texture mapped top ring
 	(smoothFlag) ? gluQuadricNormals(orbit, GLU_SMOOTH) : gluQuadricNormals(orbit, GLU_FLAT);
@@ -69,13 +87,13 @@ void drawOrbit (planet* body) {
 		glRotatef( body->getIncline(), 0.0, 0.0, 1.0 );
 	}
 
-	// Rotate the orbital ring
+	// Rotate the orbital ring to  lie on x plane
 	glRotatef(90.0, 1.0, 0.0, 0.0);
-	gluCylinder( orbit, distance - 0.5, distance + 0.5, 0, 100, 10);
+	glColor3fv(orbitColor);
+	gluCylinder( orbit, distance - 0.01, distance + 0.01, 0, 100, 4);
 
+	// Cleanup
 	gluDeleteQuadric(orbit);
-	// Hide future object backfaces
-	glEnable(GL_CULL_FACE);
 	glPopMatrix();
 }
 
@@ -92,35 +110,41 @@ void drawRings (ring* body) {
 	float ringColor[3];
 	body->getColor(ringColor);
 
-	// get distance between body surface and start of rings
+	// Get distance between start and end of rings
 	float iRadius = body->getInnerRadius();
 	float oRadius = body->getOuterRadius();
 
 	GLUquadricObj* ring = gluNewQuadric();
 
 	// Set material properties
-	if (lightFlag) {
-		setMaterials(ring, ringColor, 1, false);
-	}
+	setMaterials(ring, ringColor, 1, false);
+
+	// Set texture mipmap for object
 	if (texFlag) {
 		setTexture(body->getImage());
 	}
+
+	// Show backface of ring
 	glDisable(GL_CULL_FACE);
 
-	// Draw a texture mapped top ring
 	(smoothFlag) ? gluQuadricNormals(ring, GLU_SMOOTH) : gluQuadricNormals(ring, GLU_FLAT);
+	// Draw a texture mapped to ring
 	(texFlag) ? gluQuadricTexture(ring, GL_TRUE) : gluQuadricTexture(ring, GL_FALSE);
 
+	// Draw ring
+	glColor3fv(ringColor);
 	gluCylinder( ring, iRadius, oRadius, 0, 100, 1);
 
+	// Clean up
 	gluDeleteQuadric(ring);
-	glEnable(GL_CULL_FACE);
 	glPopMatrix();
+	glEnable(GL_CULL_FACE);
 }
 
 /* drawSun()
  *
- * Draws the sun at (0, 0, 0)
+ * Draws the sun at (0, 0, 0), as well as the
+ * asteroid belt "ring"
  *
  * Input:
  *		planet* sun - pointer to the sun in memory
@@ -134,9 +158,11 @@ void drawSun(planet* sun) {
 	GLUquadricObj* sphere = gluNewQuadric();
 
 	// Set material properties
-	if (lightFlag) {
-		setMaterials(sphere, sunColor, sun->getAlbedo(), true);
-	}
+	setMaterials(sphere, sunColor, sun->getAlbedo(), true);
+	// Draw a texture mapped top ring
+	(smoothFlag) ? gluQuadricNormals(sphere, GLU_SMOOTH) : gluQuadricNormals(sphere, GLU_FLAT);
+	(texFlag) ? gluQuadricTexture(sphere, GL_TRUE) : gluQuadricTexture(sphere, GL_FALSE);
+
 	if (texFlag) {
 		setTexture(sun->getImage());
 	}
@@ -149,16 +175,16 @@ void drawSun(planet* sun) {
 
 	// Draw body
 	glColor3fv(sunColor);
-	(solidFlag) ? gluSphere( sphere, radius, (int) (radius * 10), (int) (radius * 10) ) : glutWireSphere( radius, 10, 10 );
+	(solidFlag) ? gluSphere( sphere, radius, (int) (radius * 100), (int) (radius * 100) ) : glutWireSphere( radius, 10, 10 );
 
 	// Draw Rings
-	drawRings(ringMap.at("Sun"));
+	drawRings(ringMap.at("AsteroidBelt"));
 
 	glPopMatrix();
 
 	if (bodyLabelFlag) {
 		glDisable(GL_TEXTURE_2D);
-		drawBodyName("Sun", radius);
+		drawName("Sun", radius);
 	}
 }
 
@@ -183,9 +209,14 @@ void drawBody(planet* body, bool sat) {
 	// get distance between body surface and parent surface
 	float distance = planetMap.at(parent)->getRadius() + radius + body->getDistance();
 	// Set material properties
-	if (lightFlag) {
-		setMaterials(sphere, color, body->getAlbedo(), false);
+	setMaterials(sphere, color, body->getAlbedo(), false);
+	if (texFlag) {
+		setTexture(body->getImage());
 	}
+
+	// Draw a texture mapped top ring
+	(smoothFlag) ? gluQuadricNormals(sphere, GLU_SMOOTH) : gluQuadricNormals(sphere, GLU_FLAT);
+	(texFlag) ? gluQuadricTexture(sphere, GL_TRUE) : gluQuadricTexture(sphere, GL_FALSE);
 
 	// make sure system is not being viewed relative to current body
 	// roate about the z axis for orbital incline
@@ -201,16 +232,12 @@ void drawBody(planet* body, bool sat) {
 	// Rotate about y axis for body rotation
 	glRotatef( body->getRotation(), 0.0, 1.0, 0.0 );
 
-	if (texFlag) {
-		setTexture(body->getImage());
-	}
-
-	glColor3fv(color);
 	// rotate about x axis for body axial tilt
 	glRotatef( body->getTilt() + 270, 1.0, 0.0, 0.0 );
 
 	// Draw body
-	(solidFlag) ? gluSphere( sphere, radius, (int) (radius * 10), (int) (radius * 10) ) : glutWireSphere( radius, 10, 10 );
+	glColor3fv(color);
+	(solidFlag) ? gluSphere( sphere, radius, (int) (radius * 100), (int) (radius * 100) ) : glutWireSphere( radius, 10, 10 );
 
 	// Draw any rings around the body
 	vector<string> rings = body->getRings();
@@ -218,7 +245,7 @@ void drawBody(planet* body, bool sat) {
 		drawRings(ringMap.at(rings.at(r)));
 	}
 
-	// reverse axial tilt before drawing label
+	// reverse axial tilt before drawing label and satellites
 	glRotatef( -1 * (body->getTilt() + 270), 1.0, 0.0, 0.0 );
 
 	// Draw satellites for body
@@ -230,7 +257,7 @@ void drawBody(planet* body, bool sat) {
 	// Draw labels
 	if ((!sat && bodyLabelFlag) || (sat && moonLabelFlag)) {
 		glDisable(GL_TEXTURE_2D);
-		drawBodyName(name, radius);
+		drawName(name, radius);
 	}
 	glPopMatrix();
 }

@@ -1,7 +1,23 @@
-// Routines to read image files from uncompressed bitmap files.
-//
-// This code is a modified version of the code found at
-// http://www.mcs.sdsmt.edu/csc433/Code/TexturedObjects/bmpRead.cpp
+/******************************************************************************
+ * File: imageReader.cpp
+ *
+ * Author: John M. Weiss, Ph.D.
+ * Written March 23, 2006.
+ * Modified by: Elliot Rarden
+ * Modified November 2016
+ *
+ * Ref: based on code from RgbImage.cc (Buss, 3-D Computer Graphics, 2003).
+ *
+ * Description:
+ *      Routines to read image files from uncompressed bitmap files.
+ *
+ *      This code is a modified version of the code found at
+ *      http://www.mcs.sdsmt.edu/csc433/Code/TexturedObjects/bmpRead.cpp
+ *
+ *      Code to read in a BMP image file, originally written for CSC433/533
+ *      Computer Graphics PA#3.
+ ******************************************************************************/
+
 
 #include <cstdio>
 #include <cstdlib>

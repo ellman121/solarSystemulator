@@ -3,13 +3,14 @@
  *
  * Authors: Elliott Rarden & Katie MacMillan
  *
- * Description: This file contains implementation for the planet class.
+ * Description: This file contains implementation for the planet class. Most
+ * functions are getter functions, with only one setter function, setImage(),
+ * and one action function, step(), which progresses the associated body
+ * through time by a specified amount.
  *
  ******************************************************************************/
 
 #include "planet.h"
-#include <cmath>
-#include <iostream>
 using namespace std;
 /*
  * Constructors

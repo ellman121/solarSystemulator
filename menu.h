@@ -3,7 +3,8 @@
  *
  * Authors: Elliott Rarden & Katie MacMillan
  *
- * Description: This file contains the code for the right click menu.
+ * Description: This file contains the code for creating and handling the
+ * right click menu.
  *
  ******************************************************************************/
 
@@ -42,7 +43,11 @@ void setSpeedSelectSubmenuOption(int option) {
 
 /* setSpeedSelectSubmenuOption()
  *
- * This submenu allows the user to set the planet of focus
+ * This submenu allows the user to set the
+ * planet to be the relative position the system
+ * is viewed from. When a relative planet is
+ * selected, all view positional variables are
+ * reset.
  *
  * Parameters:
  *      int option - The option chosen by the user
@@ -57,47 +62,47 @@ void setPlanetSelectSubmenuOption(int option) {
     case 0:
         relative =
             relative = "Sun";
-        resetView();
+        setView();
         break;
 
     case 1:
         relative = "Mercury";
-        resetView();
+        setView();
         break;
 
     case 2:
         relative = "Venus";
-        resetView();
+        setView();
         break;
 
     case 3:
         relative = "Earth";
-        resetView();
+        setView();
         break;
 
     case 4:
         relative = "Mars";
-        resetView();
+        setView();
         break;
 
     case 5:
         relative = "Jupiter";
-        resetView();
+        setView();
         break;
 
     case 6:
         relative = "Saturn";
-        resetView();
+        setView();
         break;
 
     case 7:
         relative = "Uranus";
-        resetView();
+        setView();
         break;
 
     case 8:
         relative = "Neptune";
-        resetView();
+        setView();
         break;
     }
 
@@ -118,8 +123,10 @@ void setMenuOption(int option) {
         lightFlag = !lightFlag;
         (lightFlag) ? glEnable(GL_LIGHTING) : glDisable(GL_LIGHTING);
         break;
+
     case 1: // Toggle orbital paths
         orbitFlag = !orbitFlag;
+        break;
 
     case 2: // Toggle planatary labels
         bodyLabelFlag = !bodyLabelFlag;
@@ -130,7 +137,7 @@ void setMenuOption(int option) {
         break;
 
     case 4: // Reset position
-        resetView();
+        setView();
         break;
 
     case 5: // Info Screen

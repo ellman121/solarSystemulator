@@ -1,3 +1,5 @@
+#include <iostream>
+using namespace std;
 /******************************************************************************
  * File: callbacks.h
  *
@@ -9,7 +11,9 @@
 
 /* displayCallback()
  *
- * OpenGL Callback for displaying
+ * OpenGL Callback for displaying images. It clears the
+ * buffers, sets the render modes, and then calls functions
+ * to draw either the solar system or the info screen.
  */
 void displayCallback( void ) {
 	float aspectRatio = ( float ) width / ( float ) height;
@@ -22,6 +26,7 @@ void displayCallback( void ) {
 	glMatrixMode( GL_MODELVIEW );
 	// Clear the redering window
 	glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
+	// Ensure linewidth is 1 (it's changed for the info screen)
 	glLineWidth(1);
 
 	if (!infoFlag) {
@@ -42,7 +47,7 @@ void displayCallback( void ) {
 		if (relative != "Sun") {
 			float sRadius = planetMap.at("Sun")->getRadius();
 			float rRadius = planetMap.at(relative)->getRadius();
-			// how much bigger the sun is than relative body
+			// How much bigger the sun is than relative body
 			float percent = 1 - (rRadius / sRadius);
 
 			// translate to position of planet center in x position
@@ -51,26 +56,37 @@ void displayCallback( void ) {
 			glRotatef( -1 * planetMap.at(relative)->getOrbit(), 0.0, 1.0, 0.0 );
 		}
 
+		// Draw each planet's orbital path
+		if (orbitFlag) {
+			setOrbitProperties();
+			for (auto& p : planetMap) {
+				if (p.second->getName() != "Sun") {
+					// Draw orbital paths if the orbit flag is on
+					drawOrbit(p.second);
+				}
+			}
+		}
+		// Set draw parameters based on draw mode
+		setDrawParameters();
+
 		// Draw each planet
 		for (auto& p : planetMap) {
 			if (p.second->getName() != "Sun") {
-				if (orbitFlag) {
-					drawOrbit(p.second);
-				}
 				drawBody(p.second, false);
 			} else {
+				// The sun has it's own draw function
 				drawSun(p.second);
 			}
-			// glFlush();
 		}
-		drawLighSource();
+		if (lightFlag) {
+			drawLighSource();
+		}
 		drawStatus();
-		glFlush();
+
 	} else {
 		drawInfoScreen();
 	}
-	// Flush pipeline, swap buffers, and redraw
-	glFlush();
+	// Implicit flush, swap buffers, and redraw
 	glutSwapBuffers();
 	glutPostRedisplay();
 }
@@ -83,7 +99,6 @@ void displayCallback( void ) {
  * Parameters:
  *		int x - the x location of the mouse
  * 		int y - the y location of the mouse
- * Returns:
  */
 void passiveMouseCallback(int x, int y) {
 	// get  current mouse position on screen
@@ -103,14 +118,16 @@ void passiveMouseCallback(int x, int y) {
 
 /* mouseCallback()
  *
- * GLUT Callback to handle mouse clicks
+ * GLUT Callback to handle mouse clicks. The mouse
+ * buttons will either display a popup menu, or rotate
+ * the scene. The mouse wheel will move in and out of
+ * the scene
  *
  * Parameters:
  *		int button - The button that was pressed
  *		int state  - The state of the button
  *		int x 	   - The x location of the mouse
  *		int y 	   - The y location of the mouse
- * Returns:
  */
 void mouseCallback (int button, int state, int x, int y) {
 	// Variables to hold initial click cooridnates on mouse down
@@ -148,13 +165,13 @@ void mouseCallback (int button, int state, int x, int y) {
 
 /* keyboardCallback()
  *
- * GLUT callback to handle keyboard input
+ * GLUT callback to handle keyboard input. These are mostly
+ * toggle and mode switch keys, as well as movement keys.
  *
  * Parameters:
  * 		uchar key - The key that was pressed
  *		int x 	  - The x location of the mouse when the key was pressed
  * 		int y     - The y locatino of the mouse when the key was pressed
- * Returns:
  */
 void keyboardCallback(unsigned char key, int x, int y) {
 
@@ -203,82 +220,83 @@ void keyboardCallback(unsigned char key, int x, int y) {
 			(velocityFlag) ? zVelocity-- : zTranslate -= 5;
 			break;
 
-		// toggle velocity travel, set velocity values to 0
+		// Toggle velocity travel, set velocity values to 0
 		case 'V':
 		case 'v':
 			velocityFlag = !velocityFlag;
 			if (velocityFlag) {
+				// If velocity is turned on, set all movement to 0
 				xVelocity = yVelocity = zVelocity = 0;
 			}
 			break;
-
-		//Toggle lighting
-		case 'L':
-		case 'l':
-			lightFlag = !lightFlag;
-			(lightFlag) ? glEnable(GL_LIGHTING) : glDisable(GL_LIGHTING);
+		// Pause animation
+		case 'P':
+		case 'p':
+			pauseFlag = !pauseFlag;
 			break;
 
-		// toggle labels for planetary bodies
-		case 'B':
-		case 'b':
-			bodyLabelFlag = !bodyLabelFlag;
+		// Reset scene to original position
+		case 'R':
+		case 'r':
+			setView();
 			break;
 
-		// toggle labels for moons
-		case 'M':
-		case 'm':
-			moonLabelFlag = !moonLabelFlag;
+		// Progress one frame at a time
+		case 'F':
+		case 'f':
+			pauseFlag = true;
+			stepFlag = true;
 			break;
-
-		// toggle labels for moons
-		case 'O':
-		case 'o':
-			orbitFlag = !orbitFlag;
-			break;
-
-		// Set drawing modes 1 -> wireframe, 2 -> flat, 3 -> smooth, 4 ->image
-		case '1':
-			setDrawMode(wire);
-			break;
-		case '2':
-			setDrawMode(flat);
-			break;
-		case '3':
-			setDrawMode(smooth);
-			break;
-		case '4':
-			setDrawMode(image);
-			break;
-
 		}
 	}
 	switch (key) {
-	// Pause animation
-	case 'P':
-	case 'p':
-		pauseFlag = !pauseFlag;
+	//Toggle lighting
+	case 'L':
+	case 'l':
+		lightFlag = !lightFlag;
+		(lightFlag) ? glEnable(GL_LIGHTING) : glDisable(GL_LIGHTING);
 		break;
 
-	// Pause animation
+	// Toggle labels for planetary bodies
+	case 'B':
+	case 'b':
+		bodyLabelFlag = !bodyLabelFlag;
+		break;
+
+	// Toggle labels for moons
+	case 'M':
+	case 'm':
+		moonLabelFlag = !moonLabelFlag;
+		break;
+
+	// Toggle orbital paths
+	case 'O':
+	case 'o':
+		orbitFlag = !orbitFlag;
+		break;
+
+	// Set drawing modes 1 -> wireframe, 2 -> flat, 3 -> smooth, 4 ->image
+	case '1':
+		setDrawMode(wire);
+		break;
+	case '2':
+		setDrawMode(flat);
+		break;
+	case '3':
+		setDrawMode(smooth);
+		break;
+	case '4':
+		setDrawMode(image);
+		break;
+
+	// Toggle info screen
 	case 'I':
 	case 'i':
 		infoFlag = !infoFlag;
+		if (!infoFlag && !lightFlag) {
+			glDisable(GL_LIGHTING);
+		}
 		break;
-
-	// Reset scene to original position
-	case 'R':
-	case 'r':
-		resetView();
-		break;
-
-	// Run one frame at a time
-	case 'F':
-	case 'f':
-		pauseFlag = true;
-		stepFlag = true;
-		break;
-
 	// Escape key to quit
 	case 27:
 		exit(0);
@@ -289,13 +307,14 @@ void keyboardCallback(unsigned char key, int x, int y) {
 
 /* specialKeyCallback()
  *
- * GLUT callback to handle special keyboard input (e.g. arrow keys)
+ * GLUT callback to handle special keyboard input.
+ * This is used soley for arrow keys which will
+ * rotate the scene around the x and y axis
  *
  * Parameters:
  *		int key - The key that was pressed
  *		int x   - The x location of the mouse
  *		int y   - The y location of the mouse
- * Returns:
  */
 void specialKeyCallback(int key, int x, int y) {
 	switch (key) {

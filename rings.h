@@ -12,8 +12,7 @@
 
 #include <string>
 #include <vector>
-#include "globals.h"
-#include <iostream>
+#include <cmath>
 
 using namespace std;
 
@@ -21,7 +20,7 @@ class ring
 {
 public:
 	// Constructors
-	ring(string group, string planet, float iRadius, float oRadius, float incline, float hoursPerDay, float albedo, float color[3], int img);
+	ring(string name, string parent, float iRadius, float oRadius, float incline, float hoursPerDay, float albedo, float color[3], int img);
 	~ring();
 
 	// Getters
@@ -33,16 +32,16 @@ public:
 
 	void getColor(float returned[]);
 	int getImage();
-	string getGroup();
-	string getPlanet();
+	string getName();
+	string getParent();
 	// Setter functions
 	void setImage (int image);
 	// Action functions
 	void step(float speed);
 
 private:
-	string _group;			// Name of the ring
-	string _planet;			// The object that this ring orbits
+	string _name;			// Name of the ring
+	string _parent;			// The object that this ring orbits
 
 	float _innerRadius;		// Radius of the ring
 	float _outerRadius;		// Radius of the ring

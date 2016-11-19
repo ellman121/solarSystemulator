@@ -1,49 +1,67 @@
 /*
-* orbit.cpp
-*
-* Program to simulate the solar system and allow eht user to fly around, viewing
-* individual planets.
-*
-* Authors: Elliott Rarden && Katie MacMillan
-*
-* This code is based on the code provided by Dr. Weiss at
-* www.mds.sdsmt.edu/csc344/Assignments/PA3
-*
-* Compile and run using
-*
-*   $ make
-*   $ ./solar
-*
-* If on an Apple Mac Computer, use
-*
-*   $ make osx
-*   $ ./solar
-*
-* Notes:
-*	  	If program is closed from comandline there will be a mem leak from
-*		dynamically allocated bmp images
-*
-*	Moons -
-*		If a value could not be found to define a moon's day length, the default
-*		was set to that of Luna, the Earth's moon.
-*
-*		For Jupiters moons, we used only the Inner and Gallilean moons, as many
-* 		of the other moons had very small diameters < 10 km and were fairly
-*		inconcequential.
-*
-*		Saturn has a total of 62 satellite bodies, however, 7 of them comprise
-*		99.96% of the mass which orbits Saturn. For this reason we used only the
-*		primary 7 moons in this model.
-*
-*		For Uranus we used only the five major moons. These moons are quite dark
-*		with very low reflectivity coefficients.
-*
-*		Neptune has 14 moons. Triton is the largest making up 99.59% of the mass
-*		orbiting Neptune. The next two largest moons are __ and __ which together
-*		comprise 0.36% of the orbiting mass. The remaining 11 moons  make up the
-*		final 0.05% of the mass. For this reason we modeled only Triton.
-*
-*/
+ * orbit.cpp
+ *
+ * Authors: Elliott Rarden && Katie MacMillan
+ *
+ * This code is based on the code provided by Dr. Weiss at
+ * www.mds.sdsmt.edu/csc344/Assignments/PA3
+ *
+ * This program simulates the solar system allowing the user to explore the
+ * various planets and moons.
+ *
+ * Lighting features may be toggled, as well as four different drawing
+ * modes. The system may be drawn in wireframe, solid with flat shading,
+ * solid with smooth shading, or texture mapped.
+ *
+ * The scene may be rotated about the x and y
+ * axis, translated up, down, left and right, well as moving forward an
+ * backward in the scene. In addition velocity feature may be enabled to
+ * allow the user continuous movement through the system.
+ *
+ * The system may be viewed from the relative position of any planet
+ * in the system, in effect causing it to be stationary while the
+ * rest of the system moves around the relative body.
+ *
+ * Compile and run using
+ *
+ *   $ make
+ *   $ ./solar
+ *
+ * If on an Apple Mac Computer, use
+ *
+ *   $ make osx
+ *   $ ./solar
+ *
+ * Notes:
+ *	Planets -
+ *		All bodies are assumed to have circular orbits; orbital ecentricity
+ *		has not been included, though axial tilts and orbital inclines have
+ *		been, as well as heavenly body albedo coefficients.
+ *
+ *	Moons -
+ *		Orbital paths of the moon are not displayed, as they cause too much
+ *		clutter in the scene.
+ *
+ *		For Mars' moons we used only Phobos, as Deimos is too small to be
+ *		seen in our sysem.
+ *
+ *		For Jupiters moons, we used only the Gallilean moons, as many
+ * 		of the other moons had very small diameters < 10 km and were fairly
+ *		inconcequential.
+ *
+ *		Saturn has a total of 62 satellite bodies, however, 7 of them comprise
+ *		99.96% of the mass which orbits Saturn. For this reason we used only the
+ *		primary 7 moons in this model.
+ *
+ *		For Uranus we used only the five major moons. These moons are quite dark
+ *		with very low reflectivity coefficients.
+ *
+ *		Neptune has 14 moons. Triton is the largest making up 99.59% of the mass
+ *		orbiting Neptune. The next two largest moons are __ and __ which together
+ *		comprise 0.36% of the orbiting mass. The remaining 11 moons  make up the
+ *		final 0.05% of the mass. For this reason we modeled only Triton.
+ *
+ */
 
 // Our headers
 #include "globals.h"
@@ -107,47 +125,6 @@ void initMenus() {
 	glutAttachMenu(GLUT_RIGHT_BUTTON);
 }
 
-
-/* initLighting()
- *
- * Initialize OpenGL's lighting features for our solar system
- */
-void initLighting() {
-	// Specify material properties for info screen
-	GLfloat mat_ambient[] = { 0.6, 0.6, 1.0, 0.10 };
-	GLfloat mat_diffuse[] = { 0.6, 0.6, 1.0, 1.0 };
-	GLfloat mat_specular[] = { 0.6, 0.6, 1.0, 1.0 };
-	GLfloat mat_shininess = { 100.0 };
-
-	glMaterialfv( GL_FRONT_AND_BACK, GL_AMBIENT, mat_ambient );
-	glMaterialfv( GL_FRONT_AND_BACK, GL_DIFFUSE, mat_diffuse );
-	glMaterialfv( GL_FRONT_AND_BACK, GL_SPECULAR, mat_specular );
-	glMaterialf( GL_FRONT_AND_BACK, GL_SHININESS, mat_shininess );
-
-	// Specify light properties
-	GLfloat light_position[] = { 0.0, 400.0, 0.0, 1.0 };
-	GLfloat light_ambient[] = { 1.0, 1.0, 1.0, 1.0 };
-	GLfloat light_diffuse[] = { 1.0, 1.0, 1.0, 1.0 };
-	GLfloat light_specular[] = { 1.0, 1.0, 1.0, 1.0 };
-
-	// Enable a light source
-	glEnable( GL_LIGHT0 );
-	glLightfv( GL_LIGHT0, GL_POSITION, light_position );
-	glLightfv( GL_LIGHT0, GL_AMBIENT, light_ambient );
-	glLightfv( GL_LIGHT0, GL_DIFFUSE, light_diffuse );
-	glLightfv( GL_LIGHT0, GL_SPECULAR, light_specular );
-
-	// Set shading model
-	glShadeModel( GL_FLAT );
-
-	glEnable( GL_DEPTH_TEST );  // enable depth buffer for hidden-surface elimination
-	glEnable( GL_NORMALIZE );   // automatic normalization of normals
-	// Hide back of objects
-	glEnable( GL_CULL_FACE );
-	glCullFace( GL_BACK );
-
-}
-
 /* drawLightSource()
  *
  * Initalize OpenGL
@@ -174,12 +151,14 @@ void ResizeWindow( int w, int h )
 	float aspectRatio;
 	height = ( h == 0 ) ? 1 : h;
 	width = ( w == 0 ) ? 1 : w;
-	glViewport( 0, 0, w, h );	// View port uses whole window
+	// Set view port to use the whole window
+	glViewport( 0, 0, w, h );
 	aspectRatio = ( float ) width / ( float ) height;
 
-	// Set up the projection view matrix (not very well!)
+	// Do a crappy job of setting up the projection matrix
 	glMatrixMode( GL_PROJECTION );
 	glLoadIdentity();
+	// Set the perspective
 	gluPerspective( 60.0, aspectRatio, 1.0, 1000000.0 );
 
 	// Select the Modelview matrix
@@ -207,32 +186,34 @@ int main( int argc, char** argv )
 
 	// Initialize OpenGL.
 	OpenGLInit();
+	// Initialize popup menu
 	initMenus();
+	// Initialize solar system
 	setPlanets();
 	setMoons();
 	setRings();
 	setTexImage();
-	resetView();
-	// setAstroidBelt();
+	// Set default positioning
+	setView();
+
 	// Set up the callback function for resizing windows
 	glutReshapeFunc( ResizeWindow );
 
 	// Set up lighting
-	initLighting();
+	setInfoLighting();
 	glEnable(GL_LIGHTING);
 
 	// Set initial wireframe draw mode
 	glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
 	glShadeModel( GL_FLAT );
 
-
 	// Callback for graphics image redrawing
 	glutDisplayFunc( displayCallback );
 	glutKeyboardFunc(keyboardCallback);
 	glutMouseFunc(mouseCallback);
 	glutMotionFunc(NULL);
-	// glutPassiveMotionFunc(passiveMouseCallback);
 	glutSpecialFunc(specialKeyCallback);
+
 	// Start the main loop.  glutMainLoop never returns.
 	glutMainLoop( );
 

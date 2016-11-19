@@ -78,5 +78,6 @@ GLuint texNames[32];
 
 // Current draw mode
 enum Mode {wire, flat, smooth, image};
+int drawMode = 1;
 
 #endif

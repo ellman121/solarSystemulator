@@ -3,23 +3,31 @@
  *
  * Authors: Elliott Rarden & Katie MacMillan
  *
- * Description: This file contains implementation for the ring class
+ * Description: This file contains implementation for the ring class. Most
+ * functions are getter functions, with only one setter function, setImage(),
+ * and one action function, step(), which progresses the associated body
+ * through time by a specified amount.
+ *
+ * This class was neccessary because rather than having a radius and a distance
+ * element, a ring object has an inner and and outer radius. Since the planet
+ * class uses a different scale value to scale down distance from radius, we
+ * were unable to use the planet class to create ring objects as well. In
+ * nearly every other respect the ring class is the same as the planet class.
+ * The only other difference is that there is no satellite or ring vector
+ * associated with the ring class, since rings do not have orbiting bodies.
  *
  ******************************************************************************/
 
 #include "rings.h"
-#include <cmath>
-#include <iostream>
-using namespace std;
 
 /*
  * Constructors
  ***************/
 
 // Use this constructor
-ring::ring(string group, string planet, float iRadius, float oRadius, float incline, float hoursPerDay, float albedo, float color[3], int img) {
-	_group = group;
-	_planet = planet;
+ring::ring(string name, string parent, float iRadius, float oRadius, float incline, float hoursPerDay, float albedo, float color[3], int img) {
+	_name = name;
+	_parent = parent;
 	_innerRadius = iRadius / 1000;			// scale down radius
 	_outerRadius = oRadius / 1000;			// scale down radius
 
@@ -38,7 +46,6 @@ ring::ring(string group, string planet, float iRadius, float oRadius, float incl
 	_color[1] = color[1];
 	_color[2] = color[2];
 	_img = img;
-
 }
 
 /*
@@ -89,13 +96,13 @@ int ring::getImage() {
 }
 
 // Get the name of the ring group
-string ring::getGroup() {
-	return _group;
+string ring::getName() {
+	return _name;
 }
 
 // Get the name of the parent ring
-string ring::getPlanet() {
-	return _planet;
+string ring::getParent() {
+	return _parent;
 }
 
 
