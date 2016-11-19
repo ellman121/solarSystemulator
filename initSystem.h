@@ -119,7 +119,7 @@ void setRings() {
     float ringColor[] = {1, 1, 1};
     ringMap.emplace("SaturnRings", new ring ("SaturnRings", "Saturn", 67270, 140270, 0, 10.2, 0.342, ringColor, nullImage));
     float beltColor[] = {0.3, 0.3, 0.3};
-    ringMap.emplace("AsteroidBelt", new ring ("AsteroidBelt", "Sun", 1100000, 1600000, -10, 10.2, 0.342, beltColor, nullImage));
+    ringMap.emplace("AsteroidBelt", new ring ("AsteroidBelt", "Sun", 1100000, 1600000, 0, 0, 0.342, beltColor, nullImage));
 }
 
 /* storeTexture()

@@ -130,7 +130,8 @@ void drawRings (ring* body) {
 	(smoothFlag) ? gluQuadricNormals(ring, GLU_SMOOTH) : gluQuadricNormals(ring, GLU_FLAT);
 	// Draw a texture mapped to ring
 	(texFlag) ? gluQuadricTexture(ring, GL_TRUE) : gluQuadricTexture(ring, GL_FALSE);
-
+	// Rotate about y axis for body rotation
+	glRotatef( body->getRotation(), 0.0, 1.0, 0.0 );
 	// Draw ring
 	glColor3fv(ringColor);
 	gluCylinder( ring, iRadius, oRadius, 0, 100, 1);
